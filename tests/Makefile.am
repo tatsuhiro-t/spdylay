@@ -37,9 +37,9 @@ main_SOURCES = $(HFILES) $(OBJECTS)
 
 main_LDADD = ${top_builddir}/lib/libspdylay.la
 main_LDFLAGS = -static @CUNIT_LIBS@
-AM_CFLAGS = -Wall -g -O2 -I${top_srcdir}/lib -I${top_srcdir}/lib/includes \
+AM_CFLAGS = -Wall -g -O2 -I${top_srcdir}/lib -I${top_srcdir}/lib/includes -I${top_builddir}/lib/includes \
 	@CUNIT_CFLAGS@
 
-TESTS = main
+TESTS = main end_to_end.py
 
 endif # HAVE_CUNIT
