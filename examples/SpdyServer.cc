@@ -37,6 +37,7 @@
 #include <iostream>
 
 #include <openssl/err.h>
+#include <zlib.h>
 
 #include "spdylay_ssl.h"
 #include "uri.h"
@@ -272,6 +273,7 @@ int SpdyEventHandler::submit_file_response(const std::string& status,
 {
   std::string date_str = util::http_date(time(0));
   std::string content_length = util::to_str(file_length);
+  std::string last_modified_str;
   const char *nv[] = {
     ":status", status.c_str(),
     ":version", "HTTP/1.1",
@@ -283,8 +285,9 @@ int SpdyEventHandler::submit_file_response(const std::string& status,
     0
   };
   if(last_modified != 0) {
+    last_modified_str = util::http_date(last_modified);
     nv[12] = "last-modified";
-    nv[13] = util::http_date(last_modified).c_str();
+    nv[13] = last_modified_str.c_str();
   }
   return spdylay_submit_response(session_, stream_id, nv, data_prd);
 }
@@ -433,14 +436,18 @@ void prepare_status_response(Request *req, SpdyEventHandler *hd,
        << "</address>"
        << "</body></html>";
     std::string body = ss.str();
-    write(pipefd[1], body.c_str(), body.size());
+    gzFile write_fd = gzdopen(pipefd[1], "w");
+    gzwrite(write_fd, body.c_str(), body.size());
+    gzclose(write_fd);
     close(pipefd[1]);
 
     req->file = pipefd[0];
     spdylay_data_provider data_prd;
     data_prd.source.fd = pipefd[0];
     data_prd.read_callback = file_read_callback;
-    hd->submit_file_response(status, req->stream_id, 0, body.size(), &data_prd);
+    std::vector<std::pair<std::string, std::string> > headers;
+    headers.push_back(std::make_pair("content-encoding", "gzip"));
+    hd->submit_response(status, req->stream_id, headers, &data_prd);
   }
 }
 } // namespace
@@ -460,9 +467,6 @@ void prepare_response(Request *req, SpdyEventHandler *hd)
     const std::string &field = req->headers[i].first;
     const std::string &value = req->headers[i].second;
     if(!url_found && field == ":path") {
-      // Do not response to this request to allow clients to test timeouts.
-      if (value.find("?spdyd_do_not_respond_to_req=yes") != std::string::npos)
-        return;
       url_found = true;
       url = value;
     } else if(field == ":method") {
@@ -485,6 +489,11 @@ void prepare_response(Request *req, SpdyEventHandler *hd)
   }
   std::string::size_type query_pos = url.find("?");
   if(query_pos != std::string::npos) {
+    // Do not response to this request to allow clients to test timeouts.
+    if (url.find("spdyd_do_not_respond_to_req=yes",
+                 query_pos) != std::string::npos) {
+      return;
+    }
     url = url.substr(0, query_pos);
   }
   url = util::percentDecode(url.begin(), url.end());
