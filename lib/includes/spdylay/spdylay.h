@@ -355,7 +355,7 @@ typedef enum {
  * @macro
  * Default maximum concurrent streams.
  */
-#define SPDYLAY_INITIAL_MAX_CONCURRENT_STREAMS 100
+#define SPDYLAY_INITIAL_MAX_CONCURRENT_STREAMS ((1U << 31) - 1)
 
 /**
  * @enum
