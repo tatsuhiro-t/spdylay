@@ -2386,10 +2386,15 @@ int spdylay_session_on_data_received(spdylay_session *session,
         }
       }
     } else {
-      status_code = SPDYLAY_PROTOCOL_ERROR;
+      if(stream->state != SPDYLAY_STREAM_CLOSING) {
+        status_code = SPDYLAY_PROTOCOL_ERROR;
+      }
     }
   } else {
-    status_code = SPDYLAY_INVALID_STREAM;
+    /* This should be treated as stream error, but it results in lots
+       of RST_STREAM. So just ignore frame against nonexistent stream
+       for now. */
+    /* status_code = SPDYLAY_INVALID_STREAM; */
   }
   if(status_code != 0) {
     r = spdylay_session_add_rst_stream(session, stream_id, status_code);

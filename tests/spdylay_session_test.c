@@ -1356,9 +1356,9 @@ void test_spdylay_session_on_data_received(void)
   CU_ASSERT(0 == spdylay_session_on_data_received(session,
                                                   SPDYLAY_DATA_FLAG_NONE,
                                                   4096, stream_id));
+  /* In this case, no RST_STREAM */
   top = spdylay_session_get_ob_pq_top(session);
-  CU_ASSERT(SPDYLAY_RST_STREAM == OB_CTRL_TYPE(top));
-  CU_ASSERT(SPDYLAY_INVALID_STREAM == OB_CTRL(top)->rst_stream.status_code);
+  CU_ASSERT(NULL == top);
 
   spdylay_session_del(session);
 }
@@ -2645,7 +2645,7 @@ void test_spdylay_session_recv_data(void)
   spdylay_put_uint32be(data, 1);
   spdylay_put_uint32be(data+4, 4096);
 
-  /* stream 1 is not opened, so it must be responded with RST_STREAM */
+  /* stream 1 is not opened, and it is ignored. */
   ud.data_chunk_recv_cb_called = 0;
   ud.data_recv_cb_called = 0;
   rv = spdylay_session_mem_recv(session, data, 8+4096);
@@ -2654,7 +2654,7 @@ void test_spdylay_session_recv_data(void)
   CU_ASSERT(0 == ud.data_chunk_recv_cb_called);
   CU_ASSERT(0 == ud.data_recv_cb_called);
   item = spdylay_session_get_next_ob_item(session);
-  CU_ASSERT(SPDYLAY_RST_STREAM == OB_CTRL_TYPE(item));
+  CU_ASSERT(NULL == item);
 
   CU_ASSERT(0 == spdylay_session_send(session));
 
