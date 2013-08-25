@@ -855,6 +855,12 @@ void on_ctrl_recv_callback
     downstream->set_response_state(Downstream::HEADER_COMPLETE);
     if(downstream->tunnel_established()) {
       downstream->set_response_connection_close(true);
+    } else if(downstream->get_request_method() == "CONNECT") {
+      // If CONNECT failed, close upstream connection, since the
+      // modified http-parser is in tunnel mode and
+      // Downstream::get_request_state() is MSG_HEADER_COMPLETE.
+      downstream->set_response_connection_close(true);
+      downstream->end_upload_data();
     }
     rv = upstream->on_downstream_header_complete(downstream);
     if(rv != 0) {

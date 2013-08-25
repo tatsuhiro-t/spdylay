@@ -179,7 +179,11 @@ ssize_t spdy_data_read_callback(spdylay_session *session,
   for(;;) {
     nread = evbuffer_remove(body, buf, length);
     if(nread == 0) {
-      if(downstream->get_request_state() == Downstream::MSG_COMPLETE) {
+      // If CONNECT request failed, set *eof = 1.
+      if(downstream->get_request_state() == Downstream::MSG_COMPLETE ||
+         (downstream->get_response_state() == Downstream::HEADER_COMPLETE &&
+          downstream->get_request_method() == "CONNECT" &&
+          !downstream->tunnel_established())) {
         *eof = 1;
         break;
       } else {
