@@ -101,10 +101,9 @@ static ssize_t scripted_recv_callback(spdylay_session *session,
   size_t wlen = df->feedseq[df->seqidx] > len ? len : df->feedseq[df->seqidx];
   memcpy(data, df->datamark, wlen);
   df->datamark += wlen;
-  if(wlen <= len) {
+  df->feedseq[df->seqidx] -= wlen;
+  if(df->feedseq[df->seqidx] == 0) {
     ++df->seqidx;
-  } else {
-    df->feedseq[df->seqidx] -= wlen;
   }
   return wlen;
 }
