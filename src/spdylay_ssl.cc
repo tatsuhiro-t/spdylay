@@ -174,7 +174,7 @@ int Spdylay::submit_request(const std::string& scheme,
   int header_count          = headers.size();
   int total_entry_count     = hardcoded_entry_count + header_count * 2;
   if(data_prd) {
-    ++total_entry_count;
+    total_entry_count+=2;
   }
 
   const char **nv = new const char*[total_entry_count + 1];
