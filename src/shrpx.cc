@@ -537,7 +537,7 @@ void print_help(std::ostream& out)
       << "    --dh-param-file=<PATH>\n"
       << "                       Path to file that contains DH parameters in\n"
       << "                       PEM format. Without this option, DHE cipher\n"
-      << "                       suites are not available."
+      << "                       suites are not available.\n"
       << "\n"
       << "  SPDY:\n"
       << "    -c, --spdy-max-concurrent-streams=<NUM>\n"
