@@ -381,6 +381,8 @@ Here is the command-line options::
       SSL/TLS:
         --ciphers=<SUITE>  Set allowed cipher list. The format of the
                            string is described in OpenSSL ciphers(1).
+                           If this option is used, --honor-cipher-order
+                           is implicitly enabled.
         --honor-cipher-order
                            Honor server cipher order, giving the
                            ability to mitigate BEAST attacks.
@@ -408,6 +410,10 @@ Here is the command-line options::
                            Explicitly set the content of the TLS SNI
                            extension.  This will default to the backend
                            HOST name.
+        --dh-param-file=<PATH>
+                           Path to file that contains DH parameters in
+                           PEM format. Without this option, DHE cipher
+                           suites are not available.
 
       SPDY:
         -c, --spdy-max-concurrent-streams=<NUM>
