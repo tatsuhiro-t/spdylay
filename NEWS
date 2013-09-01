@@ -1,73 +1,57 @@
-spdylay 1.0.0
+spdylay 1.1.0
 =============
 
 Release Note
 ------------
 
-This release adds several enhancements to the spdyct and shrpx and
-strict checks for name/value pairs.  It fixes the bug that server can
-not push the stream against server initiated stream ID. The internal
-priority management mechanism is updated so that outbound DATA frames
-with variety of SPDY priority can interleave more frequently and don't
-let the low priority streams starve. The development is very stable
-now, so we'll make this release 1.0.0.
+This release fixes several bugs in shrpx and spdycat. It is strongly
+recommended for the users who use shrpx and spdycat to upgrade to this
+version.  Historically, spdylay.h header defined
+SPDYLAY_INITIAL_MAX_CONCURRENT_STREAMS macro as 100 and all internal
+code and utility programs (spdycat and spdyd) use that. However, this
+limit is not specified in the SPDY specification and may trigger
+unexpected stream closure to the other SPDY
+implementations. Therefore, it is now defined the large enough value.
 
 Changes
 -------
 
-* Adjust priority of outbound DATA frames so that it does not starve
-  others
+* shrpx: Enable --honor-cipher-order automatically when --ciphers is used
 
-  This change makes frames with variety of priority interleave more
-  frequently.
+* spdycat: allocate sufficient memory, patch from soyer.
 
-* Drop priveleges only after listening on possibly priveleged port
+* shrpx: Add DHE cipher suite support
 
-  Patch from moparisthebest
+  Use --dh-param-file option to specify a file including DH parameters
+  in PEM format.
 
-* Add --honor-cipher-order option to mitigate BEAST attacks
+* shrpx: Add ECDH cipher support
 
-  Patch from moparisthebest
+* shrpx: Close upstream connection if CONNECT failed in downstream
 
-* Fix building on mac os x. "error: invalid suffix on literal; C++11
-  requires a space between literal and identifier"
+* shrpx: Replace \r\n in the header field to SPC in http downstream
 
-  Patch from snnn
+* shrpx: Require content-length in SPDY upstream if FIN flag is not set
 
-* Allow server initiated stream ID in associated-stream-id
+* Return error if spdylay_gzip_inflate is invoked after Z_STREAM_END
 
-* spdycat, shrpx: TLS SNI enhancements
+* shrpx: Limit read rate on upstream-end
 
-  shrpx:
-  * Added an option to set the TLS SNI extension between shrpx and the
-    origin on the command line
+* shrpx: Make "dconn_ is NULL" message INFO level
 
-  spdycat:
-  * If the user set an explicit host header ( using --headers ) use that
-    name for the TLS SNI extension.
-  * Added the handshake completion time to the verbose output
-  * The gettimeofday call in get_time was using the incorrect structure
-    ( I believe )
-  * In update_html_parser it was submitting the request regardless of
-    the return value of add_request.
+* shrpx: Save pid file after daemon() call
 
-  Patch from Stephen Ludin
+* shrpx: Accept incoming bytes at least initial window size (65536 bytes)
 
-* shrpx: Support non-TLS SPDY in frontend connection
+* shrpx: Fix possible multiple replies on SPDY upstream
 
-* Don't allow control characters in outgoing name/value pairs
+* shrpx: Return -1 if dconn_ is nullptr on push_upload_data_chunk
 
-  This check is done in spdylay_submit_* family functions and they
-  will return error if they found control characters.
+* Change SPDYLAY_INITIAL_MAX_CONCURRENT_STREAMS
 
-* Don't pack multiple empty header values in one header field
+  The previous value 100 is non-standard, and if it is not sent with
+  SETTINGS, session will be closed with protocol error.
 
-  SPDY spec does not allow multiple empty header values in one header
-  field. This change makes out-going framer ignore such empty header
-  value if there is non-empty header value with the same name.
+* src: Send out data in output buffer before SPDY session tear down
 
-* Fix the incoming last empty header value is not checked properly
-
-  This change fixes the bug that spdylay_frame_unpack_nv does not
-  check the size of header value if it is the last value in NULL
-  separated list.
+* shrpx: Fix bug: end marker of chunked encoding is written twice
