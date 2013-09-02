@@ -43,7 +43,7 @@ public:
   // On success
   int poll(int timeout);
   // Returns number of events detected in previous call of poll().
-  int get_num_events();
+  size_t get_num_events();
   // Returns events of p-eth event.
   int get_events(size_t p);
   // Returns user data of p-th event.

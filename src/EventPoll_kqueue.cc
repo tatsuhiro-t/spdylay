@@ -73,7 +73,7 @@ int EventPoll::poll(int timeout)
   return n;
 }
 
-int EventPoll::get_num_events()
+size_t EventPoll::get_num_events()
 {
   return num_events_;
 }
