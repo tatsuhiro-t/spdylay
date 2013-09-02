@@ -516,7 +516,8 @@ void print_timer()
   get_timer(&tv);
   printf("%s[%3ld.%03ld]%s",
          ansi_esc("\033[33m"),
-         (long int)tv.tv_sec, tv.tv_usec/1000,
+         static_cast<long int>(tv.tv_sec),
+         static_cast<long int>(tv.tv_usec)/1000,
          ansi_escend());
 }
 
