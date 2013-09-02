@@ -332,7 +332,7 @@ int SpdyEventHandler::submit_response
   nv[5] = SPDYD_SERVER.c_str();
   nv[6] = "date";
   nv[7] = date_str.c_str();
-  for(int i = 0; i < (int)headers.size(); ++i) {
+  for(size_t i = 0; i < headers.size(); ++i) {
     nv[8+i*2] = headers[i].first.c_str();
     nv[8+i*2+1] = headers[i].second.c_str();
   }
@@ -492,7 +492,7 @@ void prepare_response(Request *req, SpdyEventHandler *hd)
   bool host_found = false;
   time_t last_mod = 0;
   bool last_mod_found = false;
-  for(int i = 0; i < (int)req->headers.size(); ++i) {
+  for(size_t i = 0; i < req->headers.size(); ++i) {
     const std::string &field = req->headers[i].first;
     const std::string &value = req->headers[i].second;
     if(!url_found && field == ":path") {
@@ -516,7 +516,7 @@ void prepare_response(Request *req, SpdyEventHandler *hd)
     prepare_status_response(req, hd, STATUS_400);
     return;
   }
-  std::string::size_type query_pos = url.find("?");
+  size_t query_pos = url.find("?");
   if(query_pos != std::string::npos) {
     // Do not response to this request to allow clients to test timeouts.
     if (url.find("spdyd_do_not_respond_to_req=yes",
