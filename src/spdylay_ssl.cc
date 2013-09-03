@@ -142,7 +142,7 @@ void* Spdylay::user_data()
 int Spdylay::submit_request(const std::string& scheme,
                             const std::string& hostport,
                             const std::string& path,
-                            const std::map<std::string,std::string> &headers,
+                            const std::map<std::string,std::string>& headers,
                             uint8_t pri,
                             const spdylay_data_provider *data_prd,
                             int64_t data_length,
@@ -156,6 +156,7 @@ int Spdylay::submit_request(const std::string& scheme,
     POS_SCHEME,
     POS_HOST,
     POS_ACCEPT,
+    POS_ACCEPTENCODING,
     POS_USERAGENT
   };
 
@@ -207,9 +208,8 @@ int Spdylay::submit_request(const std::string& scheme,
       nv[POS_HOST*2+1] = value;
     }
     else {
-      nv[pos] = key;
-      nv[pos+1] = value;
-      pos += 2;
+      nv[pos++] = key;
+      nv[pos++] = value;
     }
     ++i;
   }
