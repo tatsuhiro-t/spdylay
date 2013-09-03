@@ -459,13 +459,19 @@ void check_stream_id(spdylay_session *session,
   req->record_syn_stream_time();
 }
 
-void on_ctrl_send_callback2
+void before_ctrl_send_callback
 (spdylay_session *session, spdylay_frame_type type, spdylay_frame *frame,
  void *user_data)
 {
   if(type == SPDYLAY_SYN_STREAM) {
     check_stream_id(session, type, frame, user_data);
   }
+}
+
+void on_ctrl_send_callback2
+(spdylay_session *session, spdylay_frame_type type, spdylay_frame *frame,
+ void *user_data)
+{
   if(config.verbose) {
     on_ctrl_send_callback(session, type, frame, user_data);
   }
@@ -814,6 +820,7 @@ int run(char **uris, int n)
   callbacks.on_stream_close_callback = on_stream_close_callback;
   callbacks.on_ctrl_recv_callback = on_ctrl_recv_callback2;
   callbacks.on_ctrl_send_callback = on_ctrl_send_callback2;
+  callbacks.before_ctrl_send_callback = before_ctrl_send_callback;
   if(config.verbose) {
     callbacks.on_data_recv_callback = on_data_recv_callback;
     callbacks.on_invalid_ctrl_recv_callback = on_invalid_ctrl_recv_callback;
