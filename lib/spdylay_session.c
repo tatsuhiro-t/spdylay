@@ -501,8 +501,13 @@ int spdylay_session_close_stream(spdylay_session *session, int32_t stream_id,
 {
   spdylay_stream *stream = spdylay_session_get_stream(session, stream_id);
   if(stream) {
-    if(stream->state != SPDYLAY_STREAM_INITIAL &&
-       session->callbacks.on_stream_close_callback) {
+    /* We call on_stream_close_callback even if stream->state is
+       SPDYLAY_STREAM_INITIAL. This will happen while sending request
+       HEADERS, a local endpoint receives RST_STREAM for that
+       stream. It may be PROTOCOL_ERROR, but without notifying stream
+       closure will hang the stream in a local endpoint.
+     */
+    if(session->callbacks.on_stream_close_callback) {
       session->callbacks.on_stream_close_callback(session, stream_id,
                                                   status_code,
                                                   session->user_data);
