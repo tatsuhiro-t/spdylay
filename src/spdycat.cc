@@ -823,6 +823,7 @@ int run(char **uris, int n)
   callbacks.before_ctrl_send_callback = before_ctrl_send_callback;
   if(config.verbose) {
     callbacks.on_data_recv_callback = on_data_recv_callback;
+    callbacks.on_data_send_callback = on_data_send_callback;
     callbacks.on_invalid_ctrl_recv_callback = on_invalid_ctrl_recv_callback;
     callbacks.on_ctrl_recv_parse_error_callback =
       on_ctrl_recv_parse_error_callback;
