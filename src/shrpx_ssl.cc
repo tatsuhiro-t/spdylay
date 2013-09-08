@@ -153,6 +153,7 @@ SSL_CTX* create_ssl_context(const char *private_key_file,
     SSL_CTX_set_options(ssl_ctx, SSL_OP_CIPHER_SERVER_PREFERENCE);
   }
 
+#ifndef OPENSSL_NO_EC
   EC_KEY *ecdh = EC_KEY_new_by_curve_name(NID_X9_62_prime256v1);
   if(ecdh == NULL) {
     LOG(FATAL) << "EC_KEY_new_by_curv_name failed: "
@@ -161,6 +162,7 @@ SSL_CTX* create_ssl_context(const char *private_key_file,
   }
   SSL_CTX_set_tmp_ecdh(ssl_ctx, ecdh);
   EC_KEY_free(ecdh);
+#endif // OPENSSL_NO_EC
 
   if(get_config()->dh_param_file) {
     BIO *bio = BIO_new_file(get_config()->dh_param_file, "r");
