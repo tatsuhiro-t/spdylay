@@ -65,7 +65,6 @@ public:
   SpdySession* get_spdy_session() const;
 private:
   bufferevent *bev_;
-  ev_token_bucket_cfg *evbucket_cfg_;
   int fd_;
   SSL *ssl_;
   Upstream *upstream_;
