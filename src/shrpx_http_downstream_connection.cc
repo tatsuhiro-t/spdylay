@@ -116,8 +116,7 @@ int HttpDownstreamConnection::push_request_headers()
   std::string hdrs = downstream_->get_request_method();
   hdrs += " ";
   hdrs += downstream_->get_request_path();
-  hdrs += " ";
-  hdrs += "HTTP/1.1\r\n";
+  hdrs += " HTTP/1.1\r\n";
   bool connection_upgrade = false;
   std::string via_value;
   std::string xff_value;
@@ -161,6 +160,7 @@ int HttpDownstreamConnection::push_request_headers()
     hdrs += "X-Forwarded-For: ";
     if(!xff_value.empty()) {
       hdrs += xff_value;
+      http::sanitize_header_value(hdrs, hdrs.size()-xff_value.size());
       hdrs += ", ";
     }
     hdrs += downstream_->get_upstream()->get_client_handler()->get_ipaddr();
@@ -168,21 +168,22 @@ int HttpDownstreamConnection::push_request_headers()
   } else if(!xff_value.empty()) {
     hdrs += "X-Forwarded-For: ";
     hdrs += xff_value;
+    http::sanitize_header_value(hdrs, hdrs.size()-xff_value.size());
     hdrs += "\r\n";
   }
   if(downstream_->get_request_method() != "CONNECT") {
     hdrs += "X-Forwarded-Proto: ";
     if(util::istartsWith(downstream_->get_request_path(), "http:")) {
-      hdrs += "http";
+      hdrs += "http\r\n";
     } else {
-      hdrs += "https";
+      hdrs += "https\r\n";
     }
-    hdrs += "\r\n";
   }
   if(!get_config()->no_via) {
     hdrs += "Via: ";
     if(!via_value.empty()) {
       hdrs += via_value;
+      http::sanitize_header_value(hdrs, hdrs.size()-via_value.size());
       hdrs += ", ";
     }
     hdrs += http::create_via_header_value(downstream_->get_request_major(),

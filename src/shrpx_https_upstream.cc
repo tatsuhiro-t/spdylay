@@ -645,6 +645,7 @@ int HttpsUpstream::on_downstream_header_complete(Downstream *downstream)
       http::capitalize(hdrs, hdrs.size()-(*i).first.size());
       hdrs += ": ";
       hdrs += (*i).second;
+      http::sanitize_header_value(hdrs, hdrs.size()-(*i).second.size());
       hdrs += "\r\n";
     }
   }
@@ -667,6 +668,7 @@ int HttpsUpstream::on_downstream_header_complete(Downstream *downstream)
     hdrs += "Via: ";
     if(!via_value.empty()) {
       hdrs += via_value;
+      http::sanitize_header_value(hdrs, hdrs.size()-via_value.size());
       hdrs += ", ";
     }
     hdrs += http::create_via_header_value

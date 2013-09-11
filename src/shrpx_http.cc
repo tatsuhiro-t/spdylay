@@ -122,6 +122,11 @@ void capitalize(std::string& s, size_t offset)
   }
 }
 
+bool check_header_value(const char *value)
+{
+  return strpbrk(value, "\r\n") == 0;
+}
+
 void sanitize_header_value(std::string& s, size_t offset)
 {
   for(size_t i = offset, eoi = s.size(); i < eoi; ++i) {
