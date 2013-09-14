@@ -2,3 +2,6 @@ spdycat
 spdyd
 shrpx
 shrpx-unittest
+shrpx-unittest.log
+shrpx-unittest.trs
+test-suite.log
