@@ -629,7 +629,7 @@ void spdy_downstream_eventcb(bufferevent *bev, short events, void *ptr)
         if(downstream->get_response_state() == Downstream::HEADER_COMPLETE) {
           upstream->rst_stream(downstream, SPDYLAY_INTERNAL_ERROR);
         } else {
-          int status;
+          unsigned int status;
           if(events & BEV_EVENT_TIMEOUT) {
             status = 504;
           } else {
@@ -718,7 +718,7 @@ ssize_t spdy_data_read_callback(spdylay_session *session,
 }
 } // namespace
 
-int SpdyUpstream::error_reply(Downstream *downstream, int status_code)
+int SpdyUpstream::error_reply(Downstream *downstream, unsigned int status_code)
 {
   int rv;
   std::string html = http::create_error_html(status_code);
@@ -736,9 +736,9 @@ int SpdyUpstream::error_reply(Downstream *downstream, int status_code)
   data_prd.read_callback = spdy_data_read_callback;
 
   std::string content_length = util::utos(html.size());
-
+  std::string status_string = http::get_status_string(status_code);
   const char *nv[] = {
-    ":status", http::get_status_string(status_code),
+    ":status", status_string.c_str(),
     ":version", "http/1.1",
     "content-type", "text/html; charset=UTF-8",
     "server", get_config()->server_name,
@@ -807,8 +807,10 @@ int SpdyUpstream::on_downstream_header_complete(Downstream *downstream)
   const char **nv = new const char*[nheader * 2 + 6 + 1];
   size_t hdidx = 0;
   std::string via_value;
+  std::string status_string =
+    http::get_status_string(downstream->get_response_http_status());
   nv[hdidx++] = ":status";
-  nv[hdidx++] = http::get_status_string(downstream->get_response_http_status());
+  nv[hdidx++] = status_string.c_str();
   nv[hdidx++] = ":version";
   nv[hdidx++] = "HTTP/1.1";
   for(Headers::const_iterator i = downstream->get_response_headers().begin();

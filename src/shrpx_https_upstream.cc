@@ -528,7 +528,7 @@ void https_downstream_eventcb(bufferevent *bev, short events, void *ptr)
       }
     }
     if(downstream->get_response_state() == Downstream::INITIAL) {
-      int status;
+      unsigned int status;
       if(events & BEV_EVENT_TIMEOUT) {
         status = 504;
       } else {
@@ -549,7 +549,7 @@ void https_downstream_eventcb(bufferevent *bev, short events, void *ptr)
 }
 } // namespace
 
-int HttpsUpstream::error_reply(int status_code)
+int HttpsUpstream::error_reply(unsigned int status_code)
 {
   std::string html = http::create_error_html(status_code);
   std::string header;

@@ -34,7 +34,7 @@ namespace shrpx {
 
 namespace http {
 
-const char* get_status_string(int status_code)
+std::string get_status_string(unsigned int status_code)
 {
   switch(status_code) {
   case 100: return "100 Continue";
@@ -78,15 +78,15 @@ const char* get_status_string(int status_code)
   case 503: return "503 Service Unavailable";
   case 504: return "504 Gateway Timeout";
   case 505: return "505 HTTP Version Not Supported";
-  default: return "";
+  default: return util::utos(status_code);
   }
 }
 
-std::string create_error_html(int status_code)
+std::string create_error_html(unsigned int status_code)
 {
   std::string res;
   res.reserve(512);
-  const char *status = http::get_status_string(status_code);
+  std::string status = http::get_status_string(status_code);
   res += "<html><head><title>";
   res += status;
   res += "</title></head><body><h1>";
