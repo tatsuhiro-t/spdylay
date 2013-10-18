@@ -47,6 +47,7 @@ ssize_t unpack_frame_with_nv_block(spdylay_frame_type type,
                                &in[SPDYLAY_HEAD_LEN + pnvlen],
                                len - SPDYLAY_HEAD_LEN - pnvlen);
   if(rv < 0) {
+    spdylay_buffer_free(&buffer);
     return rv;
   }
   switch(type) {
