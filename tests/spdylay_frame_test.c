@@ -840,7 +840,7 @@ static const char *empty_name_headers[] = {
   NULL
 };
 
-static const char non_ascii_header_name[] = { (char)0xff };
+static const char non_ascii_header_name[] = { (char)0xff, '\0' };
 
 static const char *non_ascii_headers[] = {
   non_ascii_header_name, "foo",
