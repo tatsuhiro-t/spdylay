@@ -72,7 +72,6 @@ private:
   spdylay_session *session_;
   void *user_data_;
   uint8_t io_flags_;
-  bool debug_;
 };
 
 int connect_to(const std::string& host, uint16_t port);

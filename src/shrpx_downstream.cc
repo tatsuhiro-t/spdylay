@@ -139,20 +139,6 @@ void check_expect_100_continue(bool *res,
 }
 } // namespace
 
-namespace {
-void check_connection_close(bool *connection_close,
-                            const Headers::value_type &item)
-{
-  if(util::strieq(item.first.c_str(), "connection")) {
-    if(util::strifind(item.second.c_str(), "close")) {
-      *connection_close = true;
-    } else if(util::strifind(item.second.c_str(), "keep-alive")) {
-      *connection_close = false;
-    }
-  }
-}
-} // namespace
-
 const Headers& Downstream::get_request_headers() const
 {
   return request_headers_;
