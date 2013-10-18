@@ -67,6 +67,7 @@ typedef struct {
   size_t block_count;
   int data_chunk_recv_cb_called;
   int data_recv_cb_called;
+  size_t fixed_sendlen;
 } my_user_data;
 
 static void scripted_data_feed_init(scripted_data_feed *df,
@@ -91,6 +92,14 @@ static ssize_t fail_send_callback(spdylay_session *session,
                                   void *user_data)
 {
   return SPDYLAY_ERR_CALLBACK_FAILURE;
+}
+
+static ssize_t fixed_bytes_send_callback(spdylay_session *session,
+                                         const uint8_t *data, size_t len,
+                                         int flags, void *user_data)
+{
+  size_t fixed_sendlen = ((my_user_data*)user_data)->fixed_sendlen;
+  return fixed_sendlen < len ? fixed_sendlen : len;
 }
 
 static ssize_t scripted_recv_callback(spdylay_session *session,
@@ -1948,12 +1957,15 @@ void test_spdylay_session_flow_control(void)
   spdylay_frame settings_frame;
 
   memset(&callbacks, 0, sizeof(spdylay_session_callbacks));
-  callbacks.send_callback = null_send_callback;
+  callbacks.send_callback = fixed_bytes_send_callback;
   callbacks.on_ctrl_send_callback = on_ctrl_send_callback;
   data_prd.read_callback = fixed_length_data_source_read_callback;
 
   ud.ctrl_send_cb_called = 0;
   ud.data_source_length = 128*1024;
+  /* Use smaller emission count so that we can check outbound flow
+     control window calculation is correct. */
+  ud.fixed_sendlen = 2*1024;
 
   /* Initial window size is 64KiB */
   spdylay_session_client_new(&session, SPDYLAY_PROTO_SPDY3, &callbacks, &ud);

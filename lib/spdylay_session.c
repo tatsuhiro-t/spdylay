@@ -1554,17 +1554,23 @@ int spdylay_session_send(spdylay_session *session)
         return SPDYLAY_ERR_CALLBACK_FAILURE;
       }
     } else {
-      session->aob.framebufoff += sentlen;
       if(session->flow_control &&
          session->aob.item->frame_cat == SPDYLAY_DATA) {
         spdylay_data *frame;
         spdylay_stream *stream;
+        int32_t len;
+        if(session->aob.framebufoff < SPDYLAY_FRAME_HEAD_LENGTH) {
+          len = session->aob.framebufoff + sentlen - SPDYLAY_FRAME_HEAD_LENGTH;
+        } else {
+          len = sentlen;
+        }
         frame = spdylay_outbound_item_get_data_frame(session->aob.item);
         stream = spdylay_session_get_stream(session, frame->stream_id);
         if(stream) {
-          stream->window_size -= spdylay_get_uint32(&session->aob.framebuf[4]);
+          stream->window_size -= len;
         }
       }
+      session->aob.framebufoff += sentlen;
       if(session->aob.framebufoff == session->aob.framebuflen) {
         /* Frame has completely sent */
         r = spdylay_session_after_frame_sent(session);
