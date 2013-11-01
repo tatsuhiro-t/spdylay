@@ -930,11 +930,13 @@ void print_help(std::ostream& out)
       << "    -m, --multiply=<N> Request each URI <N> times. By default, same\n"
       << "                       URI is not requested twice. This option\n"
       << "                       disables it too.\n"
+      << "    --color            Force colored log output.\n"
       << std::endl;
 }
 
 int main(int argc, char **argv)
 {
+  bool color = false;
   while(1) {
     int flag;
     static option long_options[] = {
@@ -954,6 +956,7 @@ int main(int argc, char **argv)
       {"no-tls", no_argument, &flag, 3 },
       {"data", required_argument, 0, 'd' },
       {"multiply", required_argument, 0, 'm' },
+      {"color", no_argument, &flag, 4 },
       {0, 0, 0, 0 }
     };
     int option_index = 0;
@@ -1053,6 +1056,10 @@ int main(int argc, char **argv)
         // no-tls option
         config.no_tls = true;
         break;
+      case 4:
+        // color option
+        color = true;
+        break;
       }
       break;
     default:
@@ -1068,7 +1075,7 @@ int main(int argc, char **argv)
     }
   }
 
-  set_color_output(isatty(fileno(stdout)));
+  set_color_output(color || isatty(fileno(stdout)));
 
   struct sigaction act;
   memset(&act, 0, sizeof(struct sigaction));

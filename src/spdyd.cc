@@ -78,6 +78,7 @@ void print_help(std::ostream& out)
       << "    -3, --spdy3        Only use SPDY/3.\n"
       << "    --no-tls           Disable SSL/TLS. Use -2 or -3 to specify\n"
       << "                       SPDY protocol version to use.\n"
+      << "    --color            Force colored log output.\n"
       << "    -h, --help         Print this help.\n"
       << std::endl;
 }
@@ -86,6 +87,7 @@ void print_help(std::ostream& out)
 int main(int argc, char **argv)
 {
   Config config;
+  bool color = false;
   while(1) {
     int flag;
     static option long_options[] = {
@@ -97,6 +99,7 @@ int main(int argc, char **argv)
       {"spdy3", no_argument, 0, '3' },
       {"verify-client", no_argument, 0, 'V' },
       {"no-tls", no_argument, &flag, 1 },
+      {"color", no_argument, &flag, 2 },
       {0, 0, 0, 0 }
     };
     int option_index = 0;
@@ -133,6 +136,10 @@ int main(int argc, char **argv)
       case 1:
         // no-tls option
         config.no_tls = true;
+        break;
+      case 2:
+        // color option
+        color = true;
         break;
       }
       break;
@@ -174,7 +181,7 @@ int main(int argc, char **argv)
     config.htdocs = "./";
   }
 
-  set_color_output(isatty(fileno(stdout)));
+  set_color_output(color || isatty(fileno(stdout)));
 
   struct sigaction act;
   memset(&act, 0, sizeof(struct sigaction));
