@@ -407,6 +407,7 @@ void fill_default_config()
   mod_config()->read_burst = 4*1024*1024;
   mod_config()->write_rate = 0;
   mod_config()->write_burst = 0;
+  mod_config()->verify_client = false;
 }
 } // namespace
 
@@ -577,6 +578,7 @@ void print_help(std::ostream& out)
       << "                       Path to file that contains DH parameters in\n"
       << "                       PEM format. Without this option, DHE cipher\n"
       << "                       suites are not available.\n"
+      << "    --verify-client    Require and verify client certificate.\n"
       << "\n"
       << "  SPDY:\n"
       << "    -c, --spdy-max-concurrent-streams=<NUM>\n"
@@ -722,6 +724,7 @@ int main(int argc, char **argv)
       {"read-burst", required_argument, &flag, 35},
       {"write-rate", required_argument, &flag, 36},
       {"write-burst", required_argument, &flag, 37},
+      {"verify-client", no_argument, &flag, 38},
       {0, 0, 0, 0 }
     };
     int option_index = 0;
@@ -931,6 +934,10 @@ int main(int argc, char **argv)
         // --write-burst
         cmdcfgs.push_back(std::make_pair(SHRPX_OPT_WRITE_BURST, optarg));
         break;
+      case 38:
+        // --verify-client
+        cmdcfgs.push_back(std::make_pair(SHRPX_OPT_VERIFY_CLIENT, "yes"));
+        break;
       default:
         break;
       }
@@ -965,6 +972,22 @@ int main(int argc, char **argv)
   for(size_t i = 0, len = cmdcfgs.size(); i < len; ++i) {
     if(parse_config(cmdcfgs[i].first, cmdcfgs[i].second) == -1) {
       LOG(FATAL) << "Failed to parse command-line argument.";
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  if(!get_config()->subcerts.empty()) {
+    mod_config()->cert_tree = ssl::cert_lookup_tree_new();
+  }
+
+  for(size_t i = 0; i < get_config()->subcerts.size(); ++i) {
+    const std::pair<std::string, std::string>& keycert =
+      get_config()->subcerts[i];
+    SSL_CTX *ssl_ctx = ssl::create_ssl_context(keycert.first.c_str(),
+                                               keycert.second.c_str());
+    if(ssl::cert_lookup_tree_add_cert_from_file
+       (get_config()->cert_tree, ssl_ctx, keycert.second.c_str()) == -1) {
+      LOG(FATAL) << "Failed to add sub certificate.";
       exit(EXIT_FAILURE);
     }
   }

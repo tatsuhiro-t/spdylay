@@ -92,6 +92,7 @@ extern const char SHRPX_OPT_READ_RATE[];
 extern const char SHRPX_OPT_READ_BURST[];
 extern const char SHRPX_OPT_WRITE_RATE[];
 extern const char SHRPX_OPT_WRITE_BURST[];
+extern const char SHRPX_OPT_VERIFY_CLIENT[];
 
 union sockaddr_union {
   sockaddr sa;
@@ -182,6 +183,8 @@ struct Config {
   size_t read_burst;
   size_t write_rate;
   size_t write_burst;
+  // The list of (private key file, certificate file) pair
+  std::vector<std::pair<std::string, std::string> > subcerts;
 };
 
 const Config* get_config();

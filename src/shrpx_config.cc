@@ -98,6 +98,7 @@ const char SHRPX_OPT_READ_RATE[] = "read-rate";
 const char SHRPX_OPT_READ_BURST[] = "read-burst";
 const char SHRPX_OPT_WRITE_RATE[] = "write-rate";
 const char SHRPX_OPT_WRITE_BURST[] = "write-burst";
+const char SHRPX_OPT_VERIFY_CLIENT[] = "verify-client";
 
 namespace {
 Config *config = 0;
@@ -339,14 +340,7 @@ int parse_config(const char *opt, const char *optarg)
     if(sp) {
       std::string keyfile(optarg, sp);
       // TODO Do we need private key for subcert?
-      SSL_CTX *ssl_ctx = ssl::create_ssl_context(keyfile.c_str(), sp+1);
-      if(!get_config()->cert_tree) {
-        mod_config()->cert_tree = ssl::cert_lookup_tree_new();
-      }
-      if(ssl::cert_lookup_tree_add_cert_from_file(get_config()->cert_tree,
-                                                  ssl_ctx, sp+1) == -1) {
-        return -1;
-      }
+      mod_config()->subcerts.push_back(std::make_pair(keyfile, sp+1));
     }
   } else if(util::strieq(opt, SHRPX_OPT_SYSLOG)) {
     mod_config()->syslog = util::strieq(optarg, "yes");
@@ -415,6 +409,8 @@ int parse_config(const char *opt, const char *optarg)
     mod_config()->write_rate = strtoul(optarg, 0, 10);
   } else if(util::strieq(opt, SHRPX_OPT_WRITE_BURST)) {
     mod_config()->write_burst = strtoul(optarg, 0, 10);
+  } else if(util::strieq(opt, SHRPX_OPT_VERIFY_CLIENT)) {
+    mod_config()->verify_client = util::strieq(optarg, "yes");
   } else if(util::strieq(opt, "conf")) {
     LOG(WARNING) << "conf is ignored";
   } else {
