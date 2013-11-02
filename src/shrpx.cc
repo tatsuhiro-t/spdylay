@@ -326,7 +326,6 @@ void fill_default_config()
 
   mod_config()->verbose = false;
   mod_config()->daemon = false;
-  mod_config()->verify_client = false;
 
   mod_config()->server_name = "shrpx spdylay/" SPDYLAY_VERSION;
   set_config_str(&mod_config()->host, "0.0.0.0");
@@ -408,6 +407,7 @@ void fill_default_config()
   mod_config()->write_rate = 0;
   mod_config()->write_burst = 0;
   mod_config()->verify_client = false;
+  mod_config()->verify_client_cacert = 0;
 }
 } // namespace
 
@@ -579,6 +579,11 @@ void print_help(std::ostream& out)
       << "                       PEM format. Without this option, DHE cipher\n"
       << "                       suites are not available.\n"
       << "    --verify-client    Require and verify client certificate.\n"
+      << "    --verify-client-cacert=<PATH>\n"
+      << "                       Path to file that contains CA certificates\n"
+      << "                       to verify client certificate.\n"
+      << "                       The file must be in PEM format. It can\n"
+      << "                       contain multiple certificates.\n"
       << "\n"
       << "  SPDY:\n"
       << "    -c, --spdy-max-concurrent-streams=<NUM>\n"
@@ -725,6 +730,7 @@ int main(int argc, char **argv)
       {"write-rate", required_argument, &flag, 36},
       {"write-burst", required_argument, &flag, 37},
       {"verify-client", no_argument, &flag, 38},
+      {"verify-client-cacert", required_argument, &flag, 39},
       {0, 0, 0, 0 }
     };
     int option_index = 0;
@@ -937,6 +943,11 @@ int main(int argc, char **argv)
       case 38:
         // --verify-client
         cmdcfgs.push_back(std::make_pair(SHRPX_OPT_VERIFY_CLIENT, "yes"));
+        break;
+      case 39:
+        // --verify-client-cacert
+        cmdcfgs.push_back(std::make_pair(SHRPX_OPT_VERIFY_CLIENT_CACERT,
+                                         optarg));
         break;
       default:
         break;

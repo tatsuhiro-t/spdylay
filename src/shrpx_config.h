@@ -93,6 +93,7 @@ extern const char SHRPX_OPT_READ_BURST[];
 extern const char SHRPX_OPT_WRITE_RATE[];
 extern const char SHRPX_OPT_WRITE_BURST[];
 extern const char SHRPX_OPT_VERIFY_CLIENT[];
+extern const char SHRPX_OPT_VERIFY_CLIENT_CACERT[];
 
 union sockaddr_union {
   sockaddr sa;
@@ -185,6 +186,9 @@ struct Config {
   size_t write_burst;
   // The list of (private key file, certificate file) pair
   std::vector<std::pair<std::string, std::string> > subcerts;
+  // Path to file containing CA certificate solely used for client
+  // certificate validation
+  char *verify_client_cacert;
 };
 
 const Config* get_config();
