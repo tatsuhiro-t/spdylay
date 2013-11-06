@@ -799,6 +799,9 @@ ssize_t file_read_callback
   ssize_t r;
   while((r = pread(fd, buf, length, req->data_offset)) == -1 &&
         errno == EINTR);
+  if (r == -1 && errno == ESPIPE) {
+    while((r = read(fd, buf, length)) == -1 && errno == EINTR);
+  }
   if(r == -1) {
     return SPDYLAY_ERR_TEMPORAL_CALLBACK_FAILURE;
   } else {
