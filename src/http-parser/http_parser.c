@@ -238,6 +238,7 @@ enum state
   , s_start_req_or_res
   , s_res_or_resp_H
   , s_start_res
+  , s_res_proto_custom
   , s_res_H
   , s_res_HT
   , s_res_HTT
@@ -716,6 +717,10 @@ size_t http_parser_execute (http_parser *parser,
             break;
 
           default:
+            if(TOKEN(ch)) {
+              parser->state = s_res_proto_custom;
+              break;
+            }
             SET_ERRNO(HPE_INVALID_CONSTANT);
             goto error;
         }
@@ -723,6 +728,21 @@ size_t http_parser_execute (http_parser *parser,
         CALLBACK_NOTIFY(message_begin);
         break;
       }
+
+      /* Custom HTTP-version string (e.g., ICY) */
+      case s_res_proto_custom:
+        if (ch == ' ') {
+          /* We assume this is HTTP/1.0 */
+          parser->http_major = 1;
+          parser->http_minor = 0;
+          parser->state = s_res_first_status_code;
+          break;
+        }
+        if (!TOKEN(ch)) {
+          SET_ERRNO(HPE_INVALID_CONSTANT);
+          goto error;
+        }
+        break;
 
       case s_res_H:
         STRICT_CHECK(ch != 'T');
