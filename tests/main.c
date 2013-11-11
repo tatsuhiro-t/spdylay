@@ -78,6 +78,7 @@ int main(int argc, char* argv[])
       !CU_add_test(pSuite, "npn", test_spdylay_npn) ||
       !CU_add_test(pSuite, "npn_get_proto_list",
                    test_spdylay_npn_get_proto_list) ||
+      !CU_add_test(pSuite, "npn_get_version", test_spdylay_npn_get_version) ||
       !CU_add_test(pSuite, "session_recv", test_spdylay_session_recv) ||
       !CU_add_test(pSuite, "session_recv_invalid_stream_id",
                    test_spdylay_session_recv_invalid_stream_id) ||
@@ -146,6 +147,8 @@ int main(int argc, char* argv[])
                    test_spdylay_session_defer_data) ||
       !CU_add_test(pSuite, "session_flow_control",
                    test_spdylay_session_flow_control) ||
+      !CU_add_test(pSuite, "session_connection_flow_control",
+                   test_spdylay_session_connection_flow_control) ||
       !CU_add_test(pSuite, "session_on_ctrl_not_send",
                    test_spdylay_session_on_ctrl_not_send) ||
       !CU_add_test(pSuite, "session_on_settings_received",

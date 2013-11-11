@@ -95,6 +95,8 @@ public:
   int get_state() const;
   void set_state(int state);
 
+  spdylay_session* get_session() const;
+
   enum {
     // Disconnected
     DISCONNECTED,

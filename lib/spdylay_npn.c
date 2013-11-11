@@ -27,6 +27,7 @@
 #include <string.h>
 
 static const spdylay_npn_proto proto_list[] = {
+  { (const unsigned char*)"spdy/3.1", 8, SPDYLAY_PROTO_SPDY3_1 },
   { (const unsigned char*)"spdy/3", 6, SPDYLAY_PROTO_SPDY3 },
   { (const unsigned char*)"spdy/2", 6, SPDYLAY_PROTO_SPDY2 }
 };
@@ -72,11 +73,15 @@ uint16_t spdylay_npn_get_version(const unsigned char *proto, size_t protolen)
   if(proto == NULL) {
     return 0;
   } else {
-    if(protolen == 6) {
-      if(memcmp("spdy/2", proto, 6) == 0) {
-        return SPDYLAY_PROTO_SPDY2;
-      } else if(memcmp("spdy/3", proto, 6) == 0) {
+    if(protolen == 8) {
+      if(memcmp("spdy/3.1", proto, 8) == 0) {
+        return SPDYLAY_PROTO_SPDY3_1;
+      }
+    } else if(protolen == 6) {
+      if(memcmp("spdy/3", proto, 6) == 0) {
         return SPDYLAY_PROTO_SPDY3;
+      } else if(memcmp("spdy/2", proto, 6) == 0) {
+        return SPDYLAY_PROTO_SPDY2;
       }
     }
     return 0;

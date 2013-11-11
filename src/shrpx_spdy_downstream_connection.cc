@@ -50,8 +50,7 @@ SpdyDownstreamConnection::SpdyDownstreamConnection
   : DownstreamConnection(client_handler),
     spdy_(client_handler->get_spdy_session()),
     request_body_buf_(0),
-    sd_(0),
-    recv_window_size_(0)
+    sd_(0)
 {}
 
 SpdyDownstreamConnection::~SpdyDownstreamConnection()
@@ -111,7 +110,6 @@ int SpdyDownstreamConnection::attach_downstream(Downstream *downstream)
   }
   downstream->set_downstream_connection(this);
   downstream_ = downstream;
-  recv_window_size_ = 0;
   return 0;
 }
 
@@ -396,19 +394,30 @@ int SpdyDownstreamConnection::end_upload_data()
 
 int SpdyDownstreamConnection::resume_read(IOCtrlReason reason)
 {
-  int rv;
+  int rv1 = 0, rv2 = 0;
   if(spdy_->get_state() == SpdySession::CONNECTED &&
-     spdy_->get_flow_control() &&
-     downstream_ && downstream_->get_downstream_stream_id() != -1 &&
-     recv_window_size_ >= spdy_->get_initial_window_size()/2) {
-    rv = spdy_->submit_window_update(this, recv_window_size_);
-    if(rv == -1) {
-      return -1;
+     spdy_->get_flow_control()) {
+    int32_t delta;
+    delta = http::determine_window_update_transmission
+      (spdy_->get_session(), 0);
+    if(delta != -1) {
+      rv1 = spdy_->submit_window_update(0, delta);
+      if(rv1 == 0) {
+        spdy_->notify();
+      }
     }
-    spdy_->notify();
-    recv_window_size_ = 0;
+    if(downstream_ && downstream_->get_downstream_stream_id() != -1) {
+      delta = http::determine_window_update_transmission
+        (spdy_->get_session(), downstream_->get_downstream_stream_id());
+      if(delta != -1) {
+        rv2 = spdy_->submit_window_update(this, delta);
+        if(rv2 == 0) {
+          spdy_->notify();
+        }
+      }
+    }
   }
-  return 0;
+  return (rv1 == 0 && rv2 == 0) ? 0 : -1;
 }
 
 int SpdyDownstreamConnection::on_read()
@@ -458,16 +467,6 @@ bool SpdyDownstreamConnection::get_output_buffer_full()
   } else {
     return false;
   }
-}
-
-int32_t SpdyDownstreamConnection::get_recv_window_size() const
-{
-  return recv_window_size_;
-}
-
-void SpdyDownstreamConnection::inc_recv_window_size(int32_t amount)
-{
-  recv_window_size_ += amount;
 }
 
 } // namespace shrpx

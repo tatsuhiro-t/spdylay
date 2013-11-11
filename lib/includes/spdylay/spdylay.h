@@ -58,7 +58,11 @@ typedef enum {
   /**
    * SPDY protocol version 3
    */
-  SPDYLAY_PROTO_SPDY3 = 3
+  SPDYLAY_PROTO_SPDY3 = 3,
+  /**
+   * SPDY protocol version 3.1
+   */
+  SPDYLAY_PROTO_SPDY3_1 = 4
 } spdylay_proto_version;
 
 /**
@@ -356,6 +360,14 @@ typedef enum {
  * Default maximum concurrent streams.
  */
 #define SPDYLAY_INITIAL_MAX_CONCURRENT_STREAMS ((1U << 31) - 1)
+
+/**
+ * @macro
+ *
+ * Initial window size for both connection-level and stream-level flow
+ * control.
+ */
+#define SPDYLAY_INITIAL_WINDOW_SIZE 65536
 
 /**
  * @enum
@@ -1565,6 +1577,57 @@ uint8_t spdylay_session_get_pri_lowest(spdylay_session *session);
 /**
  * @function
  *
+ * Returns the number of DATA payload in bytes received without
+ * WINDOW_UPDATE transmission for the stream |stream_id|.
+ *
+ * If the flow control is disabled by the protocol, this function
+ * returns 0.
+ *
+ * This function returns -1 if it fails.
+ */
+int32_t spdylay_session_get_stream_recv_data_length(spdylay_session *session,
+                                                    int32_t stream_id);
+
+/**
+ * @function
+ *
+ * Returns the local (receive) window size for a stream. Because SPDY
+ * protocol always uses the initial window size as local window size,
+ * this function returns the current local settings of
+ * SETTINGS_INITIAL_WINDOW_SIZE.
+ *
+ * This function returns -1 if it fails.
+ */
+int32_t spdylay_session_get_stream_local_window_size(spdylay_session *session);
+
+/**
+ * @function
+ *
+ * Returns the number of DATA payload in bytes received without
+ * WINDOW_UPDATE transmission for a connection.
+ *
+ * If flow control is disabled by the protocol, this function returns
+ * 0.
+ *
+ * This function returns -1 if it fails.
+ */
+int32_t spdylay_session_get_recv_data_length(spdylay_session *session);
+
+/**
+ * @function
+ *
+ * Returns the local (receive) window size for a connection. Because
+ * SPDY protocol always uses the initial window size as local window
+ * size, this fucntion always returns
+ * :enum:`SPDYLAY_INITIAL_WINDOW_SIZE`.
+ *
+ * This function returns -1 if it fails.
+ */
+int32_t spdylay_session_get_local_window_size(spdylay_session *session);
+
+/**
+ * @function
+ *
  * Submits GOAWAY frame.  The status code |status_code| is ignored if
  * the protocol version is :macro:`SPDYLAY_PROTO_SPDY2`.
  *
@@ -1923,6 +1986,9 @@ int spdylay_submit_settings(spdylay_session *session, uint8_t flags,
  * application must be responsible to keep the resulting window size
  * <= (1 << 31)-1.
  *
+ * To send connection-level WINDOW_UPDATE, specify 0 to the
+ * |stream_id| if the negotiated protocol supports it.
+ *
  * This function returns 0 if it succeeds, or one of the following
  * negative error codes:
  *
@@ -2038,8 +2104,8 @@ const spdylay_npn_proto* spdylay_npn_get_proto_list(size_t *len_ptr);
  *
  * Returns spdy version which spdylay library supports from the given
  * protocol name. The |proto| is the pointer to the protocol name and
- * |protolen| is its length. Currently, ``spdy/2`` and ``spdy/3`` are
- * supported.
+ * |protolen| is its length. Currently, ``spdy/2``, ``spdy/3`` and
+ * ``spdy/3.1`` are supported.
  *
  * This function returns nonzero spdy version if it succeeds, or 0.
  */

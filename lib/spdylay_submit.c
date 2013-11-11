@@ -241,15 +241,19 @@ int spdylay_submit_window_update(spdylay_session *session, int32_t stream_id,
   if(delta_window_size <= 0) {
     return SPDYLAY_ERR_INVALID_ARGUMENT;
   }
-  stream = spdylay_session_get_stream(session, stream_id);
-  if(stream) {
+  if(stream_id == 0) {
+    session->recv_window_size -= spdylay_min(delta_window_size,
+                                             session->recv_window_size);
+  } else {
+    stream = spdylay_session_get_stream(session, stream_id);
+    if(stream == NULL) {
+      return SPDYLAY_ERR_STREAM_CLOSED;
+    }
     stream->recv_window_size -= spdylay_min(delta_window_size,
                                             stream->recv_window_size);
-    return spdylay_session_add_window_update(session, stream_id,
-                                             delta_window_size);
-  } else {
-    return SPDYLAY_ERR_STREAM_CLOSED;
   }
+  return spdylay_session_add_window_update(session, stream_id,
+                                           delta_window_size);
 }
 
 int spdylay_submit_request(spdylay_session *session, uint8_t pri,

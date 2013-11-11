@@ -55,7 +55,7 @@ namespace ssl {
 
 namespace {
 std::pair<unsigned char*, size_t> next_proto;
-unsigned char proto_list[23];
+unsigned char proto_list[255];
 } // namespace
 
 namespace {
@@ -85,7 +85,7 @@ int verify_callback(int preverify_ok, X509_STORE_CTX *ctx)
 } // namespace
 
 namespace {
-void set_npn_prefs(unsigned char *out, const char **protos, size_t len)
+size_t set_npn_prefs(unsigned char *out, const char **protos, size_t len)
 {
   unsigned char *ptr = out;
   for(size_t i = 0; i < len; ++i) {
@@ -93,6 +93,7 @@ void set_npn_prefs(unsigned char *out, const char **protos, size_t len)
     memcpy(ptr+1, protos[i], *ptr);
     ptr += *ptr+1;
   }
+  return ptr - out;
 }
 } // namespace
 
@@ -228,12 +229,13 @@ SSL_CTX* create_ssl_context(const char *private_key_file,
   }
   SSL_CTX_set_tlsext_servername_callback(ssl_ctx, servername_callback);
 
-  // We speak "http/1.1", "spdy/2" and "spdy/3".
-  const char *protos[] = { "spdy/3", "spdy/2", "http/1.1" };
-  set_npn_prefs(proto_list, protos, 3);
+  // We speak "http/1.1", "spdy/2", "spdy/3" and "spdy/3.1".
+  const char *protos[] = { "spdy/3.1", "spdy/3", "spdy/2", "http/1.1" };
+  size_t proto_list_len = set_npn_prefs(proto_list, protos,
+                                        sizeof(protos)/sizeof(protos[0]));
 
   next_proto.first = proto_list;
-  next_proto.second = sizeof(proto_list);
+  next_proto.second = proto_list_len;
   SSL_CTX_set_next_protos_advertised_cb(ssl_ctx, next_proto_cb, &next_proto);
   return ssl_ctx;
 }
@@ -245,8 +247,8 @@ int select_next_proto_cb(SSL* ssl,
                          void *arg)
 {
   if(spdylay_select_next_protocol(out, outlen, in, inlen) <= 0) {
-    *out = (unsigned char*)"spdy/3";
-    *outlen = 6;
+    *out = (unsigned char*)"spdy/3.1";
+    *outlen = 8;
   }
   return SSL_TLSEXT_ERR_OK;
 }

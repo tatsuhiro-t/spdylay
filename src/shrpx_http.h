@@ -27,6 +27,8 @@
 
 #include <string>
 
+#include <spdylay/spdylay.h>
+
 #include "http-parser/http_parser.h"
 
 namespace shrpx {
@@ -54,6 +56,15 @@ std::string colorizeHeaders(const char *hdrs);
 // nothing.
 void copy_url_component(std::string& dest, http_parser_url *u, int field,
                         const char* url);
+
+// Return positive window_size_increment if WINDOW_UPDATE should be
+// sent for the stream |stream_id|. If |stream_id| == 0, this function
+// determines the necessity of the WINDOW_UPDATE for a connection.
+//
+// If the function determines WINDOW_UPDATE is not necessary at the
+// moment, it returns -1.
+int32_t determine_window_update_transmission(spdylay_session *session,
+                                             int32_t stream_id);
 
 } // namespace http
 

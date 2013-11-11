@@ -27,5 +27,6 @@
 
 void test_spdylay_npn(void);
 void test_spdylay_npn_get_proto_list(void);
+void test_spdylay_npn_get_version(void);
 
 #endif /* SPDYLAY_NPN_TEST_H */

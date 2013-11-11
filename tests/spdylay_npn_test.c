@@ -84,12 +84,28 @@ void test_spdylay_npn_get_proto_list(void)
 {
   size_t len;
   const spdylay_npn_proto *list = spdylay_npn_get_proto_list(&len);
-  CU_ASSERT_EQUAL(2, len);
-  CU_ASSERT_STRING_EQUAL("spdy/3", list[0].proto);
-  CU_ASSERT_EQUAL(6, list[0].len);
-  CU_ASSERT_EQUAL(SPDYLAY_PROTO_SPDY3, list[0].version);
+  CU_ASSERT_EQUAL(3, len);
 
-  CU_ASSERT_STRING_EQUAL("spdy/2", list[1].proto);
+  CU_ASSERT_STRING_EQUAL("spdy/3.1", list[0].proto);
+  CU_ASSERT_EQUAL(8, list[0].len);
+  CU_ASSERT_EQUAL(SPDYLAY_PROTO_SPDY3_1, list[0].version);
+
+  CU_ASSERT_STRING_EQUAL("spdy/3", list[1].proto);
   CU_ASSERT_EQUAL(6, list[1].len);
-  CU_ASSERT_EQUAL(SPDYLAY_PROTO_SPDY2, list[1].version);
+  CU_ASSERT_EQUAL(SPDYLAY_PROTO_SPDY3, list[1].version);
+
+  CU_ASSERT_STRING_EQUAL("spdy/2", list[2].proto);
+  CU_ASSERT_EQUAL(6, list[2].len);
+  CU_ASSERT_EQUAL(SPDYLAY_PROTO_SPDY2, list[2].version);
+}
+
+void test_spdylay_npn_get_version(void)
+{
+  CU_ASSERT(SPDYLAY_PROTO_SPDY3_1 ==
+            spdylay_npn_get_version((const unsigned char*)"spdy/3.1", 8));
+  CU_ASSERT(SPDYLAY_PROTO_SPDY3 ==
+            spdylay_npn_get_version((const unsigned char*)"spdy/3", 6));
+  CU_ASSERT(SPDYLAY_PROTO_SPDY2 ==
+            spdylay_npn_get_version((const unsigned char*)"spdy/2", 6));
+  CU_ASSERT(0 == spdylay_npn_get_version((const unsigned char*)"spdy/4", 6));
 }

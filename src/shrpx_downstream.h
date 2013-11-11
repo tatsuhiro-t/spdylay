@@ -63,9 +63,6 @@ public:
   // Returns true if output buffer is full. If underlying dconn_ is
   // NULL, this function always returns false.
   bool get_output_buffer_full();
-  int32_t get_recv_window_size() const;
-  void inc_recv_window_size(int32_t amount);
-  void set_recv_window_size(int32_t new_size);
   // Returns true if tunnel connection has been established.
   bool tunnel_established() const;
   // downstream request API
@@ -168,7 +165,6 @@ private:
   evbuffer *response_body_buf_;
   // RST_STREAM status_code from downstream SPDY connection
   uint32_t response_rst_stream_status_code_;
-  int32_t recv_window_size_;
 };
 
 } // namespace shrpx

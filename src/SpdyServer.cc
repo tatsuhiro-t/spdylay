@@ -946,7 +946,7 @@ int SpdyServer::run()
 {
   SSL_CTX *ssl_ctx = 0;
   std::pair<unsigned char*, size_t> next_proto;
-  unsigned char proto_list[14];
+  unsigned char proto_list[23];
   if(!config_->no_tls) {
     ssl_ctx = SSL_CTX_new(SSLv23_server_method());
     if(!ssl_ctx) {
@@ -978,19 +978,21 @@ int SpdyServer::run()
                          verify_callback);
     }
 
-    // We speaks "spdy/2" and "spdy/3".
-    proto_list[0] = 6;
-    memcpy(&proto_list[1], "spdy/3", 6);
-    proto_list[7] = 6;
-    memcpy(&proto_list[8], "spdy/2", 6);
+    // We speaks "spdy/3.1", "spdy/3" and "spdy/2".
+    proto_list[0] = 8;
+    memcpy(&proto_list[1], "spdy/3.1", 8);
+    proto_list[9] = 6;
+    memcpy(&proto_list[10], "spdy/3", 6);
+    proto_list[16] = 6;
+    memcpy(&proto_list[17], "spdy/2", 6);
 
     switch(config_->version) {
     case SPDYLAY_PROTO_SPDY3:
-      next_proto.first = proto_list;
+      next_proto.first = proto_list+9;
       next_proto.second = 7;
       break;
     case SPDYLAY_PROTO_SPDY2:
-      next_proto.first = proto_list+7;
+      next_proto.first = proto_list+16;
       next_proto.second = 7;
       break;
     default:
