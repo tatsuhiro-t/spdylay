@@ -696,6 +696,9 @@ int communicate(const std::string& host, uint16_t port,
   case SPDYLAY_PROTO_SPDY3:
     next_proto = "spdy/3";
     break;
+  case SPDYLAY_PROTO_SPDY3_1:
+    next_proto = "spdy/3.1";
+    break;
   }
 
   if(!config.no_tls) {
@@ -909,6 +912,7 @@ void print_help(std::ostream& out)
       << "                       filename. Not implemented yet.\n"
       << "    -2, --spdy2        Only use SPDY/2.\n"
       << "    -3, --spdy3        Only use SPDY/3.\n"
+      << "    --spdy3-1          Only use SPDY/3.1.\n"
       << "    -t, --timeout=<N>  Timeout each request after <N> seconds.\n"
       << "    -w, --window-bits=<N>\n"
       << "                       Sets the initial window size to 2**<N>.\n"
@@ -923,8 +927,8 @@ void print_help(std::ostream& out)
       << "                       The file must be in PEM format.\n"
       << "    --key=<KEY>        Use the client private key file. The file\n"
       << "                       must be in PEM format.\n"
-      << "    --no-tls           Disable SSL/TLS. Use -2 or -3 to specify\n"
-      << "                       SPDY protocol version to use.\n"
+      << "    --no-tls           Disable SSL/TLS. Use -2, -3 or --spdy3-1 to\n"
+      << "                       specify SPDY protocol version to use.\n"
       << "    -d, --data=<FILE>  Post FILE to server. If - is given, data\n"
       << "                       will be read from stdin.\n"
       << "    -m, --multiply=<N> Request each URI <N> times. By default, same\n"
@@ -949,14 +953,15 @@ int main(int argc, char **argv)
       {"window-bits", required_argument, 0, 'w' },
       {"get-assets", no_argument, 0, 'a' },
       {"stat", no_argument, 0, 's' },
-      {"cert", required_argument, &flag, 1 },
-      {"key", required_argument, &flag, 2 },
       {"help", no_argument, 0, 'h' },
       {"header", required_argument, 0, 'H' },
-      {"no-tls", no_argument, &flag, 3 },
       {"data", required_argument, 0, 'd' },
       {"multiply", required_argument, 0, 'm' },
+      {"cert", required_argument, &flag, 1 },
+      {"key", required_argument, &flag, 2 },
+      {"no-tls", no_argument, &flag, 3 },
       {"color", no_argument, &flag, 4 },
+      {"spdy3-1", no_argument, &flag, 5 },
       {0, 0, 0, 0 }
     };
     int option_index = 0;
@@ -1060,6 +1065,10 @@ int main(int argc, char **argv)
         // color option
         color = true;
         break;
+      case 5:
+        // spdy3-1 option
+        config.spdy_version = SPDYLAY_PROTO_SPDY3_1;
+        break;
       }
       break;
     default:
@@ -1069,7 +1078,8 @@ int main(int argc, char **argv)
 
   if(config.no_tls) {
     if(config.spdy_version == -1) {
-      std::cerr << "Specify SPDY protocol version using either -2 or -3."
+      std::cerr << "Specify SPDY protocol version using either -2, -3 or "
+                << "--spdy3-1."
                 << std::endl;
       exit(EXIT_FAILURE);
     }

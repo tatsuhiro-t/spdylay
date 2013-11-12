@@ -987,6 +987,10 @@ int SpdyServer::run()
     memcpy(&proto_list[17], "spdy/2", 6);
 
     switch(config_->version) {
+    case SPDYLAY_PROTO_SPDY3_1:
+      next_proto.first = proto_list;
+      next_proto.second = 9;
+      break;
     case SPDYLAY_PROTO_SPDY3:
       next_proto.first = proto_list+9;
       next_proto.second = 7;

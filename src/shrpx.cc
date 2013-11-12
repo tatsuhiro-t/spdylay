@@ -361,9 +361,9 @@ void fill_default_config()
   mod_config()->spdy_downstream_window_bits = 16;
 
   mod_config()->spdy_upstream_no_tls = false;
-  mod_config()->spdy_upstream_version = 3;
+  mod_config()->spdy_upstream_version = SPDYLAY_PROTO_SPDY3_1;
   mod_config()->spdy_downstream_no_tls = false;
-  mod_config()->spdy_downstream_version = 3;
+  mod_config()->spdy_downstream_version = SPDYLAY_PROTO_SPDY3_1;
 
   set_config_str(&mod_config()->downstream_host, "127.0.0.1");
   mod_config()->downstream_port = 80;
@@ -604,8 +604,7 @@ void print_help(std::ostream& out)
       << "    --frontend-spdy-proto\n"
       << "                       Specify SPDY protocol used in frontend\n"
       << "                       connection if --frontend-spdy-no-tls is\n"
-      << "                       used. Default: spdy/"
-      << get_config()->spdy_upstream_version << "\n"
+      << "                       used. Default: spdy/3.1\n"
       << "    --backend-spdy-window-bits=<N>\n"
       << "                       Sets the initial window size of SPDY\n"
       << "                       backend connection to 2**<N>.\n"
@@ -618,8 +617,7 @@ void print_help(std::ostream& out)
       << "    --backend-spdy-proto\n"
       << "                       Specify SPDY protocol used in backend\n"
       << "                       connection if --backend-spdy-no-tls is used.\n"
-      << "                       Default: spdy/"
-      << get_config()->spdy_downstream_version << "\n"
+      << "                       Default: spdy/3.1\n"
       << "\n"
       << "  Mode:\n"
       << "    -s, --spdy-proxy   Enable secure SPDY proxy mode.\n"
