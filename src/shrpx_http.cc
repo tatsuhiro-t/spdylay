@@ -174,6 +174,7 @@ void copy_url_component(std::string& dest, http_parser_url *u, int field,
     dest.assign(url+u->field_data[field].off, u->field_data[field].len);
   }
 }
+
 int32_t determine_window_update_transmission(spdylay_session *session,
                                              int32_t stream_id)
 {
