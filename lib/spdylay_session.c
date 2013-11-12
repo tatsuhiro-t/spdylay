@@ -2076,7 +2076,6 @@ int spdylay_session_on_window_update_received(spdylay_session *session,
     if(INT32_MAX - frame->window_update.delta_window_size <
        session->window_size) {
       if(session->callbacks.on_invalid_ctrl_recv_callback) {
-        /* TODO error code should be FLOW_CONTROL_ERROR */
         session->callbacks.on_invalid_ctrl_recv_callback(session,
                                                          SPDYLAY_WINDOW_UPDATE,
                                                          frame,
