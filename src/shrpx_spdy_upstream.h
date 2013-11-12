@@ -67,12 +67,10 @@ public:
   virtual int on_downstream_body_complete(Downstream *downstream);
 
   bool get_flow_control() const;
-  int32_t get_initial_window_size() const;
 private:
   ClientHandler *handler_;
   spdylay_session *session_;
   bool flow_control_;
-  int32_t initial_window_size_;
   DownstreamQueue downstream_queue_;
 };
 

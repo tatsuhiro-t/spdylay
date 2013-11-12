@@ -396,17 +396,17 @@ SpdyUpstream::SpdyUpstream(uint16_t version, ClientHandler *handler)
   rv = spdylay_session_server_new(&session_, version, &callbacks, this);
   assert(rv == 0);
 
+  int32_t initial_window_size = 0;
   if(version >= SPDYLAY_PROTO_SPDY3) {
     int val = 1;
     flow_control_ = true;
-    initial_window_size_ = 1 << get_config()->spdy_upstream_window_bits;
+    initial_window_size = 1 << get_config()->spdy_upstream_window_bits;
     rv = spdylay_session_set_option(session_,
                                     SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE, &val,
                                     sizeof(val));
     assert(rv == 0);
   } else {
     flow_control_ = false;
-    initial_window_size_ = 0;
   }
   // TODO Maybe call from outside?
   spdylay_settings_entry entry[2];
@@ -415,7 +415,7 @@ SpdyUpstream::SpdyUpstream(uint16_t version, ClientHandler *handler)
   entry[0].flags = SPDYLAY_ID_FLAG_SETTINGS_NONE;
 
   entry[1].settings_id = SPDYLAY_SETTINGS_INITIAL_WINDOW_SIZE;
-  entry[1].value = initial_window_size_;
+  entry[1].value = initial_window_size;
   entry[1].flags = SPDYLAY_ID_FLAG_SETTINGS_NONE;
 
   rv = spdylay_submit_settings
@@ -932,11 +932,6 @@ int SpdyUpstream::on_downstream_body_complete(Downstream *downstream)
 bool SpdyUpstream::get_flow_control() const
 {
   return flow_control_;
-}
-
-int32_t SpdyUpstream::get_initial_window_size() const
-{
-  return initial_window_size_;
 }
 
 void SpdyUpstream::pause_read(IOCtrlReason reason)

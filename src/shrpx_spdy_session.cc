@@ -597,11 +597,6 @@ int SpdySession::submit_window_update(SpdyDownstreamConnection *dconn,
   return 0;
 }
 
-int32_t SpdySession::get_initial_window_size() const
-{
-  return 1 << get_config()->spdy_downstream_window_bits;
-}
-
 bool SpdySession::get_flow_control() const
 {
   return flow_control_;
@@ -1094,7 +1089,7 @@ int SpdySession::on_connect()
   entry[0].flags = SPDYLAY_ID_FLAG_SETTINGS_NONE;
 
   entry[1].settings_id = SPDYLAY_SETTINGS_INITIAL_WINDOW_SIZE;
-  entry[1].value = get_initial_window_size();
+  entry[1].value = 1 << get_config()->spdy_downstream_window_bits;
   entry[1].flags = SPDYLAY_ID_FLAG_SETTINGS_NONE;
 
   rv = spdylay_submit_settings
