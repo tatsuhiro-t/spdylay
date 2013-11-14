@@ -1,0 +1,260 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>SPDY Proxy with Firefox for Android &mdash; Spdylay 1.2.0-DEV documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/default2.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.2.0-DEV',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Spdylay 1.2.0-DEV documentation" href="index.html" />
+    <link rel="prev" title="Python-spdylay - Spdylay Python Extension Module" href="python.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="python.html" title="Python-spdylay - Spdylay Python Extension Module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Spdylay 1.2.0-DEV documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="spdy-proxy-with-firefox-for-android">
+<h1>SPDY Proxy with Firefox for Android<a class="headerlink" href="#spdy-proxy-with-firefox-for-android" title="Permalink to this headline">¶</a></h1>
+<p>This document describes how to use SPDY proxy from Android device
+using Firefox for Android. No root privilege is required. It may be
+possible to use other Web browser/software if they provide the ability
+to specify HTTP proxy. Because we don&#8217;t use the features only
+available in latest Android devices, this method works on relatively
+old but still used versions, e.g., Andriod 2.3 series.</p>
+<div class="section" id="setting-up-spdy-proxy">
+<h2>Setting up SPDY Proxy<a class="headerlink" href="#setting-up-spdy-proxy" title="Permalink to this headline">¶</a></h2>
+<p>If you have VPS, then you can setup SPDY proxy there.  You can use
+<tt class="docutils literal"><span class="pre">shrpx</span></tt> with <tt class="docutils literal"><span class="pre">-s</span></tt> option + Squid as SPDY proxy.  Alternatively,
+<a class="reference external" href="https://github.com/igrigorik/node-spdyproxy/">node-spdyproxy</a> may
+also work. If you don&#8217;t have VPS, but your home internet connection
+has global IP address which can be accessible from Android device, you
+can use your home PC as SPDY proxy temporarily for the experiment.
+The self-signed certificate is OK because we will run <tt class="docutils literal"><span class="pre">shrpx</span></tt> with
+<tt class="docutils literal"><span class="pre">-k</span></tt> option on Android in this example. Alternatively, you can store
+your certificate in Android device and specify it using <tt class="docutils literal"><span class="pre">--cacert</span></tt>
+option. If you think these are insecure, obtain valid certificate.</p>
+</div>
+<div class="section" id="building-spdylay-library-and-shrpx">
+<h2>Building spdylay library and shrpx<a class="headerlink" href="#building-spdylay-library-and-shrpx" title="Permalink to this headline">¶</a></h2>
+<p>First Android NDK must be installed on your system.  Refer
+<a class="reference internal" href="package_README.html"><em>Spdylay - SPDY C Library</em></a> to see how to install NDK. In the following document, We
+use <tt class="docutils literal"><span class="pre">ANDROID_HOME</span></tt> environment variable.</p>
+<p>To make it easier to run Android cross-compiler tools (and for the
+sake of this document), include the path to those commands to
+<tt class="docutils literal"><span class="pre">PATH</span></tt>:</p>
+<div class="highlight-c"><pre>$ export PATH=$ANDROID_HOME/toolchain/bin:$PATH</pre>
+</div>
+<p>We need to build dependent libraries: OpenSSL and libevent.</p>
+<p>To configure OpenSSL, use the following script:</p>
+<div class="highlight-c"><pre>#!/bin/sh
+
+if [ -z "$ANDROID_HOME" ]; then
+    echo 'No $ANDROID_HOME specified.'
+    exit 1
+fi
+PREFIX=$ANDROID_HOME/usr/local
+TOOLCHAIN=$ANDROID_HOME/toolchain
+PATH=$TOOLCHAIN/bin:$PATH
+
+export CROSS_COMPILE=$TOOLCHAIN/bin/arm-linux-androideabi-
+./Configure --prefix=$PREFIX android</pre>
+</div>
+<p>Then run <tt class="docutils literal"><span class="pre">make</span> <span class="pre">install</span></tt> to build and install library.</p>
+<p>For libevent, use the following script to configure:</p>
+<div class="highlight-c"><pre>#!/bin/sh
+
+if [ -z "$ANDROID_HOME" ]; then
+    echo 'No $ANDROID_HOME specified.'
+    exit 1
+fi
+PREFIX=$ANDROID_HOME/usr/local
+TOOLCHAIN=$ANDROID_HOME/toolchain
+PATH=$TOOLCHAIN/bin:$PATH
+
+./configure \
+    --host=arm-linux-androideabi \
+    --build=`dpkg-architecture -qDEB_BUILD_GNU_TYPE` \
+    --prefix=$PREFIX \
+    --disable-shared \
+    --enable-static \
+    CPPFLAGS=-I$PREFIX/include \
+    LDFLAGS=-L$PREFIX/lib</pre>
+</div>
+<p>Then run <tt class="docutils literal"><span class="pre">make</span> <span class="pre">install</span></tt> to
+build and install library.</p>
+<p>To build spdylay, use <tt class="docutils literal"><span class="pre">android-config</span></tt> to configure and
+<tt class="docutils literal"><span class="pre">android-make</span></tt> to build as described in <a class="reference internal" href="package_README.html"><em>Spdylay - SPDY C Library</em></a>.</p>
+<p>If all went well, <tt class="docutils literal"><span class="pre">shrpx</span></tt> binary is created in src directory.  Strip
+debugging information from the binary using the following command:</p>
+<div class="highlight-c"><pre>$ arm-linux-androideabi-strip src/shrpx</pre>
+</div>
+</div>
+<div class="section" id="setup-shrpx-on-android-device">
+<h2>Setup shrpx on Android device<a class="headerlink" href="#setup-shrpx-on-android-device" title="Permalink to this headline">¶</a></h2>
+<p>There may be several ways to run <tt class="docutils literal"><span class="pre">shrpx</span></tt> on Android. I describe the
+way to use <a class="reference external" href="https://github.com/jackpal/Android-Terminal-Emulator">Android Terminal Emulator</a>.  It can be
+installed from Google Play. Copy <tt class="docutils literal"><span class="pre">shrpx</span></tt> binary to the location
+where the Android-Terminal-Emulator is installed (In case of my phone,
+it is <tt class="docutils literal"><span class="pre">/data/data/jackpal.androidterm</span></tt>) and give the executable
+permission to <tt class="docutils literal"><span class="pre">shrpx</span></tt> using <tt class="docutils literal"><span class="pre">chmod</span></tt>:</p>
+<div class="highlight-c"><pre>$ chmod 755 shrpx</pre>
+</div>
+<p>Then run <tt class="docutils literal"><span class="pre">shrpx</span></tt> in client-mode like this:</p>
+<div class="highlight-c"><pre>$ ./shrpx -k -p -f localhost,8000 -b SPDY-PROXY-ADDR,SPDY-PROXY-PORT</pre>
+</div>
+<p>Substitute <tt class="docutils literal"><span class="pre">SPDY-PROXY-ADDR</span></tt> and <tt class="docutils literal"><span class="pre">SPDY-PROXY-PORT</span></tt> with the SPDY
+proxy address and port you have setup respectively. The <tt class="docutils literal"><span class="pre">-k</span></tt> option
+tells <tt class="docutils literal"><span class="pre">shrpx</span></tt> not to complain the self-signed certificate for SPDY
+proxy. The <tt class="docutils literal"><span class="pre">-p</span></tt> option makes <tt class="docutils literal"><span class="pre">shrpx</span></tt> run so called client mode.
+In that mode, <tt class="docutils literal"><span class="pre">shrpx</span></tt> acts like ordinary HTTP forward proxy in
+frontend connection, it forwards the requests from the client to
+backend in encrypted SPDY connection. The <tt class="docutils literal"><span class="pre">-f</span></tt> option specify the
+address and port <tt class="docutils literal"><span class="pre">shrpx</span></tt> listens to. In this setup, the web browser
+should be setup to use HTTP proxy localhost:8000. The <tt class="docutils literal"><span class="pre">-b</span></tt> option
+specify the SPDY proxy address and port <tt class="docutils literal"><span class="pre">shrpx</span></tt> forwards the
+requests from the client. The configuration looks like this:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="o">+----</span><span class="n">Android</span><span class="o">------------------------+</span>          <span class="o">+---</span><span class="n">SPDY</span><span class="o">-</span><span class="n">Proxy</span><span class="o">------+</span>
+<span class="o">|</span> <span class="p">[</span><span class="n">Firefox</span><span class="p">]</span> <span class="o">&lt;--</span> <span class="n">HTTP</span> <span class="o">--&gt;</span> <span class="p">[</span><span class="n">shrpx</span><span class="p">]</span> <span class="o">&lt;--=--</span> <span class="n">SPDY</span> <span class="o">--=--&gt;</span><span class="p">[</span><span class="n">shrpx</span><span class="p">,</span><span class="n">squid</span><span class="p">]</span><span class="o">&lt;--=--</span> <span class="n">SPDY</span> <span class="o">--&gt;</span> <span class="p">...</span>
+<span class="o">+-----------------------------------+</span>          <span class="o">+-------------------+</span>   <span class="n">HTTP</span>
+</pre></div>
+</div>
+<p>With the above command-line option, <tt class="docutils literal"><span class="pre">shrpx</span></tt> only opens 1 connection
+to SPDY proxy. Of course, Firefox will use multiple connections to
+neighboring <tt class="docutils literal"><span class="pre">shrpx</span></tt>. <tt class="docutils literal"><span class="pre">shrpx</span></tt> coalesces all the requests in 1
+backend connection, that is the benefit SPDY proxy brings in.</p>
+</div>
+<div class="section" id="setup-firefox-to-use-spdy-proxy">
+<h2>Setup Firefox to use SPDY proxy<a class="headerlink" href="#setup-firefox-to-use-spdy-proxy" title="Permalink to this headline">¶</a></h2>
+<p>If you have not installed, Firefox for Android, install it.  Enter
+<tt class="docutils literal"><span class="pre">about:config</span></tt> in URL bar in Firefox and locate proxy
+settings. Setup those values like this:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">network</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="n">http</span> <span class="o">=</span> <span class="n">localhost</span>
+<span class="n">network</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="n">http_port</span> <span class="o">=</span> <span class="mi">8000</span>
+<span class="n">network</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="n">ssl</span> <span class="o">=</span> <span class="n">localhost</span>
+<span class="n">network</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="n">ssl_port</span> <span class="o">=</span> <span class="mi">8000</span>
+<span class="n">network</span><span class="p">.</span><span class="n">proxy</span><span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>You also need to tweak the following settings to increase in-flight
+requests to circumvent latency:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">network</span><span class="p">.</span><span class="n">http</span><span class="p">.</span><span class="n">max</span><span class="o">-</span><span class="n">persistent</span><span class="o">-</span><span class="n">connections</span><span class="o">-</span><span class="n">per</span><span class="o">-</span><span class="n">proxy</span>
+<span class="n">network</span><span class="p">.</span><span class="n">http</span><span class="p">.</span><span class="n">max</span><span class="o">-</span><span class="n">connections</span>
+<span class="n">network</span><span class="p">.</span><span class="n">http</span><span class="p">.</span><span class="n">max</span><span class="o">-</span><span class="n">connections</span><span class="o">-</span><span class="n">per</span><span class="o">-</span><span class="n">server</span>
+</pre></div>
+</div>
+<p>Since <tt class="docutils literal"><span class="pre">shrpx</span></tt> handles maximum 100 concurrent streams, it is
+reasonable to set
+<tt class="docutils literal"><span class="pre">network.http.max-persistent-connections-per-proxy</span></tt> to <tt class="docutils literal"><span class="pre">100</span></tt>.</p>
+<p>Now borwse the sites with Firefox. The all HTTP requests are now sent
+via internal <tt class="docutils literal"><span class="pre">shrpx</span></tt> to SPDY proxy in 1 connection. SPDY proxy will
+get resources on behalf of the client and sent back the response.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Menu</h3>
+<ul>
+  <li><a href="http://sourceforge.net/projects/spdylay/files/stable/">Download</a></li>
+  <li><a href="https://github.com/tatsuhiro-t/spdylay/issues">Issues</a></li>
+  <li><a href="https://github.com/tatsuhiro-t/spdylay">Source</a></li>
+  <li><a href="http://sourceforge.net/projects/spdylay">SF.net Project Page</a></li>
+</ul>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">SPDY Proxy with Firefox for Android</a><ul>
+<li><a class="reference internal" href="#setting-up-spdy-proxy">Setting up SPDY Proxy</a></li>
+<li><a class="reference internal" href="#building-spdylay-library-and-shrpx">Building spdylay library and shrpx</a></li>
+<li><a class="reference internal" href="#setup-shrpx-on-android-device">Setup shrpx on Android device</a></li>
+<li><a class="reference internal" href="#setup-firefox-to-use-spdy-proxy">Setup Firefox to use SPDY proxy</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="python.html"
+                        title="previous chapter">Python-spdylay - Spdylay Python Extension Module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/android-spdy-proxy.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="python.html" title="Python-spdylay - Spdylay Python Extension Module"
+             >previous</a> |</li>
+        <li><a href="index.html">Spdylay 1.2.0-DEV documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, 2013, Tatsuhiro Tsujikawa.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

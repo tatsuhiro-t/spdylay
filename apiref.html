@@ -1,0 +1,2471 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>API Reference &mdash; Spdylay 1.2.0-DEV documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/default2.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.2.0-DEV',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Spdylay 1.2.0-DEV documentation" href="index.html" />
+    <link rel="next" title="Python-spdylay - Spdylay Python Extension Module" href="python.html" />
+    <link rel="prev" title="Spdylay - SPDY C Library" href="package_README.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="python.html" title="Python-spdylay - Spdylay Python Extension Module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="package_README.html" title="Spdylay - SPDY C Library"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Spdylay 1.2.0-DEV documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="api-reference">
+<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="includes">
+<h2>Includes<a class="headerlink" href="#includes" title="Permalink to this headline">¶</a></h2>
+<p>To use the public APIs, include <tt class="docutils literal"><span class="pre">spdylay/spdylay.h</span></tt>:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="cp">#include &lt;spdylay/spdylay.h&gt;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="remarks">
+<h2>Remarks<a class="headerlink" href="#remarks" title="Permalink to this headline">¶</a></h2>
+<p>Do not call <a class="reference internal" href="#spdylay_session_send" title="spdylay_session_send"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_send()</span></tt></a>, <a class="reference internal" href="#spdylay_session_recv" title="spdylay_session_recv"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_recv()</span></tt></a> or
+<a class="reference internal" href="#spdylay_session_mem_recv" title="spdylay_session_mem_recv"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_mem_recv()</span></tt></a> from the spdylay callback functions
+directly or indirectly. It will lead to the crash. You can submit
+requests or frames in the callbacks then call <a class="reference internal" href="#spdylay_session_send" title="spdylay_session_send"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_send()</span></tt></a>,
+<a class="reference internal" href="#spdylay_session_recv" title="spdylay_session_recv"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_recv()</span></tt></a> or <a class="reference internal" href="#spdylay_session_mem_recv" title="spdylay_session_mem_recv"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_mem_recv()</span></tt></a> outside of the
+callbacks.</p>
+</div>
+<div class="section" id="macros">
+<h2>Macros<a class="headerlink" href="#macros" title="Permalink to this headline">¶</a></h2>
+<dl class="macro">
+<dt id="SPDYLAY_VERSION">
+<tt class="descname">SPDYLAY_VERSION</tt><a class="headerlink" href="#SPDYLAY_VERSION" title="Permalink to this definition">¶</a></dt>
+<dd><p>Version number of the Spdylay library release</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_INITIAL_MAX_CONCURRENT_STREAMS">
+<tt class="descname">SPDYLAY_INITIAL_MAX_CONCURRENT_STREAMS</tt><a class="headerlink" href="#SPDYLAY_INITIAL_MAX_CONCURRENT_STREAMS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default maximum concurrent streams.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_INITIAL_WINDOW_SIZE">
+<tt class="descname">SPDYLAY_INITIAL_WINDOW_SIZE</tt><a class="headerlink" href="#SPDYLAY_INITIAL_WINDOW_SIZE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initial window size for both connection-level and stream-level flow
+control.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="enums">
+<h2>Enums<a class="headerlink" href="#enums" title="Permalink to this headline">¶</a></h2>
+<dl class="type">
+<dt id="spdylay_proto_version">
+<tt class="descname">spdylay_proto_version</tt><a class="headerlink" href="#spdylay_proto_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SPDY protocol version.</p>
+<dl class="macro">
+<dt id="SPDYLAY_PROTO_SPDY2">
+<tt class="descname">SPDYLAY_PROTO_SPDY2</tt><a class="headerlink" href="#SPDYLAY_PROTO_SPDY2" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">2</span></tt>)
+SPDY protocol version 2</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_PROTO_SPDY3">
+<tt class="descname">SPDYLAY_PROTO_SPDY3</tt><a class="headerlink" href="#SPDYLAY_PROTO_SPDY3" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">3</span></tt>)
+SPDY protocol version 3</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_PROTO_SPDY3_1">
+<tt class="descname">SPDYLAY_PROTO_SPDY3_1</tt><a class="headerlink" href="#SPDYLAY_PROTO_SPDY3_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">4</span></tt>)
+SPDY protocol version 3.1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_error">
+<tt class="descname">spdylay_error</tt><a class="headerlink" href="#spdylay_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Error codes used in the Spdylay library. The code range is [-999,
+-500], inclusive. The following values are defined:</p>
+<dl class="macro">
+<dt id="SPDYLAY_ERR_INVALID_ARGUMENT">
+<tt class="descname">SPDYLAY_ERR_INVALID_ARGUMENT</tt><a class="headerlink" href="#SPDYLAY_ERR_INVALID_ARGUMENT" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-501</span></tt>)
+Invalid argument passed.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_ZLIB">
+<tt class="descname">SPDYLAY_ERR_ZLIB</tt><a class="headerlink" href="#SPDYLAY_ERR_ZLIB" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-502</span></tt>)
+Zlib error.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_UNSUPPORTED_VERSION">
+<tt class="descname">SPDYLAY_ERR_UNSUPPORTED_VERSION</tt><a class="headerlink" href="#SPDYLAY_ERR_UNSUPPORTED_VERSION" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-503</span></tt>)
+The specified protocol version is not supported.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_WOULDBLOCK">
+<tt class="descname">SPDYLAY_ERR_WOULDBLOCK</tt><a class="headerlink" href="#SPDYLAY_ERR_WOULDBLOCK" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-504</span></tt>)
+Used as a return value from <a class="reference internal" href="#spdylay_send_callback" title="spdylay_send_callback"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_send_callback</span></tt></a> and
+<a class="reference internal" href="#spdylay_recv_callback" title="spdylay_recv_callback"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_recv_callback</span></tt></a> to indicate that the operation
+would block.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_PROTO">
+<tt class="descname">SPDYLAY_ERR_PROTO</tt><a class="headerlink" href="#SPDYLAY_ERR_PROTO" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-505</span></tt>)
+General protocol error</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_INVALID_FRAME">
+<tt class="descname">SPDYLAY_ERR_INVALID_FRAME</tt><a class="headerlink" href="#SPDYLAY_ERR_INVALID_FRAME" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-506</span></tt>)
+The frame is invalid.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_EOF">
+<tt class="descname">SPDYLAY_ERR_EOF</tt><a class="headerlink" href="#SPDYLAY_ERR_EOF" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-507</span></tt>)
+The peer performed a shutdown on the connection.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_DEFERRED">
+<tt class="descname">SPDYLAY_ERR_DEFERRED</tt><a class="headerlink" href="#SPDYLAY_ERR_DEFERRED" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-508</span></tt>)
+Used as a return value from
+<a class="reference internal" href="#spdylay_data_source_read_callback" title="spdylay_data_source_read_callback"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_data_source_read_callback()</span></tt></a> to indicate that data
+transfer is postponed. See
+<a class="reference internal" href="#spdylay_data_source_read_callback" title="spdylay_data_source_read_callback"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_data_source_read_callback()</span></tt></a> for details.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_STREAM_ID_NOT_AVAILABLE">
+<tt class="descname">SPDYLAY_ERR_STREAM_ID_NOT_AVAILABLE</tt><a class="headerlink" href="#SPDYLAY_ERR_STREAM_ID_NOT_AVAILABLE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-509</span></tt>)
+Stream ID has reached the maximum value. Therefore no stream ID
+is available.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_STREAM_CLOSED">
+<tt class="descname">SPDYLAY_ERR_STREAM_CLOSED</tt><a class="headerlink" href="#SPDYLAY_ERR_STREAM_CLOSED" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-510</span></tt>)
+The stream is already closed; or the stream ID is invalid.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_STREAM_CLOSING">
+<tt class="descname">SPDYLAY_ERR_STREAM_CLOSING</tt><a class="headerlink" href="#SPDYLAY_ERR_STREAM_CLOSING" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-511</span></tt>)
+RST_STREAM has been added to the outbound queue. The stream is in
+closing state.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_STREAM_SHUT_WR">
+<tt class="descname">SPDYLAY_ERR_STREAM_SHUT_WR</tt><a class="headerlink" href="#SPDYLAY_ERR_STREAM_SHUT_WR" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-512</span></tt>)
+The transmission is not allowed for this stream (e.g., a frame
+with FLAG_FIN flag set has already sent).</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_INVALID_STREAM_ID">
+<tt class="descname">SPDYLAY_ERR_INVALID_STREAM_ID</tt><a class="headerlink" href="#SPDYLAY_ERR_INVALID_STREAM_ID" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-513</span></tt>)
+The stream ID is invalid.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_INVALID_STREAM_STATE">
+<tt class="descname">SPDYLAY_ERR_INVALID_STREAM_STATE</tt><a class="headerlink" href="#SPDYLAY_ERR_INVALID_STREAM_STATE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-514</span></tt>)
+The state of the stream is not valid (e.g., SYN_REPLY cannot be
+sent to the stream if SYN_REPLY has already been sent).</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_DEFERRED_DATA_EXIST">
+<tt class="descname">SPDYLAY_ERR_DEFERRED_DATA_EXIST</tt><a class="headerlink" href="#SPDYLAY_ERR_DEFERRED_DATA_EXIST" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-515</span></tt>)
+Another DATA frame has already been deferred.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_SYN_STREAM_NOT_ALLOWED">
+<tt class="descname">SPDYLAY_ERR_SYN_STREAM_NOT_ALLOWED</tt><a class="headerlink" href="#SPDYLAY_ERR_SYN_STREAM_NOT_ALLOWED" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-516</span></tt>)
+SYN_STREAM is not allowed. (e.g., GOAWAY has been sent and/or
+received.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_GOAWAY_ALREADY_SENT">
+<tt class="descname">SPDYLAY_ERR_GOAWAY_ALREADY_SENT</tt><a class="headerlink" href="#SPDYLAY_ERR_GOAWAY_ALREADY_SENT" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-517</span></tt>)
+GOAWAY has already been sent.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_INVALID_HEADER_BLOCK">
+<tt class="descname">SPDYLAY_ERR_INVALID_HEADER_BLOCK</tt><a class="headerlink" href="#SPDYLAY_ERR_INVALID_HEADER_BLOCK" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-518</span></tt>)
+The received frame contains the invalid header block. (e.g.,
+There are duplicate header names; or the header names are not
+encoded in US-ASCII character set and not lower cased; or the
+header name is zero-length string; or the header value contains
+multiple in-sequence NUL bytes).</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_INVALID_STATE">
+<tt class="descname">SPDYLAY_ERR_INVALID_STATE</tt><a class="headerlink" href="#SPDYLAY_ERR_INVALID_STATE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-519</span></tt>)
+Indicates that the context is not suitable to perform the
+requested operation.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_GZIP">
+<tt class="descname">SPDYLAY_ERR_GZIP</tt><a class="headerlink" href="#SPDYLAY_ERR_GZIP" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-520</span></tt>)
+The gzip error.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_TEMPORAL_CALLBACK_FAILURE">
+<tt class="descname">SPDYLAY_ERR_TEMPORAL_CALLBACK_FAILURE</tt><a class="headerlink" href="#SPDYLAY_ERR_TEMPORAL_CALLBACK_FAILURE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-521</span></tt>)
+The user callback function failed due to the temporal error.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_FRAME_TOO_LARGE">
+<tt class="descname">SPDYLAY_ERR_FRAME_TOO_LARGE</tt><a class="headerlink" href="#SPDYLAY_ERR_FRAME_TOO_LARGE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-522</span></tt>)
+The length of the frame is too large.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_FATAL">
+<tt class="descname">SPDYLAY_ERR_FATAL</tt><a class="headerlink" href="#SPDYLAY_ERR_FATAL" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-900</span></tt>)
+The errors &lt; <a class="reference internal" href="#SPDYLAY_ERR_FATAL" title="SPDYLAY_ERR_FATAL"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_FATAL</span></tt></a> mean that the library is
+under unexpected condition and cannot process any further data
+reliably (e.g., out of memory).</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_NOMEM">
+<tt class="descname">SPDYLAY_ERR_NOMEM</tt><a class="headerlink" href="#SPDYLAY_ERR_NOMEM" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-901</span></tt>)
+Out of memory. This is a fatal error.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ERR_CALLBACK_FAILURE">
+<tt class="descname">SPDYLAY_ERR_CALLBACK_FAILURE</tt><a class="headerlink" href="#SPDYLAY_ERR_CALLBACK_FAILURE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">-902</span></tt>)
+The user callback function failed. This is a fatal error.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_frame_type">
+<tt class="descname">spdylay_frame_type</tt><a class="headerlink" href="#spdylay_frame_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>The control frame types in SPDY protocol.</p>
+<dl class="macro">
+<dt id="SPDYLAY_SYN_STREAM">
+<tt class="descname">SPDYLAY_SYN_STREAM</tt><a class="headerlink" href="#SPDYLAY_SYN_STREAM" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">1</span></tt>)
+The SYN_STREAM control frame.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_SYN_REPLY">
+<tt class="descname">SPDYLAY_SYN_REPLY</tt><a class="headerlink" href="#SPDYLAY_SYN_REPLY" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">2</span></tt>)
+The SYN_REPLY control frame.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_RST_STREAM">
+<tt class="descname">SPDYLAY_RST_STREAM</tt><a class="headerlink" href="#SPDYLAY_RST_STREAM" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">3</span></tt>)
+The RST_STREAM control frame.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_SETTINGS">
+<tt class="descname">SPDYLAY_SETTINGS</tt><a class="headerlink" href="#SPDYLAY_SETTINGS" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">4</span></tt>)
+The SETTINGS control frame.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_NOOP">
+<tt class="descname">SPDYLAY_NOOP</tt><a class="headerlink" href="#SPDYLAY_NOOP" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">5</span></tt>)
+The NOOP control frame. This was deprecated in SPDY/3.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_PING">
+<tt class="descname">SPDYLAY_PING</tt><a class="headerlink" href="#SPDYLAY_PING" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">6</span></tt>)
+The PING control frame.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_GOAWAY">
+<tt class="descname">SPDYLAY_GOAWAY</tt><a class="headerlink" href="#SPDYLAY_GOAWAY" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">7</span></tt>)
+The GOAWAY control frame.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_HEADERS">
+<tt class="descname">SPDYLAY_HEADERS</tt><a class="headerlink" href="#SPDYLAY_HEADERS" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">8</span></tt>)
+The HEADERS control frame.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_WINDOW_UPDATE">
+<tt class="descname">SPDYLAY_WINDOW_UPDATE</tt><a class="headerlink" href="#SPDYLAY_WINDOW_UPDATE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">9</span></tt>)
+The WINDOW_UPDATE control frame. This first appeared in SPDY/3.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_CREDENTIAL">
+<tt class="descname">SPDYLAY_CREDENTIAL</tt><a class="headerlink" href="#SPDYLAY_CREDENTIAL" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">10</span></tt>)
+The CREDENTIAL control frame. This first appeared in SPDY/3.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_ctrl_flag">
+<tt class="descname">spdylay_ctrl_flag</tt><a class="headerlink" href="#spdylay_ctrl_flag" title="Permalink to this definition">¶</a></dt>
+<dd><p>The flags for a control frame.</p>
+<dl class="macro">
+<dt id="SPDYLAY_CTRL_FLAG_NONE">
+<tt class="descname">SPDYLAY_CTRL_FLAG_NONE</tt><a class="headerlink" href="#SPDYLAY_CTRL_FLAG_NONE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">0</span></tt>)
+No flag set.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_CTRL_FLAG_FIN">
+<tt class="descname">SPDYLAY_CTRL_FLAG_FIN</tt><a class="headerlink" href="#SPDYLAY_CTRL_FLAG_FIN" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">0x1</span></tt>)
+FLAG_FIN flag.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_CTRL_FLAG_UNIDIRECTIONAL">
+<tt class="descname">SPDYLAY_CTRL_FLAG_UNIDIRECTIONAL</tt><a class="headerlink" href="#SPDYLAY_CTRL_FLAG_UNIDIRECTIONAL" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">0x2</span></tt>)
+FLAG_UNIDIRECTIONAL flag.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_data_flag">
+<tt class="descname">spdylay_data_flag</tt><a class="headerlink" href="#spdylay_data_flag" title="Permalink to this definition">¶</a></dt>
+<dd><p>The flags for a DATA frame.</p>
+<dl class="macro">
+<dt id="SPDYLAY_DATA_FLAG_NONE">
+<tt class="descname">SPDYLAY_DATA_FLAG_NONE</tt><a class="headerlink" href="#SPDYLAY_DATA_FLAG_NONE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">0</span></tt>)
+No flag set.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_DATA_FLAG_FIN">
+<tt class="descname">SPDYLAY_DATA_FLAG_FIN</tt><a class="headerlink" href="#SPDYLAY_DATA_FLAG_FIN" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">0x1</span></tt>)
+FLAG_FIN flag.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_settings_flag">
+<tt class="descname">spdylay_settings_flag</tt><a class="headerlink" href="#spdylay_settings_flag" title="Permalink to this definition">¶</a></dt>
+<dd><p>The flags for the SETTINGS control frame.</p>
+<dl class="macro">
+<dt id="SPDYLAY_FLAG_SETTINGS_NONE">
+<tt class="descname">SPDYLAY_FLAG_SETTINGS_NONE</tt><a class="headerlink" href="#SPDYLAY_FLAG_SETTINGS_NONE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">0</span></tt>)
+No flag set.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_FLAG_SETTINGS_CLEAR_SETTINGS">
+<tt class="descname">SPDYLAY_FLAG_SETTINGS_CLEAR_SETTINGS</tt><a class="headerlink" href="#SPDYLAY_FLAG_SETTINGS_CLEAR_SETTINGS" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">1</span></tt>)
+SETTINGS_CLEAR_SETTINGS flag.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_settings_id_flag">
+<tt class="descname">spdylay_settings_id_flag</tt><a class="headerlink" href="#spdylay_settings_id_flag" title="Permalink to this definition">¶</a></dt>
+<dd><p>The flags for SETTINGS ID/value pair.</p>
+<dl class="macro">
+<dt id="SPDYLAY_ID_FLAG_SETTINGS_NONE">
+<tt class="descname">SPDYLAY_ID_FLAG_SETTINGS_NONE</tt><a class="headerlink" href="#SPDYLAY_ID_FLAG_SETTINGS_NONE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">0</span></tt>)
+No flag set.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ID_FLAG_SETTINGS_PERSIST_VALUE">
+<tt class="descname">SPDYLAY_ID_FLAG_SETTINGS_PERSIST_VALUE</tt><a class="headerlink" href="#SPDYLAY_ID_FLAG_SETTINGS_PERSIST_VALUE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">1</span></tt>)
+FLAG_SETTINGS_PERSIST_VALUE flag.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_ID_FLAG_SETTINGS_PERSISTED">
+<tt class="descname">SPDYLAY_ID_FLAG_SETTINGS_PERSISTED</tt><a class="headerlink" href="#SPDYLAY_ID_FLAG_SETTINGS_PERSISTED" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">2</span></tt>)
+FLAG_SETTINGS_PERSISTED flag.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_settings_id">
+<tt class="descname">spdylay_settings_id</tt><a class="headerlink" href="#spdylay_settings_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SETTINGS ID.</p>
+<dl class="macro">
+<dt id="SPDYLAY_SETTINGS_UPLOAD_BANDWIDTH">
+<tt class="descname">SPDYLAY_SETTINGS_UPLOAD_BANDWIDTH</tt><a class="headerlink" href="#SPDYLAY_SETTINGS_UPLOAD_BANDWIDTH" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">1</span></tt>)
+SETTINGS_UPLOAD_BANDWIDTH</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_SETTINGS_DOWNLOAD_BANDWIDTH">
+<tt class="descname">SPDYLAY_SETTINGS_DOWNLOAD_BANDWIDTH</tt><a class="headerlink" href="#SPDYLAY_SETTINGS_DOWNLOAD_BANDWIDTH" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">2</span></tt>)
+SETTINGS_DOWNLOAD_BANDWIDTH</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_SETTINGS_ROUND_TRIP_TIME">
+<tt class="descname">SPDYLAY_SETTINGS_ROUND_TRIP_TIME</tt><a class="headerlink" href="#SPDYLAY_SETTINGS_ROUND_TRIP_TIME" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">3</span></tt>)
+SETTINGS_ROUND_TRIP_TIME</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_SETTINGS_MAX_CONCURRENT_STREAMS">
+<tt class="descname">SPDYLAY_SETTINGS_MAX_CONCURRENT_STREAMS</tt><a class="headerlink" href="#SPDYLAY_SETTINGS_MAX_CONCURRENT_STREAMS" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">4</span></tt>)
+SETTINGS_MAX_CONCURRENT_STREAMS</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_SETTINGS_CURRENT_CWND">
+<tt class="descname">SPDYLAY_SETTINGS_CURRENT_CWND</tt><a class="headerlink" href="#SPDYLAY_SETTINGS_CURRENT_CWND" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">5</span></tt>)
+SETTINGS_CURRENT_CWND</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_SETTINGS_DOWNLOAD_RETRANS_RATE">
+<tt class="descname">SPDYLAY_SETTINGS_DOWNLOAD_RETRANS_RATE</tt><a class="headerlink" href="#SPDYLAY_SETTINGS_DOWNLOAD_RETRANS_RATE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">6</span></tt>)
+SETTINGS_DOWNLOAD_RETRANS_RATE</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_SETTINGS_INITIAL_WINDOW_SIZE">
+<tt class="descname">SPDYLAY_SETTINGS_INITIAL_WINDOW_SIZE</tt><a class="headerlink" href="#SPDYLAY_SETTINGS_INITIAL_WINDOW_SIZE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">7</span></tt>)
+SETTINGS_INITIAL_WINDOW_SIZE</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_SETTINGS_CLIENT_CERTIFICATE_VECTOR_SIZE">
+<tt class="descname">SPDYLAY_SETTINGS_CLIENT_CERTIFICATE_VECTOR_SIZE</tt><a class="headerlink" href="#SPDYLAY_SETTINGS_CLIENT_CERTIFICATE_VECTOR_SIZE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">8</span></tt>)
+SETTINGS_CLIENT_CERTIFICATE_VECTOR_SIZE. This first appeared in
+SPDY/3.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_SETTINGS_MAX">
+<tt class="descname">SPDYLAY_SETTINGS_MAX</tt><a class="headerlink" href="#SPDYLAY_SETTINGS_MAX" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">8</span></tt>)
+Maximum ID of <a class="reference internal" href="#spdylay_settings_id" title="spdylay_settings_id"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_settings_id</span></tt></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_status_code">
+<tt class="descname">spdylay_status_code</tt><a class="headerlink" href="#spdylay_status_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>The status codes for the RST_STREAM control frame.</p>
+<dl class="macro">
+<dt id="SPDYLAY_OK">
+<tt class="descname">SPDYLAY_OK</tt><a class="headerlink" href="#SPDYLAY_OK" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">0</span></tt>)
+SPDYLAY_OK is not valid status code for RST_STREAM. It is defined
+just for spdylay library use.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_PROTOCOL_ERROR">
+<tt class="descname">SPDYLAY_PROTOCOL_ERROR</tt><a class="headerlink" href="#SPDYLAY_PROTOCOL_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">1</span></tt>)
+PROTOCOL_ERROR</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_INVALID_STREAM">
+<tt class="descname">SPDYLAY_INVALID_STREAM</tt><a class="headerlink" href="#SPDYLAY_INVALID_STREAM" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">2</span></tt>)
+INVALID_STREAM</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_REFUSED_STREAM">
+<tt class="descname">SPDYLAY_REFUSED_STREAM</tt><a class="headerlink" href="#SPDYLAY_REFUSED_STREAM" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">3</span></tt>)
+REFUSED_STREAM</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_UNSUPPORTED_VERSION">
+<tt class="descname">SPDYLAY_UNSUPPORTED_VERSION</tt><a class="headerlink" href="#SPDYLAY_UNSUPPORTED_VERSION" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">4</span></tt>)
+UNSUPPORTED_VERSION</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_CANCEL">
+<tt class="descname">SPDYLAY_CANCEL</tt><a class="headerlink" href="#SPDYLAY_CANCEL" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">5</span></tt>)
+CANCEL</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_INTERNAL_ERROR">
+<tt class="descname">SPDYLAY_INTERNAL_ERROR</tt><a class="headerlink" href="#SPDYLAY_INTERNAL_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">6</span></tt>)
+INTERNAL_ERROR</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_FLOW_CONTROL_ERROR">
+<tt class="descname">SPDYLAY_FLOW_CONTROL_ERROR</tt><a class="headerlink" href="#SPDYLAY_FLOW_CONTROL_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">7</span></tt>)
+FLOW_CONTROL_ERROR</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_STREAM_IN_USE">
+<tt class="descname">SPDYLAY_STREAM_IN_USE</tt><a class="headerlink" href="#SPDYLAY_STREAM_IN_USE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">8</span></tt>)
+STREAM_IN_USE</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_STREAM_ALREADY_CLOSED">
+<tt class="descname">SPDYLAY_STREAM_ALREADY_CLOSED</tt><a class="headerlink" href="#SPDYLAY_STREAM_ALREADY_CLOSED" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">9</span></tt>)
+STREAM_ALREADY_CLOSED</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_INVALID_CREDENTIALS">
+<tt class="descname">SPDYLAY_INVALID_CREDENTIALS</tt><a class="headerlink" href="#SPDYLAY_INVALID_CREDENTIALS" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">10</span></tt>)
+INVALID_CREDENTIALS</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_FRAME_TOO_LARGE">
+<tt class="descname">SPDYLAY_FRAME_TOO_LARGE</tt><a class="headerlink" href="#SPDYLAY_FRAME_TOO_LARGE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">11</span></tt>)
+FRAME_TOO_LARGE</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_goaway_status_code">
+<tt class="descname">spdylay_goaway_status_code</tt><a class="headerlink" href="#spdylay_goaway_status_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>The status codes for GOAWAY, introduced in SPDY/3.</p>
+<dl class="macro">
+<dt id="SPDYLAY_GOAWAY_OK">
+<tt class="descname">SPDYLAY_GOAWAY_OK</tt><a class="headerlink" href="#SPDYLAY_GOAWAY_OK" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">0</span></tt>)
+OK. This indicates a normal session teardown.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_GOAWAY_PROTOCOL_ERROR">
+<tt class="descname">SPDYLAY_GOAWAY_PROTOCOL_ERROR</tt><a class="headerlink" href="#SPDYLAY_GOAWAY_PROTOCOL_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">1</span></tt>)
+PROTOCOL_ERROR</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_GOAWAY_INTERNAL_ERROR">
+<tt class="descname">SPDYLAY_GOAWAY_INTERNAL_ERROR</tt><a class="headerlink" href="#SPDYLAY_GOAWAY_INTERNAL_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">2</span></tt>)
+INTERNAL_ERROR</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_opt">
+<tt class="descname">spdylay_opt</tt><a class="headerlink" href="#spdylay_opt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Configuration options for <a class="reference internal" href="#spdylay_session" title="spdylay_session"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_session</span></tt></a>.</p>
+<dl class="macro">
+<dt id="SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE">
+<tt class="descname">SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE</tt><a class="headerlink" href="#SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">1</span></tt>)
+This option prevents the library from sending WINDOW_UPDATE
+automatically. If this option is set, the application is
+responsible for sending WINDOW_UPDATE using
+<a class="reference internal" href="#spdylay_submit_window_update" title="spdylay_submit_window_update"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_submit_window_update()</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="macro">
+<dt id="SPDYLAY_OPT_MAX_RECV_CTRL_FRAME_BUFFER">
+<tt class="descname">SPDYLAY_OPT_MAX_RECV_CTRL_FRAME_BUFFER</tt><a class="headerlink" href="#SPDYLAY_OPT_MAX_RECV_CTRL_FRAME_BUFFER" title="Permalink to this definition">¶</a></dt>
+<dd><p>(<tt class="docutils literal"><span class="pre">2</span></tt>)
+This option sets maximum receive buffer size for incoming control
+frame.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="types-structs-unions-and-typedefs">
+<h2>Types (structs, unions and typedefs)<a class="headerlink" href="#types-structs-unions-and-typedefs" title="Permalink to this headline">¶</a></h2>
+<dl class="type">
+<dt id="spdylay_session">
+<tt class="descname">spdylay_session</tt><a class="headerlink" href="#spdylay_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>The primary structure to hold the resources needed for a SPDY
+session. The details of this structure are intentionally hidden
+from the public API.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_ctrl_hd">
+<tt class="descname">spdylay_ctrl_hd</tt><a class="headerlink" href="#spdylay_ctrl_hd" title="Permalink to this definition">¶</a></dt>
+<dd><p>The control frame header.</p>
+<dl class="member">
+<dt id="spdylay_ctrl_hd.version">
+uint16_t <tt class="descname">version</tt><a class="headerlink" href="#spdylay_ctrl_hd.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>SPDY protocol version.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_ctrl_hd.type">
+uint16_t <tt class="descname">type</tt><a class="headerlink" href="#spdylay_ctrl_hd.type" title="Permalink to this definition">¶</a></dt>
+<dd><p>The type of this control frame.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_ctrl_hd.flags">
+uint8_t <tt class="descname">flags</tt><a class="headerlink" href="#spdylay_ctrl_hd.flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>The control frame flags.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_ctrl_hd.length">
+int32_t <tt class="descname">length</tt><a class="headerlink" href="#spdylay_ctrl_hd.length" title="Permalink to this definition">¶</a></dt>
+<dd><p>The length field of this control frame.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_syn_stream">
+<tt class="descname">spdylay_syn_stream</tt><a class="headerlink" href="#spdylay_syn_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SYN_STREAM control frame. It has the following members:</p>
+<dl class="member">
+<dt id="spdylay_syn_stream.hd">
+<a class="reference internal" href="#spdylay_ctrl_hd" title="spdylay_ctrl_hd">spdylay_ctrl_hd</a> <tt class="descname">hd</tt><a class="headerlink" href="#spdylay_syn_stream.hd" title="Permalink to this definition">¶</a></dt>
+<dd><p>The control frame header.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_syn_stream.stream_id">
+int32_t <tt class="descname">stream_id</tt><a class="headerlink" href="#spdylay_syn_stream.stream_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The stream ID.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_syn_stream.assoc_stream_id">
+int32_t <tt class="descname">assoc_stream_id</tt><a class="headerlink" href="#spdylay_syn_stream.assoc_stream_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The associated-to-stream ID. 0 if this frame has no
+associated-to-stream.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_syn_stream.pri">
+uint8_t <tt class="descname">pri</tt><a class="headerlink" href="#spdylay_syn_stream.pri" title="Permalink to this definition">¶</a></dt>
+<dd><p>The priority of this frame. 0 is the highest priority value. Use
+<a class="reference internal" href="#spdylay_session_get_pri_lowest" title="spdylay_session_get_pri_lowest"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_get_pri_lowest()</span></tt></a> to know the lowest priority
+value.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_syn_stream.slot">
+uint8_t <tt class="descname">slot</tt><a class="headerlink" href="#spdylay_syn_stream.slot" title="Permalink to this definition">¶</a></dt>
+<dd><p>The index in server&#8217;s CREDENTIAL vector of the client certificate.
+This was introduced in SPDY/3.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_syn_stream.nv">
+char **<tt class="descname">nv</tt><a class="headerlink" href="#spdylay_syn_stream.nv" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name/value pairs. For i &gt;= 0, <tt class="docutils literal"><span class="pre">nv[2*i]</span></tt> contains a pointer
+to the name string and <tt class="docutils literal"><span class="pre">nv[2*i+1]</span></tt> contains a pointer to the
+value string. The one beyond last value must be <tt class="docutils literal"><span class="pre">NULL</span></tt>. That
+is, if the <em>nv</em> contains N name/value pairs, <tt class="docutils literal"><span class="pre">nv[2*N]</span></tt> must be
+<tt class="docutils literal"><span class="pre">NULL</span></tt>. This member may be <tt class="docutils literal"><span class="pre">NULL</span></tt>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_syn_reply">
+<tt class="descname">spdylay_syn_reply</tt><a class="headerlink" href="#spdylay_syn_reply" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SYN_REPLY control frame. It has the following members:</p>
+<dl class="member">
+<dt id="spdylay_syn_reply.hd">
+<a class="reference internal" href="#spdylay_ctrl_hd" title="spdylay_ctrl_hd">spdylay_ctrl_hd</a> <tt class="descname">hd</tt><a class="headerlink" href="#spdylay_syn_reply.hd" title="Permalink to this definition">¶</a></dt>
+<dd><p>The control frame header.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_syn_reply.stream_id">
+int32_t <tt class="descname">stream_id</tt><a class="headerlink" href="#spdylay_syn_reply.stream_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The stream ID.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_syn_reply.nv">
+char **<tt class="descname">nv</tt><a class="headerlink" href="#spdylay_syn_reply.nv" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name/value pairs. For i &gt;= 0, <tt class="docutils literal"><span class="pre">nv[2*i]</span></tt> contains a pointer
+to the name string and <tt class="docutils literal"><span class="pre">nv[2*i+1]</span></tt> contains a pointer to the
+value string. The one beyond last value must be <tt class="docutils literal"><span class="pre">NULL</span></tt>. That
+is, if the <em>nv</em> contains N name/value pairs, <tt class="docutils literal"><span class="pre">nv[2*N]</span></tt> must be
+<tt class="docutils literal"><span class="pre">NULL</span></tt>. This member may be <tt class="docutils literal"><span class="pre">NULL</span></tt>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_headers">
+<tt class="descname">spdylay_headers</tt><a class="headerlink" href="#spdylay_headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>The HEADERS control frame. It has the following members:</p>
+<dl class="member">
+<dt id="spdylay_headers.hd">
+<a class="reference internal" href="#spdylay_ctrl_hd" title="spdylay_ctrl_hd">spdylay_ctrl_hd</a> <tt class="descname">hd</tt><a class="headerlink" href="#spdylay_headers.hd" title="Permalink to this definition">¶</a></dt>
+<dd><p>The control frame header.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_headers.stream_id">
+int32_t <tt class="descname">stream_id</tt><a class="headerlink" href="#spdylay_headers.stream_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The stream ID.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_headers.nv">
+char **<tt class="descname">nv</tt><a class="headerlink" href="#spdylay_headers.nv" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name/value pairs. For i &gt;= 0, <tt class="docutils literal"><span class="pre">nv[2*i]</span></tt> contains a pointer
+to the name string and <tt class="docutils literal"><span class="pre">nv[2*i+1]</span></tt> contains a pointer to the
+value string. The one beyond last value must be <tt class="docutils literal"><span class="pre">NULL</span></tt>. That
+is, if the <em>nv</em> contains N name/value pairs, <tt class="docutils literal"><span class="pre">nv[2*N]</span></tt> must be
+<tt class="docutils literal"><span class="pre">NULL</span></tt>. This member may be <tt class="docutils literal"><span class="pre">NULL</span></tt>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_rst_stream">
+<tt class="descname">spdylay_rst_stream</tt><a class="headerlink" href="#spdylay_rst_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>The RST_STREAM control frame. It has the following members:</p>
+<dl class="member">
+<dt id="spdylay_rst_stream.hd">
+<a class="reference internal" href="#spdylay_ctrl_hd" title="spdylay_ctrl_hd">spdylay_ctrl_hd</a> <tt class="descname">hd</tt><a class="headerlink" href="#spdylay_rst_stream.hd" title="Permalink to this definition">¶</a></dt>
+<dd><p>The control frame header.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_rst_stream.stream_id">
+int32_t <tt class="descname">stream_id</tt><a class="headerlink" href="#spdylay_rst_stream.stream_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The stream ID.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_rst_stream.status_code">
+uint32_t <tt class="descname">status_code</tt><a class="headerlink" href="#spdylay_rst_stream.status_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>The status code. See <a class="reference internal" href="#spdylay_status_code" title="spdylay_status_code"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_status_code</span></tt></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_settings_entry">
+<tt class="descname">spdylay_settings_entry</tt><a class="headerlink" href="#spdylay_settings_entry" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SETTINGS ID/Value pair. It has the following members:</p>
+<dl class="member">
+<dt id="spdylay_settings_entry.settings_id">
+int32_t <tt class="descname">settings_id</tt><a class="headerlink" href="#spdylay_settings_entry.settings_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SETTINGS ID. See <a class="reference internal" href="#spdylay_settings_id" title="spdylay_settings_id"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_settings_id</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_settings_entry.flags">
+uint8_t <tt class="descname">flags</tt><a class="headerlink" href="#spdylay_settings_entry.flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>The flags. See <a class="reference internal" href="#spdylay_settings_id_flag" title="spdylay_settings_id_flag"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_settings_id_flag</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_settings_entry.value">
+uint32_t <tt class="descname">value</tt><a class="headerlink" href="#spdylay_settings_entry.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>The value of this entry.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_settings">
+<tt class="descname">spdylay_settings</tt><a class="headerlink" href="#spdylay_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SETTINGS control frame. It has the following members:</p>
+<dl class="member">
+<dt id="spdylay_settings.hd">
+<a class="reference internal" href="#spdylay_ctrl_hd" title="spdylay_ctrl_hd">spdylay_ctrl_hd</a> <tt class="descname">hd</tt><a class="headerlink" href="#spdylay_settings.hd" title="Permalink to this definition">¶</a></dt>
+<dd><p>The control frame header.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_settings.niv">
+size_t <tt class="descname">niv</tt><a class="headerlink" href="#spdylay_settings.niv" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of SETTINGS ID/Value pairs in <em>iv</em>.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_settings.iv">
+<a class="reference internal" href="#spdylay_settings_entry" title="spdylay_settings_entry">spdylay_settings_entry</a> *<tt class="descname">iv</tt><a class="headerlink" href="#spdylay_settings.iv" title="Permalink to this definition">¶</a></dt>
+<dd><p>The pointer to the array of SETTINGS ID/Value pair.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_ping">
+<tt class="descname">spdylay_ping</tt><a class="headerlink" href="#spdylay_ping" title="Permalink to this definition">¶</a></dt>
+<dd><p>The PING control frame. It has the following members:</p>
+<dl class="member">
+<dt id="spdylay_ping.hd">
+<a class="reference internal" href="#spdylay_ctrl_hd" title="spdylay_ctrl_hd">spdylay_ctrl_hd</a> <tt class="descname">hd</tt><a class="headerlink" href="#spdylay_ping.hd" title="Permalink to this definition">¶</a></dt>
+<dd><p>The control frame header.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_ping.unique_id">
+uint32_t <tt class="descname">unique_id</tt><a class="headerlink" href="#spdylay_ping.unique_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The unique ID.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_goaway">
+<tt class="descname">spdylay_goaway</tt><a class="headerlink" href="#spdylay_goaway" title="Permalink to this definition">¶</a></dt>
+<dd><p>The GOAWAY control frame. It has the following members:</p>
+<dl class="member">
+<dt id="spdylay_goaway.hd">
+<a class="reference internal" href="#spdylay_ctrl_hd" title="spdylay_ctrl_hd">spdylay_ctrl_hd</a> <tt class="descname">hd</tt><a class="headerlink" href="#spdylay_goaway.hd" title="Permalink to this definition">¶</a></dt>
+<dd><p>The control frame header.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_goaway.last_good_stream_id">
+int32_t <tt class="descname">last_good_stream_id</tt><a class="headerlink" href="#spdylay_goaway.last_good_stream_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The last-good-stream ID.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_goaway.status_code">
+uint32_t <tt class="descname">status_code</tt><a class="headerlink" href="#spdylay_goaway.status_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>The status code. This first appeared in SPDY/3. See
+<a class="reference internal" href="#spdylay_goaway_status_code" title="spdylay_goaway_status_code"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_goaway_status_code</span></tt></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_window_update">
+<tt class="descname">spdylay_window_update</tt><a class="headerlink" href="#spdylay_window_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>The WINDOW_UPDATE control frame. This first appeared in SPDY/3.  It
+has the following members:</p>
+<dl class="member">
+<dt id="spdylay_window_update.hd">
+<a class="reference internal" href="#spdylay_ctrl_hd" title="spdylay_ctrl_hd">spdylay_ctrl_hd</a> <tt class="descname">hd</tt><a class="headerlink" href="#spdylay_window_update.hd" title="Permalink to this definition">¶</a></dt>
+<dd><p>The control frame header.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_window_update.stream_id">
+int32_t <tt class="descname">stream_id</tt><a class="headerlink" href="#spdylay_window_update.stream_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The stream ID.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_window_update.delta_window_size">
+int32_t <tt class="descname">delta_window_size</tt><a class="headerlink" href="#spdylay_window_update.delta_window_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>The delta-window-size.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_mem_chunk">
+<tt class="descname">spdylay_mem_chunk</tt><a class="headerlink" href="#spdylay_mem_chunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>The structure to hold chunk of memory.</p>
+<dl class="member">
+<dt id="spdylay_mem_chunk.data">
+uint8_t *<tt class="descname">data</tt><a class="headerlink" href="#spdylay_mem_chunk.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>The pointer to the data.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_mem_chunk.length">
+size_t <tt class="descname">length</tt><a class="headerlink" href="#spdylay_mem_chunk.length" title="Permalink to this definition">¶</a></dt>
+<dd><p>The length of the data.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_credential">
+<tt class="descname">spdylay_credential</tt><a class="headerlink" href="#spdylay_credential" title="Permalink to this definition">¶</a></dt>
+<dd><p>The CREDENTIAL control frame. This first appeared in SPDY/3. It has
+the following members:</p>
+<dl class="member">
+<dt id="spdylay_credential.hd">
+<a class="reference internal" href="#spdylay_ctrl_hd" title="spdylay_ctrl_hd">spdylay_ctrl_hd</a> <tt class="descname">hd</tt><a class="headerlink" href="#spdylay_credential.hd" title="Permalink to this definition">¶</a></dt>
+<dd><p>The control frame header.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_credential.slot">
+uint16_t <tt class="descname">slot</tt><a class="headerlink" href="#spdylay_credential.slot" title="Permalink to this definition">¶</a></dt>
+<dd><p>The index in the client certificate vector.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_credential.proof">
+<a class="reference internal" href="#spdylay_mem_chunk" title="spdylay_mem_chunk">spdylay_mem_chunk</a> <tt class="descname">proof</tt><a class="headerlink" href="#spdylay_credential.proof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cryptographic proof that the client has possession of the private
+key associated with the certificate.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_credential.certs">
+<a class="reference internal" href="#spdylay_mem_chunk" title="spdylay_mem_chunk">spdylay_mem_chunk</a> *<tt class="descname">certs</tt><a class="headerlink" href="#spdylay_credential.certs" title="Permalink to this definition">¶</a></dt>
+<dd><p>The certificate chain. The certs[0] is the leaf certificate.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_credential.ncerts">
+size_t <tt class="descname">ncerts</tt><a class="headerlink" href="#spdylay_credential.ncerts" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of certificates in <em>certs</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_ctrl_frame">
+<tt class="descname">spdylay_ctrl_frame</tt><a class="headerlink" href="#spdylay_ctrl_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenient structure to inspect control frame header.  It is useful
+to get the frame type.</p>
+<dl class="member">
+<dt id="spdylay_ctrl_frame.hd">
+<a class="reference internal" href="#spdylay_ctrl_hd" title="spdylay_ctrl_hd">spdylay_ctrl_hd</a> <tt class="descname">hd</tt><a class="headerlink" href="#spdylay_ctrl_frame.hd" title="Permalink to this definition">¶</a></dt>
+<dd><p>The control frame header.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_data_source">
+<tt class="descname">spdylay_data_source</tt><a class="headerlink" href="#spdylay_data_source" title="Permalink to this definition">¶</a></dt>
+<dd><p>This union represents the some kind of data source passed to
+<a class="reference internal" href="#spdylay_data_source_read_callback" title="spdylay_data_source_read_callback"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_data_source_read_callback</span></tt></a>.</p>
+<dl class="member">
+<dt id="spdylay_data_source.fd">
+int <tt class="descname">fd</tt><a class="headerlink" href="#spdylay_data_source.fd" title="Permalink to this definition">¶</a></dt>
+<dd><p>The integer field, suitable for a file descriptor.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_data_source.ptr">
+void *<tt class="descname">ptr</tt><a class="headerlink" href="#spdylay_data_source.ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>The pointer to an arbitrary object.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_data_source_read_callback">
+typedef ssize_t <tt class="descname">(*spdylay_data_source_read_callback)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, int32_t<em>&nbsp;stream_id</em>, uint8_t<em>&nbsp;*buf</em>, size_t<em>&nbsp;length</em>, int<em>&nbsp;*eof</em>, <a class="reference internal" href="#spdylay_data_source" title="spdylay_data_source">spdylay_data_source</a><em>&nbsp;*source</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_data_source_read_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when the library wants to read data from
+the <em>source</em>. The read data is sent in the stream <em>stream_id</em>. The
+implementation of this function must read at most <em>length</em> bytes of
+data from <em>source</em> (or possibly other places) and store them in
+<em>buf</em> and return number of data stored in <em>buf</em>. If EOF is reached,
+set <em>*eof</em> to 1.  If the application wants to postpone DATA frames,
+(e.g., asynchronous I/O, or reading data blocks for long time), it
+is achieved by returning <a class="reference internal" href="#SPDYLAY_ERR_DEFERRED" title="SPDYLAY_ERR_DEFERRED"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_DEFERRED</span></tt></a> without
+reading any data in this invocation.  The library removes DATA
+frame from the outgoing queue temporarily.  To move back deferred
+DATA frame to outgoing queue, call <a class="reference internal" href="#spdylay_session_resume_data" title="spdylay_session_resume_data"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_resume_data()</span></tt></a>.
+In case of error, there are 2 choices. Returning
+<a class="reference internal" href="#SPDYLAY_ERR_TEMPORAL_CALLBACK_FAILURE" title="SPDYLAY_ERR_TEMPORAL_CALLBACK_FAILURE"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_TEMPORAL_CALLBACK_FAILURE</span></tt></a> will close the stream
+by issuing RST_STREAM with <a class="reference internal" href="#SPDYLAY_INTERNAL_ERROR" title="SPDYLAY_INTERNAL_ERROR"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_INTERNAL_ERROR</span></tt></a>.
+Returning <a class="reference internal" href="#SPDYLAY_ERR_CALLBACK_FAILURE" title="SPDYLAY_ERR_CALLBACK_FAILURE"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_CALLBACK_FAILURE</span></tt></a> will signal the
+entire session failure.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_data_provider">
+<tt class="descname">spdylay_data_provider</tt><a class="headerlink" href="#spdylay_data_provider" title="Permalink to this definition">¶</a></dt>
+<dd><p>This struct represents the data source and the way to read a chunk
+of data from it.</p>
+<dl class="member">
+<dt id="spdylay_data_provider.source">
+<a class="reference internal" href="#spdylay_data_source" title="spdylay_data_source">spdylay_data_source</a> <tt class="descname">source</tt><a class="headerlink" href="#spdylay_data_provider.source" title="Permalink to this definition">¶</a></dt>
+<dd><p>The data source.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_data_provider.read_callback">
+<a class="reference internal" href="#spdylay_data_source_read_callback" title="spdylay_data_source_read_callback">spdylay_data_source_read_callback</a> <tt class="descname">read_callback</tt><a class="headerlink" href="#spdylay_data_provider.read_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>The callback function to read a chunk of data from the <em>source</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_frame">
+<tt class="descname">spdylay_frame</tt><a class="headerlink" href="#spdylay_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>This union includes all control frames to pass them
+to various function calls as spdylay_frame type.</p>
+<dl class="member">
+<dt id="spdylay_frame.ctrl">
+<a class="reference internal" href="#spdylay_ctrl_frame" title="spdylay_ctrl_frame">spdylay_ctrl_frame</a> <tt class="descname">ctrl</tt><a class="headerlink" href="#spdylay_frame.ctrl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenient structure to inspect control frame header.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_frame.syn_stream">
+<a class="reference internal" href="#spdylay_syn_stream" title="spdylay_syn_stream">spdylay_syn_stream</a> <tt class="descname">syn_stream</tt><a class="headerlink" href="#spdylay_frame.syn_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SYN_STREAM control frame.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_frame.syn_reply">
+<a class="reference internal" href="#spdylay_syn_reply" title="spdylay_syn_reply">spdylay_syn_reply</a> <tt class="descname">syn_reply</tt><a class="headerlink" href="#spdylay_frame.syn_reply" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SYN_REPLY control frame.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_frame.rst_stream">
+<a class="reference internal" href="#spdylay_rst_stream" title="spdylay_rst_stream">spdylay_rst_stream</a> <tt class="descname">rst_stream</tt><a class="headerlink" href="#spdylay_frame.rst_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>The RST_STREAM control frame.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_frame.settings">
+<a class="reference internal" href="#spdylay_settings" title="spdylay_settings">spdylay_settings</a> <tt class="descname">settings</tt><a class="headerlink" href="#spdylay_frame.settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SETTINGS control frame.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_frame.ping">
+<a class="reference internal" href="#spdylay_ping" title="spdylay_ping">spdylay_ping</a> <tt class="descname">ping</tt><a class="headerlink" href="#spdylay_frame.ping" title="Permalink to this definition">¶</a></dt>
+<dd><p>The PING control frame.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_frame.goaway">
+<a class="reference internal" href="#spdylay_goaway" title="spdylay_goaway">spdylay_goaway</a> <tt class="descname">goaway</tt><a class="headerlink" href="#spdylay_frame.goaway" title="Permalink to this definition">¶</a></dt>
+<dd><p>The GOAWAY control frame.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_frame.headers">
+<a class="reference internal" href="#spdylay_headers" title="spdylay_headers">spdylay_headers</a> <tt class="descname">headers</tt><a class="headerlink" href="#spdylay_frame.headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>The HEADERS control frame.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_frame.window_update">
+<a class="reference internal" href="#spdylay_window_update" title="spdylay_window_update">spdylay_window_update</a> <tt class="descname">window_update</tt><a class="headerlink" href="#spdylay_frame.window_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>The WINDOW_UPDATE control frame.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_frame.credential">
+<a class="reference internal" href="#spdylay_credential" title="spdylay_credential">spdylay_credential</a> <tt class="descname">credential</tt><a class="headerlink" href="#spdylay_frame.credential" title="Permalink to this definition">¶</a></dt>
+<dd><p>The CREDENTIAL control frame.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_send_callback">
+typedef ssize_t <tt class="descname">(*spdylay_send_callback)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, const uint8_t<em>&nbsp;*data</em>, size_t<em>&nbsp;length</em>, int<em>&nbsp;flags</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_send_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when <em>session</em> wants to send data to the
+remote peer. The implementation of this function must send at most
+<em>length</em> bytes of data stored in <em>data</em>. The <em>flags</em> is currently
+not used and always 0. It must return the number of bytes sent if
+it succeeds.  If it cannot send any single byte without blocking,
+it must return <a class="reference internal" href="#SPDYLAY_ERR_WOULDBLOCK" title="SPDYLAY_ERR_WOULDBLOCK"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_WOULDBLOCK</span></tt></a>. For other errors, it
+must return <a class="reference internal" href="#SPDYLAY_ERR_CALLBACK_FAILURE" title="SPDYLAY_ERR_CALLBACK_FAILURE"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_CALLBACK_FAILURE</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_recv_callback">
+typedef ssize_t <tt class="descname">(*spdylay_recv_callback)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, uint8_t<em>&nbsp;*buf</em>, size_t<em>&nbsp;length</em>, int<em>&nbsp;flags</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_recv_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when <em>session</em> wants to receive data from
+the remote peer. The implementation of this function must read at
+most <em>length</em> bytes of data and store it in <em>buf</em>. The <em>flags</em> is
+currently not used and always 0. It must return the number of bytes
+written in <em>buf</em> if it succeeds. If it cannot read any single byte
+without blocking, it must return <a class="reference internal" href="#SPDYLAY_ERR_WOULDBLOCK" title="SPDYLAY_ERR_WOULDBLOCK"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_WOULDBLOCK</span></tt></a>. If
+it gets EOF before it reads any single byte, it must return
+<a class="reference internal" href="#SPDYLAY_ERR_EOF" title="SPDYLAY_ERR_EOF"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_EOF</span></tt></a>. For other errors, it must return
+<a class="reference internal" href="#SPDYLAY_ERR_CALLBACK_FAILURE" title="SPDYLAY_ERR_CALLBACK_FAILURE"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_CALLBACK_FAILURE</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_on_ctrl_recv_callback">
+typedef void <tt class="descname">(*spdylay_on_ctrl_recv_callback)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, <a class="reference internal" href="#spdylay_frame_type" title="spdylay_frame_type">spdylay_frame_type</a><em>&nbsp;type</em>, <a class="reference internal" href="#spdylay_frame" title="spdylay_frame">spdylay_frame</a><em>&nbsp;*frame</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_on_ctrl_recv_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked by <a class="reference internal" href="#spdylay_session_recv" title="spdylay_session_recv"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_recv()</span></tt></a> when a
+control frame is received.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_on_invalid_ctrl_recv_callback">
+typedef void <tt class="descname">(*spdylay_on_invalid_ctrl_recv_callback)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, <a class="reference internal" href="#spdylay_frame_type" title="spdylay_frame_type">spdylay_frame_type</a><em>&nbsp;type</em>, <a class="reference internal" href="#spdylay_frame" title="spdylay_frame">spdylay_frame</a><em>&nbsp;*frame</em>, uint32_t<em>&nbsp;status_code</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_on_invalid_ctrl_recv_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked by <a class="reference internal" href="#spdylay_session_recv" title="spdylay_session_recv"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_recv()</span></tt></a> when an
+invalid control frame is received. The <em>status_code</em> is one of the
+<a class="reference internal" href="#spdylay_status_code" title="spdylay_status_code"><tt class="xref c c-macro docutils literal"><span class="pre">spdylay_status_code</span></tt></a> and indicates the error. When this
+callback function is invoked, the library automatically submits
+either RST_STREAM or GOAWAY frame.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_on_data_chunk_recv_callback">
+typedef void <tt class="descname">(*spdylay_on_data_chunk_recv_callback)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, uint8_t<em>&nbsp;flags</em>, int32_t<em>&nbsp;stream_id</em>, const uint8_t<em>&nbsp;*data</em>, size_t<em>&nbsp;len</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_on_data_chunk_recv_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when a chunk of data in DATA frame is
+received. The <em>stream_id</em> is the stream ID this DATA frame belongs
+to. The <em>flags</em> is the flags of DATA frame which this data chunk is
+contained. <tt class="docutils literal"><span class="pre">(flags</span> <span class="pre">&amp;</span> <span class="pre">SPDYLAY_DATA_FLAG_FIN)</span> <span class="pre">!=</span> <span class="pre">0</span></tt> does not
+necessarily mean this chunk of data is the last one in the
+stream. You should use <a class="reference internal" href="#spdylay_on_data_recv_callback" title="spdylay_on_data_recv_callback"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_on_data_recv_callback</span></tt></a> to
+know all data frames are received.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_on_data_recv_callback">
+typedef void <tt class="descname">(*spdylay_on_data_recv_callback)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, uint8_t<em>&nbsp;flags</em>, int32_t<em>&nbsp;stream_id</em>, int32_t<em>&nbsp;length</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_on_data_recv_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when DATA frame is received. The actual
+data it contains are received by
+<a class="reference internal" href="#spdylay_on_data_chunk_recv_callback" title="spdylay_on_data_chunk_recv_callback"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_on_data_chunk_recv_callback</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_before_ctrl_send_callback">
+typedef void <tt class="descname">(*spdylay_before_ctrl_send_callback)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, <a class="reference internal" href="#spdylay_frame_type" title="spdylay_frame_type">spdylay_frame_type</a><em>&nbsp;type</em>, <a class="reference internal" href="#spdylay_frame" title="spdylay_frame">spdylay_frame</a><em>&nbsp;*frame</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_before_ctrl_send_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked before the control frame <em>frame</em> of type
+<em>type</em> is sent. This may be useful, for example, to know the stream
+ID of SYN_STREAM frame (see also
+<a class="reference internal" href="#spdylay_session_get_stream_user_data" title="spdylay_session_get_stream_user_data"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_get_stream_user_data()</span></tt></a>), which is not assigned
+when it was queued.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_on_ctrl_send_callback">
+typedef void <tt class="descname">(*spdylay_on_ctrl_send_callback)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, <a class="reference internal" href="#spdylay_frame_type" title="spdylay_frame_type">spdylay_frame_type</a><em>&nbsp;type</em>, <a class="reference internal" href="#spdylay_frame" title="spdylay_frame">spdylay_frame</a><em>&nbsp;*frame</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_on_ctrl_send_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked after the control frame <em>frame</em> of type
+<em>type</em> is sent.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_on_ctrl_not_send_callback">
+typedef void <tt class="descname">(*spdylay_on_ctrl_not_send_callback)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, <a class="reference internal" href="#spdylay_frame_type" title="spdylay_frame_type">spdylay_frame_type</a><em>&nbsp;type</em>, <a class="reference internal" href="#spdylay_frame" title="spdylay_frame">spdylay_frame</a><em>&nbsp;*frame</em>, int<em>&nbsp;error_code</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_on_ctrl_not_send_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked after the control frame <em>frame</em> of type
+<em>type</em> is not sent because of the error. The error is indicated by
+the <em>error_code</em>, which is one of the values defined in
+<a class="reference internal" href="#spdylay_error" title="spdylay_error"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_error</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_on_data_send_callback">
+typedef void <tt class="descname">(*spdylay_on_data_send_callback)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, uint8_t<em>&nbsp;flags</em>, int32_t<em>&nbsp;stream_id</em>, int32_t<em>&nbsp;length</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_on_data_send_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked after DATA frame is sent.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_on_stream_close_callback">
+typedef void <tt class="descname">(*spdylay_on_stream_close_callback)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, int32_t<em>&nbsp;stream_id</em>, <a class="reference internal" href="#spdylay_status_code" title="spdylay_status_code">spdylay_status_code</a><em>&nbsp;status_code</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_on_stream_close_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when the stream <em>stream_id</em> is
+closed. The reason of closure is indicated by the
+<em>status_code</em>. The stream_user_data, which was specified in
+<a class="reference internal" href="#spdylay_submit_request" title="spdylay_submit_request"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_submit_request()</span></tt></a> or <a class="reference internal" href="#spdylay_submit_syn_stream" title="spdylay_submit_syn_stream"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_submit_syn_stream()</span></tt></a>, is
+still available in this function.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_on_request_recv_callback">
+typedef void <tt class="descname">(*spdylay_on_request_recv_callback)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, int32_t<em>&nbsp;stream_id</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_on_request_recv_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when the request from the remote peer is
+received.  In other words, the frame with FIN flag set is received.
+In HTTP, this means HTTP request, including request body, is fully
+received.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_on_ctrl_recv_parse_error_callback">
+typedef void <tt class="descname">(*spdylay_on_ctrl_recv_parse_error_callback)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, <a class="reference internal" href="#spdylay_frame_type" title="spdylay_frame_type">spdylay_frame_type</a><em>&nbsp;type</em>, const uint8_t<em>&nbsp;*head</em>, size_t<em>&nbsp;headlen</em>, const uint8_t<em>&nbsp;*payload</em>, size_t<em>&nbsp;payloadlen</em>, int<em>&nbsp;error_code</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_on_ctrl_recv_parse_error_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when the received control frame octets
+could not be parsed correctly. The <em>type</em> indicates the type of
+received control frame. The <em>head</em> is the pointer to the header of
+the received frame. The <em>headlen</em> is the length of the
+<em>head</em>. According to the SPDY spec, the <em>headlen</em> is always 8. In
+other words, the <em>head</em> is the first 8 bytes of the received frame.
+The <em>payload</em> is the pointer to the data portion of the received
+frame.  The <em>payloadlen</em> is the length of the <em>payload</em>. This is
+the data after the length field. The <em>error_code</em> is one of the
+error code defined in <a class="reference internal" href="#spdylay_error" title="spdylay_error"><tt class="xref c c-macro docutils literal"><span class="pre">spdylay_error</span></tt></a> and indicates the
+error.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_on_unknown_ctrl_recv_callback">
+typedef void <tt class="descname">(*spdylay_on_unknown_ctrl_recv_callback)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, const uint8_t<em>&nbsp;*head</em>, size_t<em>&nbsp;headlen</em>, const uint8_t<em>&nbsp;*payload</em>, size_t<em>&nbsp;payloadlen</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_on_unknown_ctrl_recv_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when the received control frame type is
+unknown. The <em>head</em> is the pointer to the header of the received
+frame. The <em>headlen</em> is the length of the <em>head</em>. According to the
+SPDY spec, the <em>headlen</em> is always 8. In other words, the <em>head</em> is
+the first 8 bytes of the received frame.  The <em>payload</em> is the
+pointer to the data portion of the received frame.  The
+<em>payloadlen</em> is the length of the <em>payload</em>. This is the data after
+the length field.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_origin">
+<tt class="descname">spdylay_origin</tt><a class="headerlink" href="#spdylay_origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Web origin structure. The origin is the tuple (scheme, host,
+port). The details of this structure is intentionally hidden. To
+access these members, use accessor functions below.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_get_credential_proof">
+typedef ssize_t <tt class="descname">(*spdylay_get_credential_proof)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, const <a class="reference internal" href="#spdylay_origin" title="spdylay_origin">spdylay_origin</a><em>&nbsp;*origin</em>, uint8_t<em>&nbsp;*proof</em>, size_t<em>&nbsp;prooflen</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_get_credential_proof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when the library needs the cryptographic
+proof that the client has possession of the private key associated
+with the certificate for the given <em>origin</em>.  If called with
+<em>prooflen</em> == 0, the implementation of this function must return
+the length of the proof in bytes. If called with <em>prooflen</em> &gt; 0,
+write proof into <em>proof</em> exactly <em>prooflen</em> bytes and return 0.</p>
+<p>Because the client certificate vector has limited number of slots,
+the application code may be required to pass the same proof more
+than once.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_get_credential_ncerts">
+typedef ssize_t <tt class="descname">(*spdylay_get_credential_ncerts)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, const <a class="reference internal" href="#spdylay_origin" title="spdylay_origin">spdylay_origin</a><em>&nbsp;*origin</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_get_credential_ncerts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when the library needs the length of the
+client certificate chain for the given <em>origin</em>.  The
+implementation of this function must return the length of the
+client certificate chain.  If no client certificate is required for
+the given <em>origin</em>, return 0.  If positive integer is returned,
+<a class="reference internal" href="#spdylay_get_credential_proof" title="spdylay_get_credential_proof"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_get_credential_proof</span></tt></a> and
+<a class="reference internal" href="#spdylay_get_credential_cert" title="spdylay_get_credential_cert"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_get_credential_cert</span></tt></a> callback functions will be used
+to get the cryptographic proof and certificate respectively.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_get_credential_cert">
+typedef ssize_t <tt class="descname">(*spdylay_get_credential_cert)</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, const <a class="reference internal" href="#spdylay_origin" title="spdylay_origin">spdylay_origin</a><em>&nbsp;*origin</em>, size_t<em>&nbsp;idx</em>, uint8_t<em>&nbsp;*cert</em>, size_t<em>&nbsp;certlen</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_get_credential_cert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when the library needs the client
+certificate for the given <em>origin</em>. The <em>idx</em> is the index of the
+certificate chain and 0 means the leaf certificate of the chain.
+If called with <em>certlen</em> == 0, the implementation of this function
+must return the length of the certificate in bytes. If called with
+<em>certlen</em> &gt; 0, write certificate into <em>cert</em> exactly <em>certlen</em>
+bytes and return 0.</p>
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_session_callbacks">
+<tt class="descname">spdylay_session_callbacks</tt><a class="headerlink" href="#spdylay_session_callbacks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback functions.</p>
+<dl class="member">
+<dt id="spdylay_session_callbacks.send_callback">
+<a class="reference internal" href="#spdylay_send_callback" title="spdylay_send_callback">spdylay_send_callback</a> <tt class="descname">send_callback</tt><a class="headerlink" href="#spdylay_session_callbacks.send_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when the <em>session</em> wants to send data
+to the remote peer.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_session_callbacks.recv_callback">
+<a class="reference internal" href="#spdylay_recv_callback" title="spdylay_recv_callback">spdylay_recv_callback</a> <tt class="descname">recv_callback</tt><a class="headerlink" href="#spdylay_session_callbacks.recv_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when the <em>session</em> wants to receive
+data from the remote peer.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_session_callbacks.on_ctrl_recv_callback">
+<a class="reference internal" href="#spdylay_on_ctrl_recv_callback" title="spdylay_on_ctrl_recv_callback">spdylay_on_ctrl_recv_callback</a> <tt class="descname">on_ctrl_recv_callback</tt><a class="headerlink" href="#spdylay_session_callbacks.on_ctrl_recv_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked by <a class="reference internal" href="#spdylay_session_recv" title="spdylay_session_recv"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_recv()</span></tt></a> when a
+control frame is received.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_session_callbacks.on_invalid_ctrl_recv_callback">
+<a class="reference internal" href="#spdylay_on_invalid_ctrl_recv_callback" title="spdylay_on_invalid_ctrl_recv_callback">spdylay_on_invalid_ctrl_recv_callback</a> <tt class="descname">on_invalid_ctrl_recv_callback</tt><a class="headerlink" href="#spdylay_session_callbacks.on_invalid_ctrl_recv_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked by <a class="reference internal" href="#spdylay_session_recv" title="spdylay_session_recv"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_recv()</span></tt></a> when an
+invalid control frame is received.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_session_callbacks.on_data_chunk_recv_callback">
+<a class="reference internal" href="#spdylay_on_data_chunk_recv_callback" title="spdylay_on_data_chunk_recv_callback">spdylay_on_data_chunk_recv_callback</a> <tt class="descname">on_data_chunk_recv_callback</tt><a class="headerlink" href="#spdylay_session_callbacks.on_data_chunk_recv_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when a chunk of data in DATA frame is
+received.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_session_callbacks.on_data_recv_callback">
+<a class="reference internal" href="#spdylay_on_data_recv_callback" title="spdylay_on_data_recv_callback">spdylay_on_data_recv_callback</a> <tt class="descname">on_data_recv_callback</tt><a class="headerlink" href="#spdylay_session_callbacks.on_data_recv_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when DATA frame is received.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_session_callbacks.before_ctrl_send_callback">
+<a class="reference internal" href="#spdylay_before_ctrl_send_callback" title="spdylay_before_ctrl_send_callback">spdylay_before_ctrl_send_callback</a> <tt class="descname">before_ctrl_send_callback</tt><a class="headerlink" href="#spdylay_session_callbacks.before_ctrl_send_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked before the control frame is sent.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_session_callbacks.on_ctrl_send_callback">
+<a class="reference internal" href="#spdylay_on_ctrl_send_callback" title="spdylay_on_ctrl_send_callback">spdylay_on_ctrl_send_callback</a> <tt class="descname">on_ctrl_send_callback</tt><a class="headerlink" href="#spdylay_session_callbacks.on_ctrl_send_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked after the control frame is sent.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_session_callbacks.on_ctrl_not_send_callback">
+<a class="reference internal" href="#spdylay_on_ctrl_not_send_callback" title="spdylay_on_ctrl_not_send_callback">spdylay_on_ctrl_not_send_callback</a> <tt class="descname">on_ctrl_not_send_callback</tt><a class="headerlink" href="#spdylay_session_callbacks.on_ctrl_not_send_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>The callback function invoked when a control frame is not sent
+because of an error.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_session_callbacks.on_data_send_callback">
+<a class="reference internal" href="#spdylay_on_data_send_callback" title="spdylay_on_data_send_callback">spdylay_on_data_send_callback</a> <tt class="descname">on_data_send_callback</tt><a class="headerlink" href="#spdylay_session_callbacks.on_data_send_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked after DATA frame is sent.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_session_callbacks.on_stream_close_callback">
+<a class="reference internal" href="#spdylay_on_stream_close_callback" title="spdylay_on_stream_close_callback">spdylay_on_stream_close_callback</a> <tt class="descname">on_stream_close_callback</tt><a class="headerlink" href="#spdylay_session_callbacks.on_stream_close_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when the stream is closed.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_session_callbacks.on_request_recv_callback">
+<a class="reference internal" href="#spdylay_on_request_recv_callback" title="spdylay_on_request_recv_callback">spdylay_on_request_recv_callback</a> <tt class="descname">on_request_recv_callback</tt><a class="headerlink" href="#spdylay_session_callbacks.on_request_recv_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when request from the remote peer is
+received.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_session_callbacks.get_credential_proof">
+<a class="reference internal" href="#spdylay_get_credential_proof" title="spdylay_get_credential_proof">spdylay_get_credential_proof</a> <tt class="descname">get_credential_proof</tt><a class="headerlink" href="#spdylay_session_callbacks.get_credential_proof" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when the library needs the
+cryptographic proof that the client has possession of the private
+key associated with the certificate.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_session_callbacks.get_credential_ncerts">
+<a class="reference internal" href="#spdylay_get_credential_ncerts" title="spdylay_get_credential_ncerts">spdylay_get_credential_ncerts</a> <tt class="descname">get_credential_ncerts</tt><a class="headerlink" href="#spdylay_session_callbacks.get_credential_ncerts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when the library needs the length of the
+client certificate chain.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_session_callbacks.get_credential_cert">
+<a class="reference internal" href="#spdylay_get_credential_cert" title="spdylay_get_credential_cert">spdylay_get_credential_cert</a> <tt class="descname">get_credential_cert</tt><a class="headerlink" href="#spdylay_session_callbacks.get_credential_cert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when the library needs the client
+certificate.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_session_callbacks.on_ctrl_recv_parse_error_callback">
+<a class="reference internal" href="#spdylay_on_ctrl_recv_parse_error_callback" title="spdylay_on_ctrl_recv_parse_error_callback">spdylay_on_ctrl_recv_parse_error_callback</a> <tt class="descname">on_ctrl_recv_parse_error_callback</tt><a class="headerlink" href="#spdylay_session_callbacks.on_ctrl_recv_parse_error_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when the received control frame octets
+could not be parsed correctly.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_session_callbacks.on_unknown_ctrl_recv_callback">
+<a class="reference internal" href="#spdylay_on_unknown_ctrl_recv_callback" title="spdylay_on_unknown_ctrl_recv_callback">spdylay_on_unknown_ctrl_recv_callback</a> <tt class="descname">on_unknown_ctrl_recv_callback</tt><a class="headerlink" href="#spdylay_session_callbacks.on_unknown_ctrl_recv_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback function invoked when the received control frame type is
+unknown.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_npn_proto">
+<tt class="descname">spdylay_npn_proto</tt><a class="headerlink" href="#spdylay_npn_proto" title="Permalink to this definition">¶</a></dt>
+<dd><p>This struct contains SPDY version information this library
+supports.</p>
+<dl class="member">
+<dt id="spdylay_npn_proto.proto">
+const unsigned char *<tt class="descname">proto</tt><a class="headerlink" href="#spdylay_npn_proto.proto" title="Permalink to this definition">¶</a></dt>
+<dd><p>SPDY protocol version name which can be used as TLS NPN protocol
+string.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_npn_proto.len">
+uint8_t <tt class="descname">len</tt><a class="headerlink" href="#spdylay_npn_proto.len" title="Permalink to this definition">¶</a></dt>
+<dd><p>The length of proto member.</p>
+</dd></dl>
+
+<dl class="member">
+<dt id="spdylay_npn_proto.version">
+uint16_t <tt class="descname">version</tt><a class="headerlink" href="#spdylay_npn_proto.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>The corresponding SPDY version constant which can be passed to
+<a class="reference internal" href="#spdylay_session_client_new" title="spdylay_session_client_new"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_client_new()</span></tt></a> and <a class="reference internal" href="#spdylay_session_server_new" title="spdylay_session_server_new"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_server_new()</span></tt></a>
+as version argument.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="type">
+<dt id="spdylay_gzip">
+<tt class="descname">spdylay_gzip</tt><a class="headerlink" href="#spdylay_gzip" title="Permalink to this definition">¶</a></dt>
+<dd><p>The gzip stream to inflate data. The details of this structure are
+intentionally hidden from the public API.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spdylay_origin_get_scheme">
+const char* <tt class="descname">spdylay_origin_get_scheme</tt><big>(</big>const <a class="reference internal" href="#spdylay_origin" title="spdylay_origin">spdylay_origin</a><em>&nbsp;*origin</em><big>)</big><a class="headerlink" href="#spdylay_origin_get_scheme" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the scheme member of the <em>origin</em>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_origin_get_host">
+const char* <tt class="descname">spdylay_origin_get_host</tt><big>(</big>const <a class="reference internal" href="#spdylay_origin" title="spdylay_origin">spdylay_origin</a><em>&nbsp;*origin</em><big>)</big><a class="headerlink" href="#spdylay_origin_get_host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the host member of the <em>origin</em>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_origin_get_port">
+uint16_t <tt class="descname">spdylay_origin_get_port</tt><big>(</big>const <a class="reference internal" href="#spdylay_origin" title="spdylay_origin">spdylay_origin</a><em>&nbsp;*origin</em><big>)</big><a class="headerlink" href="#spdylay_origin_get_port" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the port member of the <em>origin</em>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_client_new">
+int <tt class="descname">spdylay_session_client_new</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;**session_ptr</em>, uint16_t<em>&nbsp;version</em>, const <a class="reference internal" href="#spdylay_session_callbacks" title="spdylay_session_callbacks">spdylay_session_callbacks</a><em>&nbsp;*callbacks</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_session_client_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes <em>*session_ptr</em> for client use, using the protocol
+version <em>version</em>. The all members of <em>callbacks</em> are copied to
+<em>*session_ptr</em>. Therefore <em>*session_ptr</em> does not store
+<em>callbacks</em>. <em>user_data</em> is an arbitrary user supplied data, which
+will be passed to the callback functions.</p>
+<p>The <a class="reference internal" href="#spdylay_session_callbacks.send_callback" title="spdylay_session_callbacks.send_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.send_callback</span></tt></a> must be
+specified.  If the application code uses <a class="reference internal" href="#spdylay_session_recv" title="spdylay_session_recv"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_recv()</span></tt></a>,
+the <a class="reference internal" href="#spdylay_session_callbacks.recv_callback" title="spdylay_session_callbacks.recv_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.recv_callback</span></tt></a> must be
+specified. The other members of <em>callbacks</em> can be <tt class="docutils literal"><span class="pre">NULL</span></tt>.  To
+use CREDENTIAL frame, specify <a class="reference internal" href="#SPDYLAY_PROTO_SPDY3" title="SPDYLAY_PROTO_SPDY3"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_PROTO_SPDY3</span></tt></a> in
+<em>version</em> and specify
+<a class="reference internal" href="#spdylay_session_callbacks.get_credential_ncerts" title="spdylay_session_callbacks.get_credential_ncerts"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.get_credential_ncerts</span></tt></a>,
+<a class="reference internal" href="#spdylay_session_callbacks.get_credential_cert" title="spdylay_session_callbacks.get_credential_cert"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.get_credential_cert</span></tt></a> and
+<a class="reference internal" href="#spdylay_session_callbacks.get_credential_proof" title="spdylay_session_callbacks.get_credential_proof"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.get_credential_proof</span></tt></a>.  See also
+<a class="reference internal" href="#spdylay_session_set_initial_client_cert_origin" title="spdylay_session_set_initial_client_cert_origin"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_set_initial_client_cert_origin()</span></tt></a>.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_ZLIB" title="SPDYLAY_ERR_ZLIB"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_ZLIB</span></tt></a></dt>
+<dd>The z_stream initialization failed.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_UNSUPPORTED_VERSION" title="SPDYLAY_ERR_UNSUPPORTED_VERSION"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_UNSUPPORTED_VERSION</span></tt></a></dt>
+<dd>The version is not supported.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_server_new">
+int <tt class="descname">spdylay_session_server_new</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;**session_ptr</em>, uint16_t<em>&nbsp;version</em>, const <a class="reference internal" href="#spdylay_session_callbacks" title="spdylay_session_callbacks">spdylay_session_callbacks</a><em>&nbsp;*callbacks</em>, void<em>&nbsp;*user_data</em><big>)</big><a class="headerlink" href="#spdylay_session_server_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes <em>*session_ptr</em> for server use, using the protocol
+version <em>version</em>. The all members of <em>callbacks</em> are copied to
+<em>*session_ptr</em>. Therefore <em>*session_ptr</em> does not store
+<em>callbacks</em>. <em>user_data</em> is an arbitrary user supplied data, which
+will be passed to the callback functions.</p>
+<p>The <a class="reference internal" href="#spdylay_session_callbacks.send_callback" title="spdylay_session_callbacks.send_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.send_callback</span></tt></a> must be
+specified.  If the application code uses <a class="reference internal" href="#spdylay_session_recv" title="spdylay_session_recv"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_recv()</span></tt></a>,
+the <a class="reference internal" href="#spdylay_session_callbacks.recv_callback" title="spdylay_session_callbacks.recv_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.recv_callback</span></tt></a> must be
+specified. The other members of <em>callbacks</em> can be <tt class="docutils literal"><span class="pre">NULL</span></tt>.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_ZLIB" title="SPDYLAY_ERR_ZLIB"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_ZLIB</span></tt></a></dt>
+<dd>The z_stream initialization failed.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_UNSUPPORTED_VERSION" title="SPDYLAY_ERR_UNSUPPORTED_VERSION"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_UNSUPPORTED_VERSION</span></tt></a></dt>
+<dd>The version is not supported.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_del">
+void <tt class="descname">spdylay_session_del</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em><big>)</big><a class="headerlink" href="#spdylay_session_del" title="Permalink to this definition">¶</a></dt>
+<dd><p>Frees any resources allocated for <em>session</em>. If <em>session</em> is
+<tt class="docutils literal"><span class="pre">NULL</span></tt>, this function does nothing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_set_option">
+int <tt class="descname">spdylay_session_set_option</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, int<em>&nbsp;optname</em>, void<em>&nbsp;*optval</em>, size_t<em>&nbsp;optlen</em><big>)</big><a class="headerlink" href="#spdylay_session_set_option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the configuration option for the <em>session</em>.  The <em>optname</em> is
+one of <a class="reference internal" href="#spdylay_opt" title="spdylay_opt"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_opt</span></tt></a>. The <em>optval</em> is the pointer to the
+option value and the <em>optlen</em> is the size of <em>*optval</em>. The
+required type of <em>optval</em> varies depending on the <em>optname</em>. See
+below.</p>
+<p>The following <em>optname</em> are supported:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE" title="SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE</span></tt></a></dt>
+<dd>The <em>optval</em> must be a pointer to <tt class="docutils literal"><span class="pre">int</span></tt>. If the <em>*optval</em> is
+nonzero, the library will not send WINDOW_UPDATE automatically.
+Therefore, the application is responsible for sending
+WINDOW_UPDATE using <a class="reference internal" href="#spdylay_submit_window_update" title="spdylay_submit_window_update"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_submit_window_update()</span></tt></a>. This option
+defaults to 0.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_OPT_MAX_RECV_CTRL_FRAME_BUFFER" title="SPDYLAY_OPT_MAX_RECV_CTRL_FRAME_BUFFER"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_OPT_MAX_RECV_CTRL_FRAME_BUFFER</span></tt></a></dt>
+<dd>The <em>optval</em> must be a pointer to <tt class="docutils literal"><span class="pre">uint32_t</span></tt>. The <em>*optval</em>
+must be in the range [(1 &lt;&lt; 13), (1 &lt;&lt; 24)-1], inclusive. This
+option defaults to (1 &lt;&lt; 24)-1.</dd>
+</dl>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_INVALID_ARGUMENT" title="SPDYLAY_ERR_INVALID_ARGUMENT"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_INVALID_ARGUMENT</span></tt></a></dt>
+<dd>The <em>optname</em> is not supported; or the <em>optval</em> and/or the
+<em>optlen</em> are invalid.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_set_initial_client_cert_origin">
+int <tt class="descname">spdylay_session_set_initial_client_cert_origin</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, const char<em>&nbsp;*scheme</em>, const char<em>&nbsp;*host</em>, uint16_t<em>&nbsp;port</em><big>)</big><a class="headerlink" href="#spdylay_session_set_initial_client_cert_origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the origin tuple (<em>scheme</em>, <em>host</em> and <em>port</em>) that the
+connection is made to and the client certificate is sent in the
+first TLS handshake. This function must be called before any call
+of <a class="reference internal" href="#spdylay_session_send" title="spdylay_session_send"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_send()</span></tt></a> and <a class="reference internal" href="#spdylay_session_recv" title="spdylay_session_recv"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_recv()</span></tt></a> and be
+called only once per session. This function must not be called if
+the <em>session</em> is initialized for server use. If the client did not
+provide the client certificate in the first TLS handshake, this
+function must not be called.</p>
+<p>This function stores the given origin at the slot 1 in the client
+certificate vector.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_INVALID_STATE" title="SPDYLAY_ERR_INVALID_STATE"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_INVALID_STATE</span></tt></a></dt>
+<dd>The <em>session</em> is initialized for server use; or the client
+certificate vector size is 0.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_get_client_cert_origin">
+const <a class="reference internal" href="#spdylay_origin" title="spdylay_origin">spdylay_origin</a>* <tt class="descname">spdylay_session_get_client_cert_origin</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, size_t<em>&nbsp;slot</em><big>)</big><a class="headerlink" href="#spdylay_session_get_client_cert_origin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the origin at the index <em>slot</em> in the client certificate
+vector. If there is no origin at the given <em>slot</em>, this function
+returns <tt class="docutils literal"><span class="pre">NULL</span></tt>.</p>
+<p>This function must not be called if the <em>session</em> is initialized
+for server use.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_send">
+int <tt class="descname">spdylay_session_send</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em><big>)</big><a class="headerlink" href="#spdylay_session_send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends pending frames to the remote peer.</p>
+<p>This function retrieves the highest prioritized frame from the
+outbound queue and sends it to the remote peer. It does this as
+many as possible until the user callback
+<a class="reference internal" href="#spdylay_session_callbacks.send_callback" title="spdylay_session_callbacks.send_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.send_callback</span></tt></a> returns
+<a class="reference internal" href="#SPDYLAY_ERR_WOULDBLOCK" title="SPDYLAY_ERR_WOULDBLOCK"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_WOULDBLOCK</span></tt></a> or the outbound queue becomes empty.
+This function calls several callback functions which are passed
+when initializing the <em>session</em>. Here is the simple time chart
+which tells when each callback is invoked:</p>
+<ol class="arabic simple">
+<li>Get the next frame to send from outbound queue.</li>
+<li>Prepare transmission of the frame.</li>
+<li>If the control frame cannot be sent because some preconditions
+are not met (e.g., SYN_STREAM cannot be sent after GOAWAY),
+<a class="reference internal" href="#spdylay_session_callbacks.on_ctrl_not_send_callback" title="spdylay_session_callbacks.on_ctrl_not_send_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.on_ctrl_not_send_callback</span></tt></a> is
+invoked. Abort the following steps.</li>
+<li>If the frame is SYN_STREAM, the stream is opened here.
+If the <em>session</em> is initialized for client use and the protocol
+version is <a class="reference internal" href="#SPDYLAY_PROTO_SPDY3" title="SPDYLAY_PROTO_SPDY3"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_PROTO_SPDY3</span></tt></a> and the library needs
+the client certificate for the origin,
+<a class="reference internal" href="#spdylay_session_callbacks.get_credential_ncerts" title="spdylay_session_callbacks.get_credential_ncerts"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.get_credential_ncerts</span></tt></a> is
+invoked. If the result is more than zero,
+<a class="reference internal" href="#spdylay_session_callbacks.get_credential_proof" title="spdylay_session_callbacks.get_credential_proof"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.get_credential_proof</span></tt></a> and
+<a class="reference internal" href="#spdylay_session_callbacks.get_credential_cert" title="spdylay_session_callbacks.get_credential_cert"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.get_credential_cert</span></tt></a> are also
+invoked.</li>
+<li><a class="reference internal" href="#spdylay_session_callbacks.before_ctrl_send_callback" title="spdylay_session_callbacks.before_ctrl_send_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.before_ctrl_send_callback</span></tt></a> is
+invoked.</li>
+<li><a class="reference internal" href="#spdylay_session_callbacks.send_callback" title="spdylay_session_callbacks.send_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.send_callback</span></tt></a> is invoked one
+or more times to send the frame.</li>
+<li>If the frame is a control frame,
+<a class="reference internal" href="#spdylay_session_callbacks.on_ctrl_send_callback" title="spdylay_session_callbacks.on_ctrl_send_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.on_ctrl_send_callback</span></tt></a> is
+invoked.</li>
+<li>If the frame is a DATA frame,
+<a class="reference internal" href="#spdylay_session_callbacks.on_data_send_callback" title="spdylay_session_callbacks.on_data_send_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.on_data_send_callback</span></tt></a> is
+invoked.</li>
+<li>If the transmission of the frame triggers closure of the stream,
+the stream is closed and
+<a class="reference internal" href="#spdylay_session_callbacks.on_stream_close_callback" title="spdylay_session_callbacks.on_stream_close_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.on_stream_close_callback</span></tt></a> is
+invoked.</li>
+</ol>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_CALLBACK_FAILURE" title="SPDYLAY_ERR_CALLBACK_FAILURE"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_CALLBACK_FAILURE</span></tt></a></dt>
+<dd>The callback function failed.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_recv">
+int <tt class="descname">spdylay_session_recv</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em><big>)</big><a class="headerlink" href="#spdylay_session_recv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Receives frames from the remote peer.</p>
+<p>This function receives as many frames as possible until the user
+callback <a class="reference internal" href="#spdylay_session_callbacks.recv_callback" title="spdylay_session_callbacks.recv_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.recv_callback</span></tt></a> returns
+<a class="reference internal" href="#SPDYLAY_ERR_WOULDBLOCK" title="SPDYLAY_ERR_WOULDBLOCK"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_WOULDBLOCK</span></tt></a>. This function calls several
+callback functions which are passed when initializing the
+<em>session</em>. Here is the simple time chart which tells when each
+callback is invoked:</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="#spdylay_session_callbacks.recv_callback" title="spdylay_session_callbacks.recv_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.recv_callback</span></tt></a> is invoked one
+or more times to receive frame header.</li>
+<li>If the frame is DATA frame:</li>
+</ol>
+<blockquote>
+<div><dl class="docutils">
+<dt>2.1. <a class="reference internal" href="#spdylay_session_callbacks.recv_callback" title="spdylay_session_callbacks.recv_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.recv_callback</span></tt></a> is invoked</dt>
+<dd>to receive DATA payload. For each chunk of data,
+<a class="reference internal" href="#spdylay_session_callbacks.on_data_chunk_recv_callback" title="spdylay_session_callbacks.on_data_chunk_recv_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.on_data_chunk_recv_callback</span></tt></a>
+is invoked.</dd>
+<dt>2.2. If one DATA frame is completely received,</dt>
+<dd><a class="reference internal" href="#spdylay_session_callbacks.on_data_recv_callback" title="spdylay_session_callbacks.on_data_recv_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.on_data_recv_callback</span></tt></a> is
+invoked.  If the frame is the final frame of the request,
+<a class="reference internal" href="#spdylay_session_callbacks.on_request_recv_callback" title="spdylay_session_callbacks.on_request_recv_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.on_request_recv_callback</span></tt></a>
+is invoked.  If the reception of the frame triggers the
+closure of the stream,
+<a class="reference internal" href="#spdylay_session_callbacks.on_stream_close_callback" title="spdylay_session_callbacks.on_stream_close_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.on_stream_close_callback</span></tt></a>
+is invoked.</dd>
+</dl>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li>If the frame is the control frame:</li>
+</ol>
+<blockquote>
+<div><dl class="docutils">
+<dt>3.1. <a class="reference internal" href="#spdylay_session_callbacks.recv_callback" title="spdylay_session_callbacks.recv_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.recv_callback</span></tt></a> is invoked</dt>
+<dd>one or more times to receive whole frame.</dd>
+<dt>3.2. If the received frame is valid,</dt>
+<dd><a class="reference internal" href="#spdylay_session_callbacks.on_ctrl_recv_callback" title="spdylay_session_callbacks.on_ctrl_recv_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.on_ctrl_recv_callback</span></tt></a> is
+invoked.  If the frame is the final frame of the request,
+<a class="reference internal" href="#spdylay_session_callbacks.on_request_recv_callback" title="spdylay_session_callbacks.on_request_recv_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.on_request_recv_callback</span></tt></a>
+is invoked.  If the reception of the frame triggers the
+closure of the stream,
+<a class="reference internal" href="#spdylay_session_callbacks.on_stream_close_callback" title="spdylay_session_callbacks.on_stream_close_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.on_stream_close_callback</span></tt></a>
+is invoked.</dd>
+<dt>3.3. If the received frame is unpacked but is interpreted as</dt>
+<dd>invalid,
+<a class="reference internal" href="#spdylay_session_callbacks.on_invalid_ctrl_recv_callback" title="spdylay_session_callbacks.on_invalid_ctrl_recv_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.on_invalid_ctrl_recv_callback</span></tt></a>
+is invoked.</dd>
+<dt>3.4. If the received frame could not be unpacked correctly,</dt>
+<dd><a class="reference internal" href="#spdylay_session_callbacks.on_ctrl_recv_parse_error_callback" title="spdylay_session_callbacks.on_ctrl_recv_parse_error_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.on_ctrl_recv_parse_error_callback</span></tt></a>
+is invoked.</dd>
+<dt>3.5. If the received frame type is unknown,</dt>
+<dd><a class="reference internal" href="#spdylay_session_callbacks.on_unknown_ctrl_recv_callback" title="spdylay_session_callbacks.on_unknown_ctrl_recv_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.on_unknown_ctrl_recv_callback</span></tt></a>
+is invoked.</dd>
+</dl>
+</div></blockquote>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_EOF" title="SPDYLAY_ERR_EOF"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_EOF</span></tt></a></dt>
+<dd>The remote peer did shutdown on the connection.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_CALLBACK_FAILURE" title="SPDYLAY_ERR_CALLBACK_FAILURE"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_CALLBACK_FAILURE</span></tt></a></dt>
+<dd>The callback function failed.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_mem_recv">
+ssize_t <tt class="descname">spdylay_session_mem_recv</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, const uint8_t<em>&nbsp;*in</em>, size_t<em>&nbsp;inlen</em><big>)</big><a class="headerlink" href="#spdylay_session_mem_recv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processes data <em>in</em> as an input from the remote endpoint. The
+<em>inlen</em> indicates the number of bytes in the <em>in</em>.</p>
+<p>This function behaves like <a class="reference internal" href="#spdylay_session_recv" title="spdylay_session_recv"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_recv()</span></tt></a> except that it
+does not use <a class="reference internal" href="#spdylay_session_callbacks.recv_callback" title="spdylay_session_callbacks.recv_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.recv_callback</span></tt></a> to
+receive data; the <em>in</em> is the only data for the invocation of this
+function. If all bytes are processed, this function returns. The
+other callbacks are called in the same way as they are in
+<a class="reference internal" href="#spdylay_session_recv" title="spdylay_session_recv"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_recv()</span></tt></a>.</p>
+<p>In the current implementation, this function always tries to
+processes all input data unless an error occurs.</p>
+<p>This function returns the number of processed bytes, or one of the
+following negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_resume_data">
+int <tt class="descname">spdylay_session_resume_data</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, int32_t<em>&nbsp;stream_id</em><big>)</big><a class="headerlink" href="#spdylay_session_resume_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Puts back previously deferred DATA frame in the stream <em>stream_id</em>
+to the outbound queue.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_INVALID_ARGUMENT" title="SPDYLAY_ERR_INVALID_ARGUMENT"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_INVALID_ARGUMENT</span></tt></a></dt>
+<dd>The stream does not exist or no deferred data exist.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_want_read">
+int <tt class="descname">spdylay_session_want_read</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em><big>)</big><a class="headerlink" href="#spdylay_session_want_read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns nonzero value if <em>session</em> wants to receive data from the
+remote peer.</p>
+<p>If both <a class="reference internal" href="#spdylay_session_want_read" title="spdylay_session_want_read"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_want_read()</span></tt></a> and
+<a class="reference internal" href="#spdylay_session_want_write" title="spdylay_session_want_write"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_want_write()</span></tt></a> return 0, the application should
+drop the connection.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_want_write">
+int <tt class="descname">spdylay_session_want_write</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em><big>)</big><a class="headerlink" href="#spdylay_session_want_write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns nonzero value if <em>session</em> wants to send data to the remote
+peer.</p>
+<p>If both <a class="reference internal" href="#spdylay_session_want_read" title="spdylay_session_want_read"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_want_read()</span></tt></a> and
+<a class="reference internal" href="#spdylay_session_want_write" title="spdylay_session_want_write"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_want_write()</span></tt></a> return 0, the application should
+drop the connection.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_get_stream_user_data">
+void* <tt class="descname">spdylay_session_get_stream_user_data</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, int32_t<em>&nbsp;stream_id</em><big>)</big><a class="headerlink" href="#spdylay_session_get_stream_user_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns stream_user_data for the stream <em>stream_id</em>. The
+stream_user_data is provided by <a class="reference internal" href="#spdylay_submit_request" title="spdylay_submit_request"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_submit_request()</span></tt></a> or
+<a class="reference internal" href="#spdylay_submit_syn_stream" title="spdylay_submit_syn_stream"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_submit_syn_stream()</span></tt></a>.  If the stream is initiated by the
+remote endpoint, stream_user_data is always <tt class="docutils literal"><span class="pre">NULL</span></tt>. If the stream
+is initiated by the local endpoint and <tt class="docutils literal"><span class="pre">NULL</span></tt> is given in
+<a class="reference internal" href="#spdylay_submit_request" title="spdylay_submit_request"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_submit_request()</span></tt></a> or <a class="reference internal" href="#spdylay_submit_syn_stream" title="spdylay_submit_syn_stream"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_submit_syn_stream()</span></tt></a>, then
+this function returns <tt class="docutils literal"><span class="pre">NULL</span></tt>. If the stream does not exist, this
+function returns <tt class="docutils literal"><span class="pre">NULL</span></tt>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_get_outbound_queue_size">
+size_t <tt class="descname">spdylay_session_get_outbound_queue_size</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em><big>)</big><a class="headerlink" href="#spdylay_session_get_outbound_queue_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of frames in the outbound queue. This does not
+include the deferred DATA frames.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_get_pri_lowest">
+uint8_t <tt class="descname">spdylay_session_get_pri_lowest</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em><big>)</big><a class="headerlink" href="#spdylay_session_get_pri_lowest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns lowest priority value for the <em>session</em>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_get_stream_recv_data_length">
+int32_t <tt class="descname">spdylay_session_get_stream_recv_data_length</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, int32_t<em>&nbsp;stream_id</em><big>)</big><a class="headerlink" href="#spdylay_session_get_stream_recv_data_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of DATA payload in bytes received without
+WINDOW_UPDATE transmission for the stream <em>stream_id</em>.</p>
+<p>If the flow control is disabled by the protocol, this function
+returns 0.</p>
+<p>This function returns -1 if it fails.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_get_stream_local_window_size">
+int32_t <tt class="descname">spdylay_session_get_stream_local_window_size</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em><big>)</big><a class="headerlink" href="#spdylay_session_get_stream_local_window_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the local (receive) window size for a stream. Because SPDY
+protocol always uses the initial window size as local window size,
+this function returns the current local settings of
+SETTINGS_INITIAL_WINDOW_SIZE.</p>
+<p>This function returns -1 if it fails.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_get_recv_data_length">
+int32_t <tt class="descname">spdylay_session_get_recv_data_length</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em><big>)</big><a class="headerlink" href="#spdylay_session_get_recv_data_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of DATA payload in bytes received without
+WINDOW_UPDATE transmission for a connection.</p>
+<p>If flow control is disabled by the protocol, this function returns
+0.</p>
+<p>This function returns -1 if it fails.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_get_local_window_size">
+int32_t <tt class="descname">spdylay_session_get_local_window_size</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em><big>)</big><a class="headerlink" href="#spdylay_session_get_local_window_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the local (receive) window size for a connection. Because
+SPDY protocol always uses the initial window size as local window
+size, this fucntion always returns
+<a class="reference internal" href="#SPDYLAY_INITIAL_WINDOW_SIZE" title="SPDYLAY_INITIAL_WINDOW_SIZE"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_INITIAL_WINDOW_SIZE</span></tt></a>.</p>
+<p>This function returns -1 if it fails.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_session_fail_session">
+int <tt class="descname">spdylay_session_fail_session</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, uint32_t<em>&nbsp;status_code</em><big>)</big><a class="headerlink" href="#spdylay_session_fail_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits GOAWAY frame.  The status code <em>status_code</em> is ignored if
+the protocol version is <a class="reference internal" href="#SPDYLAY_PROTO_SPDY2" title="SPDYLAY_PROTO_SPDY2"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_PROTO_SPDY2</span></tt></a>.</p>
+<p>This function should be called when the connection should be
+terminated after sending GOAWAY. If the remaining streams should be
+processed after GOAWAY, use <a class="reference internal" href="#spdylay_submit_goaway" title="spdylay_submit_goaway"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_submit_goaway()</span></tt></a> instead.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_strerror">
+const char* <tt class="descname">spdylay_strerror</tt><big>(</big>int<em>&nbsp;error_code</em><big>)</big><a class="headerlink" href="#spdylay_strerror" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns string describing the <em>error_code</em>. The <em>error_code</em> must
+be one of the <a class="reference internal" href="#spdylay_error" title="spdylay_error"><tt class="xref c c-macro docutils literal"><span class="pre">spdylay_error</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_submit_request">
+int <tt class="descname">spdylay_submit_request</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, uint8_t<em>&nbsp;pri</em>, const char<em>&nbsp;**nv</em>, const <a class="reference internal" href="#spdylay_data_provider" title="spdylay_data_provider">spdylay_data_provider</a><em>&nbsp;*data_prd</em>, void<em>&nbsp;*stream_user_data</em><big>)</big><a class="headerlink" href="#spdylay_submit_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits SYN_STREAM frame and optionally one or more DATA
+frames.</p>
+<p>The <em>pri</em> is priority of this request. 0 is the highest priority
+value. Use <a class="reference internal" href="#spdylay_session_get_pri_lowest" title="spdylay_session_get_pri_lowest"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_get_pri_lowest()</span></tt></a> to know the lowest
+priority value for this <em>session</em>.</p>
+<p>The <em>nv</em> contains the name/value pairs. For i &gt;= 0, <tt class="docutils literal"><span class="pre">nv[2*i]</span></tt>
+contains a pointer to the name string and <tt class="docutils literal"><span class="pre">nv[2*i+1]</span></tt> contains a
+pointer to the value string. The one beyond last value must be
+<tt class="docutils literal"><span class="pre">NULL</span></tt>. That is, if the <em>nv</em> contains N name/value pairs,
+<tt class="docutils literal"><span class="pre">nv[2*N]</span></tt> must be <tt class="docutils literal"><span class="pre">NULL</span></tt>.</p>
+<p>The <em>nv</em> must include following name/value pairs:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">:method</span></tt></dt>
+<dd>HTTP method (e.g., <tt class="docutils literal"><span class="pre">GET</span></tt>, <tt class="docutils literal"><span class="pre">POST</span></tt>, <tt class="docutils literal"><span class="pre">HEAD</span></tt>, etc)</dd>
+<dt><tt class="docutils literal"><span class="pre">:scheme</span></tt></dt>
+<dd>URI scheme (e.g., <tt class="docutils literal"><span class="pre">https</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">:path</span></tt></dt>
+<dd>Absolute path and parameters of this request (e.g., <tt class="docutils literal"><span class="pre">/foo</span></tt>,
+<tt class="docutils literal"><span class="pre">/foo;bar;haz?h=j&amp;y=123</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">:version</span></tt></dt>
+<dd>HTTP version (e.g., <tt class="docutils literal"><span class="pre">HTTP/1.1</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">:host</span></tt></dt>
+<dd>The hostport portion of the URI for this request (e.g.,
+<tt class="docutils literal"><span class="pre">example.org:443</span></tt>). This is the same as the HTTP &#8220;Host&#8221; header
+field.</dd>
+</dl>
+<p>If the <em>session</em> is initialized with the version
+<a class="reference internal" href="#SPDYLAY_PROTO_SPDY2" title="SPDYLAY_PROTO_SPDY2"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_PROTO_SPDY2</span></tt></a>, the above names are translated to
+<tt class="docutils literal"><span class="pre">method</span></tt>, <tt class="docutils literal"><span class="pre">scheme</span></tt>, <tt class="docutils literal"><span class="pre">url</span></tt>, <tt class="docutils literal"><span class="pre">version</span></tt> and <tt class="docutils literal"><span class="pre">host</span></tt>
+respectively.</p>
+<p>This function creates copies of all name/value pairs in <em>nv</em>.  It
+also lower-cases all names in <em>nv</em>.</p>
+<p>If <em>data_prd</em> is not <tt class="docutils literal"><span class="pre">NULL</span></tt>, it provides data which will be sent
+in subsequent DATA frames. In this case, a method that allows
+request message bodies
+(<a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9">http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9</a>) must
+be specified with <tt class="docutils literal"><span class="pre">:method</span></tt> key in <em>nv</em> (e.g. <tt class="docutils literal"><span class="pre">POST</span></tt>). This
+function does not take ownership of the <em>data_prd</em>. The function
+copies the members of the <em>data_prd</em>. If <em>data_prd</em> is <tt class="docutils literal"><span class="pre">NULL</span></tt>,
+SYN_STREAM have FLAG_FIN set. The <em>stream_user_data</em> is data
+associated to the stream opened by this request and can be an
+arbitrary pointer, which can be retrieved later by
+<a class="reference internal" href="#spdylay_session_get_stream_user_data" title="spdylay_session_get_stream_user_data"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_get_stream_user_data()</span></tt></a>.</p>
+<p>Since the library reorders the frames and tries to send the highest
+prioritized one first and the SPDY specification requires the
+stream ID must be strictly increasing, the stream ID of this
+request cannot be known until it is about to sent.  To know the
+stream ID of the request, the application can use
+<a class="reference internal" href="#spdylay_session_callbacks.before_ctrl_send_callback" title="spdylay_session_callbacks.before_ctrl_send_callback"><tt class="xref c c-member docutils literal"><span class="pre">spdylay_session_callbacks.before_ctrl_send_callback</span></tt></a>. This
+callback is called just before the frame is sent. For SYN_STREAM
+frame, the argument frame has the stream ID assigned. Also since
+the stream is already opened,
+<a class="reference internal" href="#spdylay_session_get_stream_user_data" title="spdylay_session_get_stream_user_data"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_get_stream_user_data()</span></tt></a> can be used to get
+<em>stream_user_data</em> to identify which SYN_STREAM we are processing.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_INVALID_ARGUMENT" title="SPDYLAY_ERR_INVALID_ARGUMENT"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_INVALID_ARGUMENT</span></tt></a></dt>
+<dd>The <em>pri</em> is invalid; or the <em>nv</em> includes empty name or NULL
+value.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_submit_response">
+int <tt class="descname">spdylay_submit_response</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, int32_t<em>&nbsp;stream_id</em>, const char<em>&nbsp;**nv</em>, const <a class="reference internal" href="#spdylay_data_provider" title="spdylay_data_provider">spdylay_data_provider</a><em>&nbsp;*data_prd</em><big>)</big><a class="headerlink" href="#spdylay_submit_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits SYN_REPLY frame and optionally one or more DATA frames
+against the stream <em>stream_id</em>.</p>
+<p>The <em>nv</em> contains the name/value pairs. For i &gt;= 0, <tt class="docutils literal"><span class="pre">nv[2*i]</span></tt>
+contains a pointer to the name string and <tt class="docutils literal"><span class="pre">nv[2*i+1]</span></tt> contains a
+pointer to the value string. The one beyond last value must be
+<tt class="docutils literal"><span class="pre">NULL</span></tt>. That is, if the <em>nv</em> contains N name/value pairs,
+<tt class="docutils literal"><span class="pre">nv[2*N]</span></tt> must be <tt class="docutils literal"><span class="pre">NULL</span></tt>.</p>
+<p>The <em>nv</em> must include following name/value pairs:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">:status</span></tt></dt>
+<dd>HTTP status code (e.g., <tt class="docutils literal"><span class="pre">200</span></tt> or <tt class="docutils literal"><span class="pre">200</span> <span class="pre">OK</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">:version</span></tt></dt>
+<dd>HTTP response version (e.g., <tt class="docutils literal"><span class="pre">HTTP/1.1</span></tt>)</dd>
+</dl>
+<p>If the <em>session</em> is initialized with the version
+<a class="reference internal" href="#SPDYLAY_PROTO_SPDY2" title="SPDYLAY_PROTO_SPDY2"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_PROTO_SPDY2</span></tt></a>, the above names are translated to
+<tt class="docutils literal"><span class="pre">status</span></tt> and <tt class="docutils literal"><span class="pre">version</span></tt> respectively.</p>
+<p>This function creates copies of all name/value pairs in <em>nv</em>.  It
+also lower-cases all names in <em>nv</em>.</p>
+<p>If <em>data_prd</em> is not <tt class="docutils literal"><span class="pre">NULL</span></tt>, it provides data which will be sent
+in subsequent DATA frames.  This function does not take ownership
+of the <em>data_prd</em>. The function copies the members of the
+<em>data_prd</em>.  If <em>data_prd</em> is <tt class="docutils literal"><span class="pre">NULL</span></tt>, SYN_REPLY will have
+FLAG_FIN set.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_INVALID_ARGUMENT" title="SPDYLAY_ERR_INVALID_ARGUMENT"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_INVALID_ARGUMENT</span></tt></a></dt>
+<dd>The <em>nv</em> includes empty name or NULL value.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_submit_syn_stream">
+int <tt class="descname">spdylay_submit_syn_stream</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, uint8_t<em>&nbsp;flags</em>, int32_t<em>&nbsp;assoc_stream_id</em>, uint8_t<em>&nbsp;pri</em>, const char<em>&nbsp;**nv</em>, void<em>&nbsp;*stream_user_data</em><big>)</big><a class="headerlink" href="#spdylay_submit_syn_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits SYN_STREAM frame. The <em>flags</em> is bitwise OR of the
+following values:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#SPDYLAY_CTRL_FLAG_FIN" title="SPDYLAY_CTRL_FLAG_FIN"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_CTRL_FLAG_FIN</span></tt></a></li>
+<li><a class="reference internal" href="#SPDYLAY_CTRL_FLAG_UNIDIRECTIONAL" title="SPDYLAY_CTRL_FLAG_UNIDIRECTIONAL"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_CTRL_FLAG_UNIDIRECTIONAL</span></tt></a></li>
+</ul>
+<p>If <em>flags</em> includes <a class="reference internal" href="#SPDYLAY_CTRL_FLAG_FIN" title="SPDYLAY_CTRL_FLAG_FIN"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_CTRL_FLAG_FIN</span></tt></a>, this frame has
+FLAG_FIN flag set.</p>
+<p>The <em>assoc_stream_id</em> is used for server-push. Specify 0 if this
+stream is not server-push. If <em>session</em> is initialized for client
+use, <em>assoc_stream_id</em> is ignored.</p>
+<p>The <em>pri</em> is priority of this request. 0 is the highest priority
+value. Use <a class="reference internal" href="#spdylay_session_get_pri_lowest" title="spdylay_session_get_pri_lowest"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_get_pri_lowest()</span></tt></a> to know the lowest
+priority value for this <em>session</em>.</p>
+<p>The <em>nv</em> contains the name/value pairs. For i &gt;= 0, <tt class="docutils literal"><span class="pre">nv[2*i]</span></tt>
+contains a pointer to the name string and <tt class="docutils literal"><span class="pre">nv[2*i+1]</span></tt> contains a
+pointer to the value string. The one beyond last value must be
+<tt class="docutils literal"><span class="pre">NULL</span></tt>. That is, if the <em>nv</em> contains N name/value pairs,
+<tt class="docutils literal"><span class="pre">nv[2*N]</span></tt> must be <tt class="docutils literal"><span class="pre">NULL</span></tt>.</p>
+<p>This function creates copies of all name/value pairs in <em>nv</em>.  It
+also lower-cases all names in <em>nv</em>.</p>
+<p>The <em>stream_user_data</em> is a pointer to an arbitrary
+data which is associated to the stream this frame will open.</p>
+<p>This function is low-level in a sense that the application code can
+specify flags and the Associated-To-Stream-ID directly. For usual
+HTTP request, <a class="reference internal" href="#spdylay_submit_request" title="spdylay_submit_request"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_submit_request()</span></tt></a> is useful.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_INVALID_ARGUMENT" title="SPDYLAY_ERR_INVALID_ARGUMENT"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_INVALID_ARGUMENT</span></tt></a></dt>
+<dd>The <em>pri</em> is invalid; or the <em>assoc_stream_id</em> is invalid; or
+the <em>nv</em> includes empty name or NULL value.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_submit_syn_reply">
+int <tt class="descname">spdylay_submit_syn_reply</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, uint8_t<em>&nbsp;flags</em>, int32_t<em>&nbsp;stream_id</em>, const char<em>&nbsp;**nv</em><big>)</big><a class="headerlink" href="#spdylay_submit_syn_reply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits SYN_REPLY frame. The <em>flags</em> is bitwise OR of the following
+values:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#SPDYLAY_CTRL_FLAG_FIN" title="SPDYLAY_CTRL_FLAG_FIN"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_CTRL_FLAG_FIN</span></tt></a></li>
+</ul>
+<p>If <em>flags</em> includes <a class="reference internal" href="#SPDYLAY_CTRL_FLAG_FIN" title="SPDYLAY_CTRL_FLAG_FIN"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_CTRL_FLAG_FIN</span></tt></a>, this frame has
+FLAG_FIN flag set.</p>
+<p>The stream which this frame belongs to is given in the
+<em>stream_id</em>. The <em>nv</em> is the name/value pairs in this frame.</p>
+<p>The <em>nv</em> contains the name/value pairs. For i &gt;= 0, <tt class="docutils literal"><span class="pre">nv[2*i]</span></tt>
+contains a pointer to the name string and <tt class="docutils literal"><span class="pre">nv[2*i+1]</span></tt> contains a
+pointer to the value string. The one beyond last value must be
+<tt class="docutils literal"><span class="pre">NULL</span></tt>. That is, if the <em>nv</em> contains N name/value pairs,
+<tt class="docutils literal"><span class="pre">nv[2*N]</span></tt> must be <tt class="docutils literal"><span class="pre">NULL</span></tt>.</p>
+<p>This function creates copies of all name/value pairs in <em>nv</em>.  It
+also lower-cases all names in <em>nv</em>.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_INVALID_ARGUMENT" title="SPDYLAY_ERR_INVALID_ARGUMENT"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_INVALID_ARGUMENT</span></tt></a></dt>
+<dd>The <em>nv</em> includes empty name or NULL value.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_submit_headers">
+int <tt class="descname">spdylay_submit_headers</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, uint8_t<em>&nbsp;flags</em>, int32_t<em>&nbsp;stream_id</em>, const char<em>&nbsp;**nv</em><big>)</big><a class="headerlink" href="#spdylay_submit_headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits HEADERS frame. The <em>flags</em> is bitwise OR of the following
+values:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#SPDYLAY_CTRL_FLAG_FIN" title="SPDYLAY_CTRL_FLAG_FIN"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_CTRL_FLAG_FIN</span></tt></a></li>
+</ul>
+<p>If <em>flags</em> includes <a class="reference internal" href="#SPDYLAY_CTRL_FLAG_FIN" title="SPDYLAY_CTRL_FLAG_FIN"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_CTRL_FLAG_FIN</span></tt></a>, this frame has
+FLAG_FIN flag set.</p>
+<p>The stream which this frame belongs to is given in the
+<em>stream_id</em>. The <em>nv</em> is the name/value pairs in this frame.</p>
+<p>The <em>nv</em> contains the name/value pairs. For i &gt;= 0, <tt class="docutils literal"><span class="pre">nv[2*i]</span></tt>
+contains a pointer to the name string and <tt class="docutils literal"><span class="pre">nv[2*i+1]</span></tt> contains a
+pointer to the value string. The one beyond last value must be
+<tt class="docutils literal"><span class="pre">NULL</span></tt>. That is, if the <em>nv</em> contains N name/value pairs,
+<tt class="docutils literal"><span class="pre">nv[2*N]</span></tt> must be <tt class="docutils literal"><span class="pre">NULL</span></tt>.</p>
+<p>This function creates copies of all name/value pairs in <em>nv</em>.  It
+also lower-cases all names in <em>nv</em>.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_INVALID_ARGUMENT" title="SPDYLAY_ERR_INVALID_ARGUMENT"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_INVALID_ARGUMENT</span></tt></a></dt>
+<dd>The <em>nv</em> includes empty name or NULL value.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_submit_data">
+int <tt class="descname">spdylay_submit_data</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, int32_t<em>&nbsp;stream_id</em>, uint8_t<em>&nbsp;flags</em>, const <a class="reference internal" href="#spdylay_data_provider" title="spdylay_data_provider">spdylay_data_provider</a><em>&nbsp;*data_prd</em><big>)</big><a class="headerlink" href="#spdylay_submit_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits one or more DATA frames to the stream <em>stream_id</em>.  The
+data to be sent are provided by <em>data_prd</em>. If <em>flags</em> contains
+<a class="reference internal" href="#SPDYLAY_DATA_FLAG_FIN" title="SPDYLAY_DATA_FLAG_FIN"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_DATA_FLAG_FIN</span></tt></a>, the last DATA frame has FLAG_FIN
+set.</p>
+<p>This function does not take ownership of the <em>data_prd</em>. The
+function copies the members of the <em>data_prd</em>.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_submit_rst_stream">
+int <tt class="descname">spdylay_submit_rst_stream</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, int32_t<em>&nbsp;stream_id</em>, uint32_t<em>&nbsp;status_code</em><big>)</big><a class="headerlink" href="#spdylay_submit_rst_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits RST_STREAM frame to cancel/reject the stream <em>stream_id</em>
+with the status code <em>status_code</em>.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_submit_ping">
+int <tt class="descname">spdylay_submit_ping</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em><big>)</big><a class="headerlink" href="#spdylay_submit_ping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits PING frame. You don&#8217;t have to send PING back when you
+received PING frame. The library automatically submits PING frame
+in this case.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_submit_goaway">
+int <tt class="descname">spdylay_submit_goaway</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, uint32_t<em>&nbsp;status_code</em><big>)</big><a class="headerlink" href="#spdylay_submit_goaway" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits GOAWAY frame. The status code <em>status_code</em> is ignored if
+the protocol version is <a class="reference internal" href="#SPDYLAY_PROTO_SPDY2" title="SPDYLAY_PROTO_SPDY2"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_PROTO_SPDY2</span></tt></a>.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_submit_settings">
+int <tt class="descname">spdylay_submit_settings</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, uint8_t<em>&nbsp;flags</em>, const <a class="reference internal" href="#spdylay_settings_entry" title="spdylay_settings_entry">spdylay_settings_entry</a><em>&nbsp;*iv</em>, size_t<em>&nbsp;niv</em><big>)</big><a class="headerlink" href="#spdylay_submit_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores local settings and submits SETTINGS frame. The <em>iv</em> is the
+pointer to the array of <a class="reference internal" href="#spdylay_settings_entry" title="spdylay_settings_entry"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_settings_entry</span></tt></a>. The <em>niv</em>
+indicates the number of <a class="reference internal" href="#spdylay_settings_entry" title="spdylay_settings_entry"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_settings_entry</span></tt></a>. The <em>flags</em>
+is bitwise-OR of one or more values from
+<a class="reference internal" href="#spdylay_settings_flag" title="spdylay_settings_flag"><tt class="xref c c-type docutils literal"><span class="pre">spdylay_settings_flag</span></tt></a>.</p>
+<p>This function does not take ownership of the <em>iv</em>. This function
+copies all the elements in the <em>iv</em>.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_INVALID_ARGUMENT" title="SPDYLAY_ERR_INVALID_ARGUMENT"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_INVALID_ARGUMENT</span></tt></a></dt>
+<dd>The <em>iv</em> contains duplicate settings ID or invalid value.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_submit_window_update">
+int <tt class="descname">spdylay_submit_window_update</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em>, int32_t<em>&nbsp;stream_id</em>, int32_t<em>&nbsp;delta_window_size</em><big>)</big><a class="headerlink" href="#spdylay_submit_window_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits WINDOW_UPDATE frame. The effective range of the
+<em>delta_window_size</em> is [1, (1 &lt;&lt; 31)-1], inclusive. But the
+application must be responsible to keep the resulting window size
+&lt;= (1 &lt;&lt; 31)-1.</p>
+<p>To send connection-level WINDOW_UPDATE, specify 0 to the
+<em>stream_id</em> if the negotiated protocol supports it.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_INVALID_ARGUMENT" title="SPDYLAY_ERR_INVALID_ARGUMENT"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_INVALID_ARGUMENT</span></tt></a></dt>
+<dd>The <em>delta_window_size</em> is 0 or negative.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_STREAM_CLOSED" title="SPDYLAY_ERR_STREAM_CLOSED"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_STREAM_CLOSED</span></tt></a></dt>
+<dd>The stream is already closed or does not exist.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_select_next_protocol">
+int <tt class="descname">spdylay_select_next_protocol</tt><big>(</big>unsigned char<em>&nbsp;**out</em>, unsigned char<em>&nbsp;*outlen</em>, const unsigned char<em>&nbsp;*in</em>, unsigned int<em>&nbsp;inlen</em><big>)</big><a class="headerlink" href="#spdylay_select_next_protocol" title="Permalink to this definition">¶</a></dt>
+<dd><p>A helper function for dealing with NPN in client side.  The <em>in</em>
+contains server&#8217;s protocol in preferable order.  The format of <em>in</em>
+is length-prefixed and not null-terminated.  For example,
+<tt class="docutils literal"><span class="pre">spdy/2</span></tt> and <tt class="docutils literal"><span class="pre">http/1.1</span></tt> stored in <em>in</em> like this:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">in</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">in</span><span class="p">[</span><span class="mf">1..6</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;spdy/2&quot;</span>
+<span class="n">in</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">in</span><span class="p">[</span><span class="mf">8..15</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;http/1.1&quot;</span>
+<span class="n">inlen</span> <span class="o">=</span> <span class="mi">16</span>
+</pre></div>
+</div>
+<p>The selection algorithm is as follows:</p>
+<ol class="arabic simple">
+<li>If server&#8217;s list contains SPDY versions the spdylay library
+supports, this function selects one of them and returns its SPDY
+protocol version which can be used directly with
+<a class="reference internal" href="#spdylay_session_client_new" title="spdylay_session_client_new"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_client_new()</span></tt></a> and
+<a class="reference internal" href="#spdylay_session_server_new" title="spdylay_session_server_new"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_server_new()</span></tt></a> . The following steps are not
+taken.</li>
+<li>If server&#8217;s list contains <tt class="docutils literal"><span class="pre">http/1.1</span></tt>, this function selects
+<tt class="docutils literal"><span class="pre">http/1.1</span></tt> and returns 0. The following step is not taken.</li>
+<li>This function selects nothing and returns -1. (So called
+non-overlap case). In this case, <em>out</em> and <em>outlen</em> are left
+untouched.</li>
+</ol>
+<p>When spdylay supports updated version of SPDY in the future, this
+function may select updated protocol and application code which
+relies on spdylay for SPDY stuff needs not be modified.</p>
+<p>Selecting <tt class="docutils literal"><span class="pre">spdy/2</span></tt> means that <tt class="docutils literal"><span class="pre">spdy/2</span></tt> is written into <em>*out</em>
+and length of <tt class="docutils literal"><span class="pre">spdy/2</span></tt> (which is 6) is assigned to <em>*outlen</em>.</p>
+<p>See <a class="reference external" href="http://technotes.googlecode.com/git/nextprotoneg.html">http://technotes.googlecode.com/git/nextprotoneg.html</a> for more
+details about NPN.</p>
+<p>To use this method you should do something like:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">static</span> <span class="kt">int</span> <span class="nf">select_next_proto_cb</span><span class="p">(</span><span class="n">SSL</span><span class="o">*</span> <span class="n">ssl</span><span class="p">,</span>
+                                <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">**</span><span class="n">out</span><span class="p">,</span>
+                                <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">outlen</span><span class="p">,</span>
+                                <span class="k">const</span> <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">in</span><span class="p">,</span>
+                                <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">inlen</span><span class="p">,</span>
+                                <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">version</span><span class="p">;</span>
+    <span class="n">version</span> <span class="o">=</span> <span class="n">spdylay_select_next_protocol</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">outlen</span><span class="p">,</span> <span class="n">in</span><span class="p">,</span> <span class="n">inlen</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">version</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="p">((</span><span class="n">MyType</span><span class="o">*</span><span class="p">)</span><span class="n">arg</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">spdy_version</span> <span class="o">=</span> <span class="n">version</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">SSL_TLSEXT_ERR_OK</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="p">...</span>
+<span class="n">SSL_CTX_set_next_proto_select_cb</span><span class="p">(</span><span class="n">ssl_ctx</span><span class="p">,</span> <span class="n">select_next_proto_cb</span><span class="p">,</span> <span class="n">my_obj</span><span class="p">);</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_npn_get_proto_list">
+const <a class="reference internal" href="#spdylay_npn_proto" title="spdylay_npn_proto">spdylay_npn_proto</a>* <tt class="descname">spdylay_npn_get_proto_list</tt><big>(</big>size_t<em>&nbsp;*len_ptr</em><big>)</big><a class="headerlink" href="#spdylay_npn_get_proto_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a pointer to the supported SPDY version list. The number of
+elements in the list will be assigned to the <em>*len_ptr</em>. It
+contains all SPDY version information this library supports. The
+application can use this information to configure NPN protocol
+offerings/selection.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_npn_get_version">
+uint16_t <tt class="descname">spdylay_npn_get_version</tt><big>(</big>const unsigned char<em>&nbsp;*proto</em>, size_t<em>&nbsp;protolen</em><big>)</big><a class="headerlink" href="#spdylay_npn_get_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns spdy version which spdylay library supports from the given
+protocol name. The <em>proto</em> is the pointer to the protocol name and
+<em>protolen</em> is its length. Currently, <tt class="docutils literal"><span class="pre">spdy/2</span></tt>, <tt class="docutils literal"><span class="pre">spdy/3</span></tt> and
+<tt class="docutils literal"><span class="pre">spdy/3.1</span></tt> are supported.</p>
+<p>This function returns nonzero spdy version if it succeeds, or 0.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_gzip_inflate_new">
+int <tt class="descname">spdylay_gzip_inflate_new</tt><big>(</big><a class="reference internal" href="#spdylay_gzip" title="spdylay_gzip">spdylay_gzip</a><em>&nbsp;**inflater_ptr</em><big>)</big><a class="headerlink" href="#spdylay_gzip_inflate_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>A helper function to set up a per request gzip stream to inflate data.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_GZIP" title="SPDYLAY_ERR_GZIP"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_GZIP</span></tt></a></dt>
+<dd>The initialization of gzip stream failed.</dd>
+<dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
+<dd>Out of memory.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_gzip_inflate_del">
+void <tt class="descname">spdylay_gzip_inflate_del</tt><big>(</big><a class="reference internal" href="#spdylay_gzip" title="spdylay_gzip">spdylay_gzip</a><em>&nbsp;*inflater</em><big>)</big><a class="headerlink" href="#spdylay_gzip_inflate_del" title="Permalink to this definition">¶</a></dt>
+<dd><p>Frees the inflate stream.  The <em>inflater</em> may be <tt class="docutils literal"><span class="pre">NULL</span></tt>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay_gzip_inflate">
+int <tt class="descname">spdylay_gzip_inflate</tt><big>(</big><a class="reference internal" href="#spdylay_gzip" title="spdylay_gzip">spdylay_gzip</a><em>&nbsp;*inflater</em>, uint8_t<em>&nbsp;*out</em>, size_t<em>&nbsp;*outlen_ptr</em>, const uint8_t<em>&nbsp;*in</em>, size_t<em>&nbsp;*inlen_ptr</em><big>)</big><a class="headerlink" href="#spdylay_gzip_inflate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inflates data in <em>in</em> with the length <em>*inlen_ptr</em> and stores the
+inflated data to <em>out</em> which has allocated size at least
+<em>*outlen_ptr</em>. On return, <em>*outlen_ptr</em> is updated to represent
+the number of data written in <em>out</em>.  Similarly, <em>*inlen_ptr</em> is
+updated to represent the number of input bytes processed.</p>
+<p>This function returns 0 if it succeeds, or one of the following
+negative error codes:</p>
+<dl class="docutils">
+<dt><a class="reference internal" href="#SPDYLAY_ERR_GZIP" title="SPDYLAY_ERR_GZIP"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_GZIP</span></tt></a></dt>
+<dd>The inflation of gzip stream failed.</dd>
+</dl>
+<p>The example follows:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="kt">void</span> <span class="nf">on_data_chunk_recv_callback</span><span class="p">(</span><span class="n">spdylay_session</span> <span class="o">*</span><span class="n">session</span><span class="p">,</span>
+                                 <span class="kt">uint8_t</span> <span class="n">flags</span><span class="p">,</span>
+                                 <span class="kt">int32_t</span> <span class="n">stream_id</span><span class="p">,</span>
+                                 <span class="k">const</span> <span class="kt">uint8_t</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">,</span>
+                                 <span class="kt">void</span> <span class="o">*</span><span class="n">user_data</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="p">...</span>
+    <span class="n">req</span> <span class="o">=</span> <span class="n">spdylay_session_get_stream_user_data</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">stream_id</span><span class="p">);</span>
+    <span class="n">spdylay_gzip</span> <span class="o">*</span><span class="n">inflater</span> <span class="o">=</span> <span class="n">req</span><span class="o">-&gt;</span><span class="n">inflater</span><span class="p">;</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">len</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">uint8_t</span> <span class="n">out</span><span class="p">[</span><span class="n">MAX_OUTLEN</span><span class="p">];</span>
+        <span class="kt">size_t</span> <span class="n">outlen</span> <span class="o">=</span> <span class="n">MAX_OUTLEN</span><span class="p">;</span>
+        <span class="kt">size_t</span> <span class="n">tlen</span> <span class="o">=</span> <span class="n">len</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">rv</span><span class="p">;</span>
+        <span class="n">rv</span> <span class="o">=</span> <span class="n">spdylay_gzip_inflate</span><span class="p">(</span><span class="n">inflater</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">outlen</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">tlen</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">rv</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">spdylay_submit_rst_stream</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">stream_id</span><span class="p">,</span>
+                                      <span class="n">SPDYLAY_INTERNAL_ERROR</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="p">...</span> <span class="n">Do</span> <span class="n">stuff</span> <span class="p">...</span>
+        <span class="n">data</span> <span class="o">+=</span> <span class="n">tlen</span><span class="p">;</span>
+        <span class="n">len</span> <span class="o">-=</span> <span class="n">tlen</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="p">....</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Menu</h3>
+<ul>
+  <li><a href="http://sourceforge.net/projects/spdylay/files/stable/">Download</a></li>
+  <li><a href="https://github.com/tatsuhiro-t/spdylay/issues">Issues</a></li>
+  <li><a href="https://github.com/tatsuhiro-t/spdylay">Source</a></li>
+  <li><a href="http://sourceforge.net/projects/spdylay">SF.net Project Page</a></li>
+</ul>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">API Reference</a><ul>
+<li><a class="reference internal" href="#includes">Includes</a></li>
+<li><a class="reference internal" href="#remarks">Remarks</a></li>
+<li><a class="reference internal" href="#macros">Macros</a></li>
+<li><a class="reference internal" href="#enums">Enums</a></li>
+<li><a class="reference internal" href="#types-structs-unions-and-typedefs">Types (structs, unions and typedefs)</a></li>
+<li><a class="reference internal" href="#functions">Functions</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="package_README.html"
+                        title="previous chapter">Spdylay - SPDY C Library</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="python.html"
+                        title="next chapter">Python-spdylay - Spdylay Python Extension Module</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/apiref.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="python.html" title="Python-spdylay - Spdylay Python Extension Module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="package_README.html" title="Spdylay - SPDY C Library"
+             >previous</a> |</li>
+        <li><a href="index.html">Spdylay 1.2.0-DEV documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, 2013, Tatsuhiro Tsujikawa.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,748 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Spdylay - SPDY C Library &mdash; Spdylay 1.2.0-DEV documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/default2.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.2.0-DEV',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Spdylay 1.2.0-DEV documentation" href="index.html" />
+    <link rel="next" title="API Reference" href="apiref.html" />
+    <link rel="prev" title="Spdylay - SPDY C Library" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="apiref.html" title="API Reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Spdylay - SPDY C Library"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Spdylay 1.2.0-DEV documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="spdylay-spdy-c-library">
+<h1>Spdylay - SPDY C Library<a class="headerlink" href="#spdylay-spdy-c-library" title="Permalink to this headline">¶</a></h1>
+<p>This is an experimental implementation of Google&#8217;s SPDY protocol in C.</p>
+<p>This library provides SPDY version 2, 3 and 3.1 framing layer
+implementation.  It does not perform any I/O operations.  When the
+library needs them, it calls the callback functions provided by the
+application. It also does not include any event polling mechanism, so
+the application can freely choose the way of handling events. This
+library code does not depend on any particular SSL library (except for
+example programs which depend on OpenSSL 1.0.1 or later).</p>
+<p>This project also develops SPDY client, server and proxy on top of
+Spdylay library. See <a class="reference internal" href="#spdy-client-and-server-programs">SPDY Client and Server Programs</a> section.</p>
+<div class="section" id="development-status">
+<h2>Development Status<a class="headerlink" href="#development-status" title="Permalink to this headline">¶</a></h2>
+<p>Most of the SPDY/2, SPDY/3 and SPDY/3.1 functionality has been
+implemented.  In both versions, the direct support of server-push has
+not been available yet.  The application can achieve server-push using
+primitive APIs though.</p>
+<p>As described below, we can create SPDY client and server with the
+current Spdylay API.</p>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p>The following packages are needed to build the library:</p>
+<ul class="simple">
+<li>pkg-config &gt;= 0.20</li>
+<li>zlib &gt;= 1.2.3</li>
+</ul>
+<p>To build and run the unit test programs, the following packages are
+needed:</p>
+<ul class="simple">
+<li>cunit &gt;= 2.1</li>
+</ul>
+<p>To build and run the example programs, the following packages are
+needed:</p>
+<ul class="simple">
+<li>OpenSSL &gt;= 1.0.1</li>
+</ul>
+<p>To enable <tt class="docutils literal"><span class="pre">-a</span></tt> option (getting linked assets from the downloaded
+resource) in <tt class="docutils literal"><span class="pre">spdycat</span></tt> (one of the example program), the following
+packages are needed:</p>
+<ul class="simple">
+<li>libxml2 &gt;= 2.7.7</li>
+</ul>
+<p>To build SPDY/HTTPS to HTTP reverse proxy <tt class="docutils literal"><span class="pre">shrpx</span></tt> (one of the
+example program), the following packages are needed:</p>
+<ul class="simple">
+<li>libevent-openssl &gt;= 2.0.8</li>
+</ul>
+<p>If you are using Ubuntu 12.04, you need the following packages
+installed:</p>
+<ul class="simple">
+<li>autoconf</li>
+<li>automake</li>
+<li>autotools-dev</li>
+<li>libtool</li>
+<li>pkg-config</li>
+<li>zlib1g-dev</li>
+<li>libcunit1-dev</li>
+<li>libssl-dev</li>
+<li>libxml2-dev</li>
+<li>libevent-dev</li>
+</ul>
+</div>
+<div class="section" id="build-from-git">
+<h2>Build from git<a class="headerlink" href="#build-from-git" title="Permalink to this headline">¶</a></h2>
+<p>Building from git is easy, but please be sure that at least autoconf 2.68 is
+used:</p>
+<div class="highlight-c"><pre>$ autoreconf -i
+$ automake
+$ autoconf
+$ ./configure
+$ make</pre>
+</div>
+</div>
+<div class="section" id="building-documentation">
+<h2>Building documentation<a class="headerlink" href="#building-documentation" title="Permalink to this headline">¶</a></h2>
+<p>To build documentation, run:</p>
+<div class="highlight-c"><pre>$ make html</pre>
+</div>
+<p>The documents will be generated under <tt class="docutils literal"><span class="pre">doc/manual/html/</span></tt>.</p>
+<p>The generated documents will not be installed with <tt class="docutils literal"><span class="pre">make</span> <span class="pre">install</span></tt>.</p>
+</div>
+<div class="section" id="building-android-binary">
+<h2>Building Android binary<a class="headerlink" href="#building-android-binary" title="Permalink to this headline">¶</a></h2>
+<p>In this section, we briefly describe how to build Android binary using
+<a class="reference external" href="http://developer.android.com/tools/sdk/ndk/index.html">Android NDK</a>
+cross-compiler on Debian Linux.</p>
+<p>We offer <tt class="docutils literal"><span class="pre">android-config</span></tt> and <tt class="docutils literal"><span class="pre">android-make</span></tt> scripts to make the
+build easier. To make these script work, NDK toolchain must be
+installed in the following way. First, let introduce <tt class="docutils literal"><span class="pre">ANDROID_HOME</span></tt>
+environment variable. We need to install toolchain under
+<tt class="docutils literal"><span class="pre">$ANDROID_HOME/toolchain</span></tt>. An user can freely choose the path for
+<tt class="docutils literal"><span class="pre">ANDROID_HOME</span></tt>.  For example, to install toolchain under
+<tt class="docutils literal"><span class="pre">$ANDROID_HOME/toolchain</span></tt>, do this in the the directory where NDK is
+unpacked:</p>
+<div class="highlight-c"><pre>$ build/tools/make-standalone-toolchain.sh --platform=android-9 --install-dir=$ANDROID_HOME/toolchain</pre>
+</div>
+<p>The platform level is not important here because we don&#8217;t use Android
+specific C/C++ API.</p>
+<p>The dependent libraries, such as OpenSSL and libevent should be built
+with the toolchain and installed under <tt class="docutils literal"><span class="pre">$ANDROID_HOME/usr/local</span></tt>.
+We recommend to build these libraries as static library to make the
+deployment easier. libxml2 support is currently disabled.</p>
+<p>We use zlib which comes with Android NDK, so we don&#8217;t have to build it
+by ourselves.</p>
+<p>Before running <tt class="docutils literal"><span class="pre">android-config</span></tt> and <tt class="docutils literal"><span class="pre">android-make</span></tt>,
+<tt class="docutils literal"><span class="pre">ANDOIRD_HOME</span></tt> environment variable must be set to point to the
+correct path.</p>
+<p>After <tt class="docutils literal"><span class="pre">android-config</span></tt>, run <tt class="docutils literal"><span class="pre">android-make</span></tt> to compile sources.
+<tt class="docutils literal"><span class="pre">android-make</span></tt> is just include path to cross compiler in <tt class="docutils literal"><span class="pre">PATH</span></tt>
+and run make. So if you include path to corss compiler by yourself,
+you can just run make to build spdylay and tools as usual.</p>
+</div>
+<div class="section" id="api">
+<h2>API<a class="headerlink" href="#api" title="Permalink to this headline">¶</a></h2>
+<p>The public API reference is available on online. Visit
+<a class="reference external" href="http://spdylay.sourceforge.net/">http://spdylay.sourceforge.net/</a>.  All public APIs are in
+<em>spdylay/spdylay.h</em>. All public API functions as well as the callback
+function typedefs are documented.</p>
+</div>
+<div class="section" id="spdy-client-and-server-programs">
+<h2>SPDY Client and Server Programs<a class="headerlink" href="#spdy-client-and-server-programs" title="Permalink to this headline">¶</a></h2>
+<p>The <em>src</em> directory contains SPDY client and server implementations
+using Spdylay library. These programs are intended to make sure that
+Spdylay API is acutally usable for real implementation and also for
+debugging purposes. Please note that OpenSSL with <a class="reference external" href="http://technotes.googlecode.com/git/nextprotoneg.html">NPN</a> support is
+required in order to build and run these programs.  At the time of
+this writing, the OpenSSL 1.0.1 supports NPN.</p>
+<div class="section" id="spdycat-spdy-client">
+<h3>Spdycat - SPDY client<a class="headerlink" href="#spdycat-spdy-client" title="Permalink to this headline">¶</a></h3>
+<p>The SPDY client is called <tt class="docutils literal"><span class="pre">spdycat</span></tt>. It is a dead simple downloader
+like wget/curl. It connects to SPDY server and gets resources given in
+the command-line:</p>
+<div class="highlight-c"><pre>$ src/spdycat -h
+Usage: spdycat [-Oansv23] [-t &lt;SECONDS&gt;] [-w &lt;WINDOW_BITS&gt;] [--cert=&lt;CERT&gt;]
+               [--key=&lt;KEY&gt;] [--no-tls] [-d &lt;FILE&gt;] [-m &lt;N&gt;] &lt;URI&gt;...
+
+OPTIONS:
+    -v, --verbose      Print debug information such as reception/
+                       transmission of frames and name/value pairs.
+    -n, --null-out     Discard downloaded data.
+    -O, --remote-name  Save download data in the current directory.
+                       The filename is dereived from URI. If URI
+                       ends with '/', 'index.html' is used as a
+                       filename. Not implemented yet.
+    -2, --spdy2        Only use SPDY/2.
+    -3, --spdy3        Only use SPDY/3.
+    -t, --timeout=&lt;N&gt;  Timeout each request after &lt;N&gt; seconds.
+    -w, --window-bits=&lt;N&gt;
+                       Sets the initial window size to 2**&lt;N&gt;.
+    -a, --get-assets   Download assets such as stylesheets, images
+                       and script files linked from the downloaded
+                       resource. Only links whose origins are the
+                       same with the linking resource will be
+                       downloaded.
+    -s, --stat         Print statistics.
+    -H, --header       Add a header to the requests.
+    --cert=&lt;CERT&gt;      Use the specified client certificate file.
+                       The file must be in PEM format.
+    --key=&lt;KEY&gt;        Use the client private key file. The file
+                       must be in PEM format.
+    --no-tls           Disable SSL/TLS. Use -2 or -3 to specify
+                       SPDY protocol version to use.
+    -d, --data=&lt;FILE&gt;  Post FILE to server. If - is given, data
+                       will be read from stdin.
+    -m, --multiply=&lt;N&gt; Request each URI &lt;N&gt; times. By default, same
+                       URI is not requested twice. This option
+                       disables it too.
+
+$ src/spdycat -nv https://www.google.com/
+[  0.025] NPN select next protocol: the remote server offers:
+          * spdy/3
+          * spdy/2
+          * http/1.1
+          NPN selected the protocol: spdy/3
+[  0.035] recv SETTINGS frame &lt;version=3, flags=0, length=20&gt;
+          (niv=2)
+          [4(1):100]
+          [7(0):12288]
+[  0.035] send SYN_STREAM frame &lt;version=3, flags=1, length=106&gt;
+          (stream_id=1, assoc_stream_id=0, pri=3)
+          :host: www.google.com
+          :method: GET
+          :path: /
+          :scheme: https
+          :version: HTTP/1.1
+          accept: */*
+          user-agent: spdylay/0.2.0
+[  0.077] recv SYN_REPLY frame &lt;version=3, flags=0, length=558&gt;
+          (stream_id=1)
+          :status: 302 Found
+          :version: HTTP/1.1
+          cache-control: private
+          content-length: 222
+          content-type: text/html; charset=UTF-8
+          date: Sun, 13 May 2012 08:02:54 GMT
+          location: https://www.google.co.jp/
+          server: gws
+          x-frame-options: SAMEORIGIN
+          x-xss-protection: 1; mode=block
+[  0.077] recv DATA frame (stream_id=1, flags=1, length=222)
+[  0.077] send GOAWAY frame &lt;version=3, flags=0, length=8&gt;
+          (last_good_stream_id=0)</pre>
+</div>
+</div>
+<div class="section" id="spdyd-spdy-server">
+<h3>Spdyd - SPDY server<a class="headerlink" href="#spdyd-spdy-server" title="Permalink to this headline">¶</a></h3>
+<p>SPDY server is called <tt class="docutils literal"><span class="pre">spdyd</span></tt> and serves static files. It is single
+threaded and multiplexes connections using non-blocking socket. The
+static files are read using blocking I/O system call, <tt class="docutils literal"><span class="pre">read(2)</span></tt>. It
+speaks SPDY/2 and SPDY/3:</p>
+<div class="highlight-c"><pre>$ src/spdyd --htdocs=/your/htdocs/ -v 3000 server.key server.crt
+IPv4: listen on port 3000
+IPv6: listen on port 3000
+The negotiated next protocol: spdy/3
+[id=1] [ 17.456] send SETTINGS frame &lt;version=3, flags=0, length=12&gt;
+          (niv=1)
+          [4(0):100]
+[id=1] [ 17.457] recv SYN_STREAM frame &lt;version=3, flags=1, length=108&gt;
+          (stream_id=1, assoc_stream_id=0, pri=3)
+          :host: localhost:3000
+          :method: GET
+          :path: /README
+          :scheme: https
+          :version: HTTP/1.1
+          accept: */*
+          user-agent: spdylay/0.2.0
+[id=1] [ 17.457] send SYN_REPLY frame &lt;version=3, flags=0, length=113&gt;
+          (stream_id=1)
+          :status: 200 OK
+          :version: HTTP/1.1
+          cache-control: max-age=3600
+          content-length: 15
+          date: Sun, 13 May 2012 08:06:12 GMT
+          last-modified: Tue, 17 Jan 2012 15:39:01 GMT
+          server: spdyd spdylay/0.2.0
+[id=1] [ 17.467] send DATA frame (stream_id=1, flags=0, length=15)
+[id=1] [ 17.467] send DATA frame (stream_id=1, flags=1, length=0)
+[id=1] [ 17.468] stream_id=1 closed
+[id=1] [ 17.468] recv GOAWAY frame &lt;version=3, flags=0, length=8&gt;
+          (last_good_stream_id=0)
+[id=1] [ 17.468] closed</pre>
+</div>
+<p>Currently, <tt class="docutils literal"><span class="pre">spdyd</span></tt> needs <tt class="docutils literal"><span class="pre">epoll</span></tt> or <tt class="docutils literal"><span class="pre">kqueue</span></tt>.</p>
+</div>
+<div class="section" id="shrpx-a-reverse-proxy-for-spdy-https">
+<h3>Shrpx - A reverse proxy for SPDY/HTTPS<a class="headerlink" href="#shrpx-a-reverse-proxy-for-spdy-https" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="docutils literal"><span class="pre">shrpx</span></tt> is a multi-threaded reverse proxy for SPDY/HTTPS.  It
+converts SPDY/HTTPS traffic to plain HTTP.  It is initially developed
+as a reverse proxy, but now it has other operation modes such as a
+frontend forward proxy.  For example, with <tt class="docutils literal"><span class="pre">--spdy-proxy</span></tt> (<tt class="docutils literal"><span class="pre">-s</span></tt> in
+shorthand) option, it can be used as secure SPDY proxy with a proxy
+(e.g., Squid) in the backend.  With <tt class="docutils literal"><span class="pre">--cliet-proxy</span></tt> (<tt class="docutils literal"><span class="pre">-p</span></tt>) option,
+it acts like an ordinaly forward proxy but expects secure SPDY proxy
+in the backend. Thus it becomes an adapter to secure SPDY proxy for
+clients which does not support secure SPDY proxy. The another notable
+operation mode is <tt class="docutils literal"><span class="pre">--spdy-relay</span></tt>, which just relays SPDY/HTTPS
+traffic to the backend in SPDY. The following table summarizes the
+operation modes.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="38%" />
+<col width="21%" />
+<col width="15%" />
+<col width="27%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Mode option</th>
+<th class="head">Frontend</th>
+<th class="head">Backend</th>
+<th class="head">Note</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>default</td>
+<td>SPDY/HTTPS</td>
+<td>HTTP</td>
+<td>Reverse proxy</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">--spdy</span></tt></td>
+<td>SPDY/HTTPS</td>
+<td>HTTP</td>
+<td>SPDY proxy</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">--spdy-relay</span></tt></td>
+<td>SPDY/HTTPS</td>
+<td>SPDY</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">--client</span></tt></td>
+<td>HTTP</td>
+<td>SPDY</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td><tt class="docutils literal"><span class="pre">--client-proxy</span></tt></td>
+<td>HTTP</td>
+<td>SPDY</td>
+<td>Forward proxy</td>
+</tr>
+</tbody>
+</table>
+<p>The <tt class="docutils literal"><span class="pre">shrpx</span></tt> supports configuration file. See <tt class="docutils literal"><span class="pre">--conf</span></tt> option and
+sample configuration file <tt class="docutils literal"><span class="pre">shrpx.conf.sample</span></tt>.</p>
+<p>We briefly describe the architecture of <tt class="docutils literal"><span class="pre">shrpx</span></tt> here.  It has a
+dedicated thread which listens on server sockets.  When it accepted
+the incoming connection, it passes the file descriptor of the incoming
+connection to one of the worker thread.  Each worker thread has its
+own event loop and can handle many connections using non-blocking I/O.
+The number of worker thread can be specified using the command-line
+option. The <a class="reference external" href="http://libevent.org/">libevent</a> is used to handle
+low-level network I/O.</p>
+<p>Here is the command-line options:</p>
+<div class="highlight-c"><pre>$ src/shrpx -h
+Usage: shrpx [-Dh] [-s|--client|-p] [-b &lt;HOST,PORT&gt;]
+             [-f &lt;HOST,PORT&gt;] [-n &lt;CORES&gt;] [-c &lt;NUM&gt;] [-L &lt;LEVEL&gt;]
+             [OPTIONS...] [&lt;PRIVATE_KEY&gt; &lt;CERT&gt;]
+
+A reverse proxy for SPDY/HTTPS.
+
+Positional arguments:
+    &lt;PRIVATE_KEY&gt;      Set path to server's private key. Required
+                       unless either -p or --client is specified.
+    &lt;CERT&gt;             Set path to server's certificate. Required
+                       unless either -p or --client is specified.
+
+OPTIONS:
+
+  Connections:
+    -b, --backend=&lt;HOST,PORT&gt;
+                       Set backend host and port.
+                       Default: '127.0.0.1,80'
+    -f, --frontend=&lt;HOST,PORT&gt;
+                       Set frontend host and port.
+                       Default: '0.0.0.0,3000'
+    --backlog=&lt;NUM&gt;    Set listen backlog size.
+                       Default: 256
+    --backend-ipv4     Resolve backend hostname to IPv4 address
+                       only.
+    --backend-ipv6     Resolve backend hostname to IPv6 address
+                       only.
+
+  Performance:
+    -n, --workers=&lt;CORES&gt;
+                       Set the number of worker threads.
+                       Default: 1
+
+  Timeout:
+    --frontend-spdy-read-timeout=&lt;SEC&gt;
+                       Specify read timeout for SPDY frontend
+                       connection. Default: 180
+    --frontend-read-timeout=&lt;SEC&gt;
+                       Specify read timeout for non-SPDY frontend
+                       connection. Default: 180
+    --frontend-write-timeout=&lt;SEC&gt;
+                       Specify write timeout for both SPDY and
+                       non-SPDY frontends.
+                       connection. Default: 60
+    --backend-read-timeout=&lt;SEC&gt;
+                       Specify read timeout for backend connection.
+                       Default: 900
+    --backend-write-timeout=&lt;SEC&gt;
+                       Specify write timeout for backend
+                       connection. Default: 60
+    --backend-keep-alive-timeout=&lt;SEC&gt;
+                       Specify keep-alive timeout for backend
+                       connection. Default: 60
+    --backend-http-proxy-uri=&lt;URI&gt;
+                       Specify proxy URI in the form
+                       http://[&lt;USER&gt;:&lt;PASS&gt;@]&lt;PROXY&gt;:&lt;PORT&gt;. If
+                       a proxy requires authentication, specify
+                       &lt;USER&gt; and &lt;PASS&gt;. Note that they must be
+                       properly percent-encoded. This proxy is used
+                       when the backend connection is SPDY. First,
+                       make a CONNECT request to the proxy and
+                       it connects to the backend on behalf of
+                       shrpx. This forms tunnel. After that, shrpx
+                       performs SSL/TLS handshake with the
+                       downstream through the tunnel. The timeouts
+                       when connecting and making CONNECT request
+                       can be specified by --backend-read-timeout
+                       and --backend-write-timeout options.
+
+  SSL/TLS:
+    --ciphers=&lt;SUITE&gt;  Set allowed cipher list. The format of the
+                       string is described in OpenSSL ciphers(1).
+                       If this option is used, --honor-cipher-order
+                       is implicitly enabled.
+    --honor-cipher-order
+                       Honor server cipher order, giving the
+                       ability to mitigate BEAST attacks.
+    -k, --insecure     When used with -p or --client, don't verify
+                       backend server's certificate.
+    --cacert=&lt;PATH&gt;    When used with -p or --client, set path to
+                       trusted CA certificate file.
+                       The file must be in PEM format. It can
+                       contain multiple certificates. If the
+                       linked OpenSSL is configured to load system
+                       wide certificates, they are loaded
+                       at startup regardless of this option.
+    --private-key-passwd-file=&lt;FILEPATH&gt;
+                       Path to file that contains password for the
+                       server's private key. If none is given and
+                       the private key is password protected it'll
+                       be requested interactively.
+    --subcert=&lt;KEYPATH&gt;:&lt;CERTPATH&gt;
+                       Specify additional certificate and private
+                       key file. Shrpx will choose certificates
+                       based on the hostname indicated by client
+                       using TLS SNI extension. This option can be
+                       used multiple times.
+    --backend-tls-sni-field=&lt;HOST&gt;
+                       Explicitly set the content of the TLS SNI
+                       extension.  This will default to the backend
+                       HOST name.
+    --dh-param-file=&lt;PATH&gt;
+                       Path to file that contains DH parameters in
+                       PEM format. Without this option, DHE cipher
+                       suites are not available.
+
+  SPDY:
+    -c, --spdy-max-concurrent-streams=&lt;NUM&gt;
+                       Set the maximum number of the concurrent
+                       streams in one SPDY session.
+                       Default: 100
+    --frontend-spdy-window-bits=&lt;N&gt;
+                       Sets the initial window size of SPDY
+                       frontend connection to 2**&lt;N&gt;.
+                       Default: 16
+    --frontend-spdy-no-tls
+                       Disable SSL/TLS on frontend SPDY
+                       connections. SPDY protocol must be specified
+                       using --frontend-spdy-proto. This option
+                       also disables frontend HTTP/1.1.
+    --frontend-spdy-proto
+                       Specify SPDY protocol used in frontend
+                       connection if --frontend-spdy-no-tls is
+                       used. Default: spdy/3
+    --backend-spdy-window-bits=&lt;N&gt;
+                       Sets the initial window size of SPDY
+                       backend connection to 2**&lt;N&gt;.
+                       Default: 16
+    --backend-spdy-no-tls
+                       Disable SSL/TLS on backend SPDY connections.
+                       SPDY protocol must be specified using
+                       --backend-spdy-proto
+    --backend-spdy-proto
+                       Specify SPDY protocol used in backend
+                       connection if --backend-spdy-no-tls is used.
+                       Default: spdy/3
+
+  Mode:
+    -s, --spdy-proxy   Enable secure SPDY proxy mode.
+    --spdy-bridge      Communicate with the backend in SPDY. Thus
+                       the incoming SPDY/HTTPS connections are
+                       converted to SPDY connection and relayed to
+                       the backend. See --backend-http-proxy-uri
+                       option if you are behind the proxy and want
+                       to connect to the outside SPDY proxy.
+    --client           Instead of accepting SPDY/HTTPS connection,
+                       accept HTTP connection and communicate with
+                       backend server in SPDY. To use shrpx as
+                       a forward proxy, use -p option instead.
+    -p, --client-proxy Like --client option, but it also requires
+                       the request path from frontend must be
+                       an absolute URI, suitable for use as a
+                       forward proxy.
+
+  Logging:
+    -L, --log-level=&lt;LEVEL&gt;
+                       Set the severity level of log output.
+                       INFO, WARNING, ERROR and FATAL.
+                       Default: WARNING
+    --accesslog        Print simple accesslog to stderr.
+    --syslog           Send log messages to syslog.
+    --syslog-facility=&lt;FACILITY&gt;
+                       Set syslog facility.
+                       Default: daemon
+
+  Misc:
+    --add-x-forwarded-for
+                       Append X-Forwarded-For header field to the
+                       downstream request.
+    --no-via           Don't append to Via header field. If Via
+                       header field is received, it is left
+                       unaltered.
+    -D, --daemon       Run in a background. If -D is used, the
+                       current working directory is changed to '/'.
+    --pid-file=&lt;PATH&gt;  Set path to save PID of this program.
+    --user=&lt;USER&gt;      Run this program as USER. This option is
+                       intended to be used to drop root privileges.
+    --conf=&lt;PATH&gt;      Load configuration from PATH.
+                       Default: /etc/shrpx/shrpx.conf
+    -v, --version      Print version and exit.
+    -h, --help         Print this help and exit.</pre>
+</div>
+<p>For those of you who are curious, <tt class="docutils literal"><span class="pre">shrpx</span></tt> is an abbreviation of
+&#8220;Spdy/https to Http Reverse ProXy&#8221;.</p>
+<p>Without any of <tt class="docutils literal"><span class="pre">-s</span></tt>, <tt class="docutils literal"><span class="pre">--spdy-bridge</span></tt>, <tt class="docutils literal"><span class="pre">-p</span></tt> and <tt class="docutils literal"><span class="pre">--client</span></tt>
+options, <tt class="docutils literal"><span class="pre">shrpx</span></tt> works as reverse proxy to the backend server:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">,</span> <span class="n">HTTPS</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">HTTP</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Web</span> <span class="n">Server</span>
+                        <span class="p">[</span><span class="n">reverse</span> <span class="n">proxy</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>With <tt class="docutils literal"><span class="pre">-s</span></tt> option, it works as secure SPDY proxy:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">,</span> <span class="n">HTTPS</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">HTTP</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Proxy</span>
+                          <span class="p">[</span><span class="n">SPDY</span> <span class="n">proxy</span><span class="p">]</span>            <span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">g</span><span class="p">.,</span> <span class="n">Squid</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">Client</span></tt> in the above is needs to be configured to use shrpx as
+secure SPDY proxy.</p>
+<p>At the time of this writing, Chrome is the only browser which supports
+secure SPDY proxy. The one way to configure Chrome to use secure SPDY
+proxy is create proxy.pac script like this:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">function</span> <span class="nf">FindProxyForURL</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s">&quot;HTTPS SERVERADDR:PORT&quot;</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><tt class="docutils literal"><span class="pre">SERVERADDR</span></tt> and <tt class="docutils literal"><span class="pre">PORT</span></tt> is the hostname/address and port of the
+machine shrpx is running.  Please note that Chrome requires valid
+certificate for secure SPDY proxy.</p>
+<p>Then run chrome with the following arguments:</p>
+<div class="highlight-c"><pre>$ google-chrome --proxy-pac-url=file:///path/to/proxy.pac --use-npn</pre>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>At the time of this writing, Chrome 24 limits the maximum
+concurrent connections to the proxy to 32. And due to the
+limitation of socket pool handling in Chrome, it is quickly filled
+up if SPDY proxy is used and many SPDY sessions are established. If
+it reaches the limit, the new connections are simply blocked until
+existing connections are timed out. (See <a class="reference external" href="https://code.google.com/p/chromium/issues/detail?id=92244">Chrome Issue 92244</a>). The
+workaround is make the number of maximum connections high, say, 99,
+which is the highest. To do this, you need to change so called
+Policy setup.  See <a class="reference external" href="http://dev.chromium.org/administrators/policy-templates">Policy Templates</a> for
+details how to change Policy setup on the platform you use.  The
+Policy name we are looking for is <a class="reference external" href="http://dev.chromium.org/administrators/policy-list-3#MaxConnectionsPerProxy">MaxConnectionsPerProxy</a>
+For example, if you are using Linux, follow the instruction
+described in <a class="reference external" href="http://dev.chromium.org/administrators/linux-quick-start">Linux Quick Start</a> and
+create <tt class="docutils literal"><span class="pre">/etc/opt/chrome/policies/managed/test_policy.json</span></tt> file
+with the following content and restart Chrome:</p>
+<div class="last highlight-c"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s">&quot;MaxConnectionsPerProxy&quot;</span> <span class="o">:</span><span class="mi">99</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<p>With <tt class="docutils literal"><span class="pre">--spdy-bridge</span></tt>, it accepts SPDY/HTTPS connections and
+communicates with backend in SPDY:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">,</span> <span class="n">HTTPS</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Web</span> <span class="n">or</span> <span class="n">SPDY</span> <span class="n">Proxy</span> <span class="n">etc</span>
+                          <span class="p">[</span><span class="n">SPDY</span> <span class="n">bridge</span><span class="p">]</span>           <span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">g</span><span class="p">.,</span> <span class="n">shrpx</span> <span class="o">-</span><span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With <tt class="docutils literal"><span class="pre">-p</span></tt> option, it works as forward proxy and expects that the
+backend is secure SPDY proxy:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">HTTP</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Secure</span> <span class="n">SPDY</span> <span class="n">Proxy</span>
+                 <span class="p">[</span><span class="n">forward</span> <span class="n">proxy</span><span class="p">]</span>         <span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">g</span><span class="p">.,</span> <span class="n">shrpx</span> <span class="o">-</span><span class="n">s</span> <span class="n">or</span> <span class="n">node</span><span class="o">-</span><span class="n">spdyproxy</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">Client</span></tt> is needs to be configured to use shrpx as forward proxy.</p>
+<p>In this configuration, clients which do not support secure SPDY proxy
+can use secure SPDY proxy through <tt class="docutils literal"><span class="pre">shrpx</span></tt>. Putting <tt class="docutils literal"><span class="pre">shrpx</span></tt> in the
+same box or same network with the clients, this configuration can
+bring the benefits of secure SPDY proxy to those clients. Since the
+maximum number of connections per server still applies in proxy
+connection, the performance gain is not obvious. For example, if the
+maximum number of connections per server is 6, after sending 6
+requests to the proxy, client blocks further requests, which kills
+performance which might be gained in SPDY connection.  For clients
+which can tweak these values (e.g.,
+<tt class="docutils literal"><span class="pre">network.http.max-connections-per-server</span></tt> in Firefox), increasing
+them may improve the performance.</p>
+<p>With <tt class="docutils literal"><span class="pre">--client</span></tt> option, it works as reverse proxy and expects that
+the backend is SPDY-enabled Web server:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">HTTP</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Web</span> <span class="n">Server</span>
+                 <span class="p">[</span><span class="n">reverse</span> <span class="n">proxy</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>For the operation modes which talk to the backend in SPDY, the backend
+connections can be tunneled though HTTP proxy. The proxy is specified
+using <tt class="docutils literal"><span class="pre">--backend-http-proxy-uri</span></tt> option. The following figure
+illustrates the example of <tt class="docutils literal"><span class="pre">--spdy-bridge</span></tt> and
+<tt class="docutils literal"><span class="pre">--backend-http-proxy-uri</span></tt> option to talk to the outside SPDY proxy
+through HTTP proxy:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">,</span> <span class="n">HTTPS</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">)</span> <span class="o">--</span>
+                         <span class="p">[</span><span class="n">SPDY</span> <span class="n">bridge</span><span class="p">]</span>
+
+        <span class="o">--===================---&gt;</span> <span class="n">SPDY</span> <span class="n">Proxy</span>
+          <span class="p">(</span><span class="n">HTTP</span> <span class="n">proxy</span> <span class="n">tunnel</span><span class="p">)</span>     <span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">g</span><span class="p">.,</span> <span class="n">shrpx</span> <span class="o">-</span><span class="n">s</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The <em>examples</em> directory contains a simple SPDY client implementation
+in C.</p>
+</div>
+<div class="section" id="python-spdylay-python-wrapper">
+<h2>Python-Spdylay - Python Wrapper<a class="headerlink" href="#python-spdylay-python-wrapper" title="Permalink to this headline">¶</a></h2>
+<p>The library comes with Python wrapper <tt class="docutils literal"><span class="pre">python-spdylay</span></tt>. See
+<tt class="docutils literal"><span class="pre">python</span></tt> directory.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Menu</h3>
+<ul>
+  <li><a href="http://sourceforge.net/projects/spdylay/files/stable/">Download</a></li>
+  <li><a href="https://github.com/tatsuhiro-t/spdylay/issues">Issues</a></li>
+  <li><a href="https://github.com/tatsuhiro-t/spdylay">Source</a></li>
+  <li><a href="http://sourceforge.net/projects/spdylay">SF.net Project Page</a></li>
+</ul>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Spdylay - SPDY C Library</a><ul>
+<li><a class="reference internal" href="#development-status">Development Status</a></li>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#build-from-git">Build from git</a></li>
+<li><a class="reference internal" href="#building-documentation">Building documentation</a></li>
+<li><a class="reference internal" href="#building-android-binary">Building Android binary</a></li>
+<li><a class="reference internal" href="#api">API</a></li>
+<li><a class="reference internal" href="#spdy-client-and-server-programs">SPDY Client and Server Programs</a><ul>
+<li><a class="reference internal" href="#spdycat-spdy-client">Spdycat - SPDY client</a></li>
+<li><a class="reference internal" href="#spdyd-spdy-server">Spdyd - SPDY server</a></li>
+<li><a class="reference internal" href="#shrpx-a-reverse-proxy-for-spdy-https">Shrpx - A reverse proxy for SPDY/HTTPS</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#python-spdylay-python-wrapper">Python-Spdylay - Python Wrapper</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Spdylay - SPDY C Library</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="apiref.html"
+                        title="next chapter">API Reference</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/package_README.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="apiref.html" title="API Reference"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Spdylay - SPDY C Library"
+             >previous</a> |</li>
+        <li><a href="index.html">Spdylay 1.2.0-DEV documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, 2013, Tatsuhiro Tsujikawa.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

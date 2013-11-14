@@ -1,0 +1,1659 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Python-spdylay - Spdylay Python Extension Module &mdash; Spdylay 1.2.0-DEV documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/default2.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.2.0-DEV',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Spdylay 1.2.0-DEV documentation" href="index.html" />
+    <link rel="next" title="SPDY Proxy with Firefox for Android" href="android-spdy-proxy.html" />
+    <link rel="prev" title="API Reference" href="apiref.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="android-spdy-proxy.html" title="SPDY Proxy with Firefox for Android"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="apiref.html" title="API Reference"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Spdylay 1.2.0-DEV documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-spdylay">
+<span id="python-spdylay-spdylay-python-extension-module"></span><h1>Python-spdylay - Spdylay Python Extension Module<a class="headerlink" href="#module-spdylay" title="Permalink to this headline">¶</a></h1>
+<p>Python-spdylay is the Python extension module of Spdylay SPDY C
+library.</p>
+<div class="section" id="build">
+<h2>Build<a class="headerlink" href="#build" title="Permalink to this headline">¶</a></h2>
+<p>To generate C source code from <tt class="docutils literal"><span class="pre">spdylay.pyx</span></tt>, run <tt class="docutils literal"><span class="pre">cython</span></tt>:</p>
+<div class="highlight-c"><pre>$ cython spdylay.pyx</pre>
+</div>
+<p>To build extension, run <tt class="docutils literal"><span class="pre">setup.py</span></tt>:</p>
+<div class="highlight-c"><pre>$ python setup.py build_ext</pre>
+</div>
+</div>
+<div class="section" id="session-objects">
+<h2>Session Objects<a class="headerlink" href="#session-objects" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="spdylay.Session">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">Session</tt><big>(</big><em>side</em>, <em>version</em>, <em>config=None</em>, <em>send_cb=None</em>, <em>recv_cb=None</em>, <em>on_ctrl_recv_cb=None</em>, <em>on_invalid_ctrl_recv_cb=None</em>, <em>on_data_chunk_recv_cb=None</em>, <em>on_data_recv_cb=None</em>, <em>before_ctrl_send_cb=None</em>, <em>on_ctrl_send_cb=None</em>, <em>on_ctrl_not_send_cb=None</em>, <em>on_data_send_cb=None</em>, <em>on_stream_close_cb=None</em>, <em>on_request_recv_cb=None</em>, <em>on_ctrl_recv_parse_error_cb=None</em>, <em>on_unknown_ctrl_recv_cb=None</em>, <em>user_data=None</em><big>)</big><a class="headerlink" href="#spdylay.Session" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the class to hold the resources needed for a SPDY session.
+Sending and receiving SPDY frames are done using the methods of
+this class.</p>
+<p>The <em>side</em> specifies server or client. Use one of the following:</p>
+<dl class="data">
+<dt id="spdylay.Session.CLIENT">
+<tt class="descname">CLIENT</tt><a class="headerlink" href="#spdylay.Session.CLIENT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicates client.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="spdylay.Session.SERVER">
+<tt class="descname">SERVER</tt><a class="headerlink" href="#spdylay.Session.SERVER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicates server.</p>
+</dd></dl>
+
+<p>The <em>version</em> specifies SPDY protocol version. Use of the following:</p>
+<dl class="data">
+<dt id="spdylay.Session.PROTO_SPDY2">
+<tt class="descname">PROTO_SPDY2</tt><a class="headerlink" href="#spdylay.Session.PROTO_SPDY2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicates SPDY/2.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="spdylay.Session.PROTO_SPDY3">
+<tt class="descname">PROTO_SPDY3</tt><a class="headerlink" href="#spdylay.Session.PROTO_SPDY3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicates SPDY/3.</p>
+</dd></dl>
+
+<p>The <em>user_data</em> specifies opaque object tied to this object. It
+can be accessed through <a class="reference internal" href="#spdylay.Session.user_data" title="spdylay.Session.user_data"><tt class="xref py py-attr docutils literal"><span class="pre">user_data</span></tt></a> attribute.</p>
+<p>The <em>recv_cb</em> specifies callback function (callable) invoked when
+the object wants to receive data from the remote peer. The
+signature of this callback is:</p>
+<dl class="function">
+<dt id="spdylay.Session.recv_cb">
+<tt class="descname">recv_cb</tt><big>(</big><em>session</em>, <em>length</em><big>)</big><a class="headerlink" href="#spdylay.Session.recv_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>session</em> is the <a class="reference internal" href="#spdylay.Session" title="spdylay.Session"><tt class="xref py py-class docutils literal"><span class="pre">Session</span></tt></a> object invoking the
+callback.  The implementation of this function must read at
+most <em>length</em> bytes of bytestring and return it. If it cannot
+read any single byte without blocking, it must return empty
+bytestring or <tt class="docutils literal"><span class="pre">None</span></tt>. If it gets EOF before it reads any
+single byte, it must raise <a class="reference internal" href="#spdylay.EOFError" title="spdylay.EOFError"><tt class="xref py py-class docutils literal"><span class="pre">EOFError</span></tt></a>. For other
+errors, it must raise <a class="reference internal" href="#spdylay.CallbackFailureError" title="spdylay.CallbackFailureError"><tt class="xref py py-class docutils literal"><span class="pre">CallbackFailureError</span></tt></a>.</p>
+</dd></dl>
+
+<p>The <em>send_cb</em> specifies callback function (callable) invoked when
+session wants to send data to the remote peer. The signature of
+this callback is:</p>
+<dl class="function">
+<dt id="spdylay.Session.send_cb">
+<tt class="descname">send_cb</tt><big>(</big><em>session</em>, <em>data</em><big>)</big><a class="headerlink" href="#spdylay.Session.send_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>session</em> is the <a class="reference internal" href="#spdylay.Session" title="spdylay.Session"><tt class="xref py py-class docutils literal"><span class="pre">Session</span></tt></a> object invoking the
+callback. The <em>data</em> is the bytestring to send. The
+implementation of this function will send all or part of
+<em>data</em>. It must return the number of bytes sent if it
+succeeds. If it cannot send any single byte without blocking,
+it must return 0 or <tt class="docutils literal"><span class="pre">None</span></tt>. For other errors, it must return
+<a class="reference internal" href="#spdylay.CallbackFailureError" title="spdylay.CallbackFailureError"><tt class="xref py py-class docutils literal"><span class="pre">CallbackFailureError</span></tt></a>.</p>
+</dd></dl>
+
+<p>The <em>on_ctrl_recv_cb</em> specifies callback function (callable)
+invoked when a control frame is received.</p>
+<dl class="function">
+<dt id="spdylay.Session.on_ctrl_recv_cb">
+<tt class="descname">on_ctrl_recv_cb</tt><big>(</big><em>session</em>, <em>frame</em><big>)</big><a class="headerlink" href="#spdylay.Session.on_ctrl_recv_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>session</em> is the <a class="reference internal" href="#spdylay.Session" title="spdylay.Session"><tt class="xref py py-class docutils literal"><span class="pre">Session</span></tt></a> object invoking the
+callback. The <em>frame</em> is the received control
+frame. <tt class="docutils literal"><span class="pre">frame.frame_type</span></tt> tells the type of frame. See
+<a class="reference internal" href="#frame-types">Frame Types</a> for the details. Once the frame type is
+identified, access attribute of the <em>frame</em> to get
+information.</p>
+</dd></dl>
+
+<p>The <em>on_invalid_ctrl_recv_cb</em> specifies callback function
+(callable) invoked when an invalid control frame is received.</p>
+<dl class="function">
+<dt id="spdylay.Session.on_invalid_ctrl_recv_cb">
+<tt class="descname">on_invalid_ctrl_recv_cb</tt><big>(</big><em>session</em>, <em>frame</em>, <em>status_code</em><big>)</big><a class="headerlink" href="#spdylay.Session.on_invalid_ctrl_recv_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>session</em> is the <a class="reference internal" href="#spdylay.Session" title="spdylay.Session"><tt class="xref py py-class docutils literal"><span class="pre">Session</span></tt></a> object invoking the
+callback. The <em>frame</em> is the received control
+frame. <tt class="docutils literal"><span class="pre">frame.frame_type</span></tt> tells the type of frame. See
+<a class="reference internal" href="#frame-types">Frame Types</a> for the details. Once the frame type is
+identified, access attribute of the <em>frame</em> to get
+information.  The <em>status_code</em> is one of the <a class="reference internal" href="#stream-status-codes">Stream Status
+Codes</a> and indicates the error. When this callback function
+is invoked, either RST_STREAM or GOAWAY will be sent.</p>
+</dd></dl>
+
+<p>The <em>on_data_chunk_recv_cb</em> specifies callback function (callable)
+invoked when a chunk of data in DATA frame is received.</p>
+<dl class="function">
+<dt id="spdylay.Session.on_data_chunk_recv_cb">
+<tt class="descname">on_data_chunk_recv_cb</tt><big>(</big><em>session</em>, <em>flags</em>, <em>stream_id</em>, <em>data</em><big>)</big><a class="headerlink" href="#spdylay.Session.on_data_chunk_recv_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>session</em> is the <a class="reference internal" href="#spdylay.Session" title="spdylay.Session"><tt class="xref py py-class docutils literal"><span class="pre">Session</span></tt></a> object invoking the
+callback. The <em>stream_id</em> is the stream ID this DATA frame
+belongs to. The <em>flags</em> is the flags of DATA frame which this
+data chunk is contained. <tt class="docutils literal"><span class="pre">(flags</span> <span class="pre">&amp;</span> <span class="pre">DATA_FLAG_FIN)</span> <span class="pre">!=</span> <span class="pre">0</span></tt> does
+not necessarily mean this chunk of data is the last one in the
+stream. You should use <a class="reference internal" href="#spdylay.Session.on_data_recv_cb" title="spdylay.Session.on_data_recv_cb"><tt class="xref py py-func docutils literal"><span class="pre">on_data_recv_cb()</span></tt></a> to know all
+data frames are received. The <em>data</em> is the bytestring of
+received data.</p>
+</dd></dl>
+
+<p>The <em>on_data_recv_cb</em> specifies callback function (callable)
+invoked when DATA frame is received.</p>
+<dl class="function">
+<dt id="spdylay.Session.on_data_recv_cb">
+<tt class="descname">on_data_recv_cb</tt><big>(</big><em>session</em>, <em>flags</em>, <em>stream_id</em>, <em>length</em><big>)</big><a class="headerlink" href="#spdylay.Session.on_data_recv_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>The actual data it contains are received by
+<a class="reference internal" href="#spdylay.Session.on_data_chunk_recv_cb" title="spdylay.Session.on_data_chunk_recv_cb"><tt class="xref py py-func docutils literal"><span class="pre">on_data_chunk_recv_cb()</span></tt></a>.</p>
+</dd></dl>
+
+<p>The <em>before_ctrl_send_cb</em> specifies callback function (callable)
+invoked before the control frame is sent.</p>
+<dl class="function">
+<dt id="spdylay.Session.before_ctrl_send_cb">
+<tt class="descname">before_ctrl_send_cb</tt><big>(</big><em>session</em>, <em>frame</em><big>)</big><a class="headerlink" href="#spdylay.Session.before_ctrl_send_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>session</em> is the <a class="reference internal" href="#spdylay.Session" title="spdylay.Session"><tt class="xref py py-class docutils literal"><span class="pre">Session</span></tt></a> object invoking the
+callback. The <em>frame</em> is the control frame to be
+sent. <tt class="docutils literal"><span class="pre">frame.frame_type</span></tt> tells the type of frame. See <a class="reference internal" href="#frame-types">Frame
+Types</a> for the details. Once the frame type is identified,
+access attribute of the <em>frame</em> to get information.</p>
+</dd></dl>
+
+<p>The <em>on_ctrl_send_cb</em> specifies callback function (callable)
+invoked after the control frame is sent.</p>
+<dl class="function">
+<dt id="spdylay.Session.on_ctrl_send_cb">
+<tt class="descname">on_ctrl_send_cb</tt><big>(</big><em>session</em>, <em>frame</em><big>)</big><a class="headerlink" href="#spdylay.Session.on_ctrl_send_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>session</em> is the <a class="reference internal" href="#spdylay.Session" title="spdylay.Session"><tt class="xref py py-class docutils literal"><span class="pre">Session</span></tt></a> object invoking the
+callback. The <em>frame</em> is the control frame to be
+sent. <tt class="docutils literal"><span class="pre">frame.frame_type</span></tt> tells the type of frame. See <a class="reference internal" href="#frame-types">Frame
+Types</a> for the details. Once the frame type is identified,
+access attribute of the <em>frame</em> to get information.</p>
+</dd></dl>
+
+<p>The <em>on_ctrl_not_send_cb</em> specifies callback function (callable)
+after the control frame is not sent because of the error.</p>
+<dl class="function">
+<dt id="spdylay.Session.on_ctrl_not_send_cb">
+<tt class="descname">on_ctrl_not_send_cb</tt><big>(</big><em>session</em>, <em>frame</em>, <em>error_code</em><big>)</big><a class="headerlink" href="#spdylay.Session.on_ctrl_not_send_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>session</em> is the <a class="reference internal" href="#spdylay.Session" title="spdylay.Session"><tt class="xref py py-class docutils literal"><span class="pre">Session</span></tt></a> object invoking the
+callback. The <em>frame</em> is the received control
+frame. <tt class="docutils literal"><span class="pre">frame.frame_type</span></tt> tells the type of frame. See
+<a class="reference internal" href="#frame-types">Frame Types</a> for the details. Once the frame type is
+identified, access attribute of the <em>frame</em> to get
+information.  The <em>error_code</em> is one of the <a class="reference internal" href="#error-codes">Error Codes</a>
+and indicates the error.</p>
+</dd></dl>
+
+<p>The <em>on_data_send_cb</em> specifies callback function (callable)
+invoked after DATA frame is sent.</p>
+<dl class="function">
+<dt id="spdylay.Session.on_data_send_cb">
+<tt class="descname">on_data_send_cb</tt><big>(</big><em>session</em>, <em>flags</em>, <em>stream_id</em>, <em>length</em><big>)</big><a class="headerlink" href="#spdylay.Session.on_data_send_cb" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>The <em>on_stream_close_cb</em> specifies callback function (callable)
+invoked when the stream is closed.</p>
+<dl class="function">
+<dt id="spdylay.Session.on_stream_close_cb">
+<tt class="descname">on_stream_close_cb</tt><big>(</big><em>session</em>, <em>stream_id</em>, <em>status_code</em><big>)</big><a class="headerlink" href="#spdylay.Session.on_stream_close_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>session</em> is the <a class="reference internal" href="#spdylay.Session" title="spdylay.Session"><tt class="xref py py-class docutils literal"><span class="pre">Session</span></tt></a> object invoking the
+callback. The <em>stream_id</em> indicates the stream ID.  The reason
+of closure is indicated by the <em>status_code</em>. See <a class="reference internal" href="#stream-status-codes">Stream
+Status Codes</a> for the details. The stream_user_data, which
+was specified in <a class="reference internal" href="#spdylay.Session.submit_request" title="spdylay.Session.submit_request"><tt class="xref py py-meth docutils literal"><span class="pre">submit_request()</span></tt></a> or
+<a class="reference internal" href="#spdylay.Session.submit_syn_stream" title="spdylay.Session.submit_syn_stream"><tt class="xref py py-meth docutils literal"><span class="pre">submit_syn_stream()</span></tt></a>, is still available in this
+function.</p>
+</dd></dl>
+
+<p>The <em>on_request_recv_cb</em> specifies callback function (callable)
+invoked when the request from the remote peer is received. In
+other words, the frame with FIN flag set is received. In HTTP,
+this means HTTP request, including request body, is fully
+received.</p>
+<dl class="function">
+<dt id="spdylay.Session.on_request_recv_cb">
+<tt class="descname">on_request_recv_cb</tt><big>(</big><em>session</em>, <em>stream_id</em><big>)</big><a class="headerlink" href="#spdylay.Session.on_request_recv_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>session</em> is the <a class="reference internal" href="#spdylay.Session" title="spdylay.Session"><tt class="xref py py-class docutils literal"><span class="pre">Session</span></tt></a> object invoking the
+callback. The <em>stream_id</em> indicates the stream ID.</p>
+</dd></dl>
+
+<p>The <em>on_ctrl_recv_parse_error_cb</em> specifies callback function
+(callable) invoked when the received control frame octets could
+not be parsed correctly.</p>
+<dl class="function">
+<dt id="spdylay.Session.on_ctrl_recv_parse_error_cb">
+<tt class="descname">on_ctrl_recv_parse_error_cb</tt><big>(</big><em>session</em>, <em>type</em>, <em>head</em>, <em>payload</em>, <em>error_code</em><big>)</big><a class="headerlink" href="#spdylay.Session.on_ctrl_recv_parse_error_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>type</em> indicates the type of received control frame. The
+<em>head</em> is the bytestring of control frame header. The
+<em>payload</em> is the bytestring of data portion of the received
+frame. The <em>error_code</em> is one of the error code defined in
+<a class="reference internal" href="#error-codes">Error Codes</a> and indicates the error.</p>
+</dd></dl>
+
+<p>The <em>on_unknown_ctrl_recv_cb</em> specifies callback function
+(callable) invoked when the received control frame type is
+unknown.</p>
+<dl class="function">
+<dt id="spdylay.Session.on_unknown_ctrl_recv_cb">
+<tt class="descname">on_unknown_ctrl_recv_cb</tt><big>(</big><em>session</em>, <em>head</em>, <em>payload</em><big>)</big><a class="headerlink" href="#spdylay.Session.on_unknown_ctrl_recv_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>head</em> is the bytestring of control frame header. The
+<em>payload</em> is the bytestring of data portion of the received
+frame.</p>
+</dd></dl>
+
+<p>The <a class="reference internal" href="#spdylay.InvalidArgumentError" title="spdylay.InvalidArgumentError"><tt class="xref py py-class docutils literal"><span class="pre">InvalidArgumentError</span></tt></a> will be raised if the given
+argument is invalid.  The <a class="reference internal" href="#spdylay.UnsupportedVersionError" title="spdylay.UnsupportedVersionError"><tt class="xref py py-class docutils literal"><span class="pre">UnsupportedVersionError</span></tt></a> will
+be raised if the <em>version</em> is not supported. The
+<a class="reference internal" href="#spdylay.ZlibError" title="spdylay.ZlibError"><tt class="xref py py-class docutils literal"><span class="pre">ZlibError</span></tt></a> will be raised if initialization of zlib
+failed.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.Session.user_data">
+<tt class="descclassname">Session.</tt><tt class="descname">user_data</tt><a class="headerlink" href="#spdylay.Session.user_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>The object passed in the constructor as <em>user_data</em> argument.
+This attribute is read-only.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.send">
+<tt class="descclassname">Session.</tt><tt class="descname">send</tt><big>(</big><big>)</big><a class="headerlink" href="#spdylay.Session.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends pending frames to the remote peer.  This method retrieves
+the highest prioritized frame from the outbound queue and sends it
+to the remote peer. It does this as many as possible until the
+user callback <a class="reference internal" href="#spdylay.Session.send_cb" title="spdylay.Session.send_cb"><tt class="xref py py-func docutils literal"><span class="pre">send_cb()</span></tt></a> returns 0 or <tt class="docutils literal"><span class="pre">None</span></tt> or the
+outbound queue becomes empty. This method calls several callback
+functions which are passed when initializing the session.  See
+<a class="reference internal" href="apiref.html#spdylay_session_send" title="spdylay_session_send"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_send()</span></tt></a> about the callback functions invoked
+from this method.</p>
+<p>The <a class="reference internal" href="#spdylay.CallbackFailureError" title="spdylay.CallbackFailureError"><tt class="xref py py-class docutils literal"><span class="pre">CallbackFailureError</span></tt></a> will be raised if the
+callback function failed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.recv">
+<tt class="descclassname">Session.</tt><tt class="descname">recv</tt><big>(</big><em>data=None</em><big>)</big><a class="headerlink" href="#spdylay.Session.recv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Receives frames from the remote peer.  This method receives as
+many frames as possible until the user callback <a class="reference internal" href="#spdylay.Session.recv_cb" title="spdylay.Session.recv_cb"><tt class="xref py py-func docutils literal"><span class="pre">recv_cb()</span></tt></a>
+returns empty bytestring or <tt class="docutils literal"><span class="pre">None</span></tt>. This function calls several
+callback functions which are passed when initializing the session.
+See <a class="reference internal" href="apiref.html#spdylay_session_recv" title="spdylay_session_recv"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_recv()</span></tt></a> about the callback functions
+invoked from this method. If data is <tt class="docutils literal"><span class="pre">None</span></tt>, this method will
+invoke <a class="reference internal" href="#spdylay.Session.recv_cb" title="spdylay.Session.recv_cb"><tt class="xref py py-func docutils literal"><span class="pre">recv_cb()</span></tt></a> callback function to receive incoming
+data.  If data is not <tt class="docutils literal"><span class="pre">None</span></tt>, it must be a bytestring and this
+method uses it as the incoming data and does not call
+<a class="reference internal" href="#spdylay.Session.recv_cb" title="spdylay.Session.recv_cb"><tt class="xref py py-func docutils literal"><span class="pre">recv_cb()</span></tt></a> callback function.</p>
+<p>The <a class="reference internal" href="#spdylay.EOFError" title="spdylay.EOFError"><tt class="xref py py-class docutils literal"><span class="pre">EOFError</span></tt></a> will be raised if the remote peer did
+shutdown on the connection. The <a class="reference internal" href="#spdylay.CallbackFailureError" title="spdylay.CallbackFailureError"><tt class="xref py py-class docutils literal"><span class="pre">CallbackFailureError</span></tt></a>
+will be raised if the callback function failed.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.resume_data">
+<tt class="descclassname">Session.</tt><tt class="descname">resume_data</tt><big>(</big><em>stream_id</em><big>)</big><a class="headerlink" href="#spdylay.Session.resume_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Puts back previously deferred DATA frame in the stream <em>stream_id</em>
+to the outbound queue.</p>
+<p>This method returns <tt class="docutils literal"><span class="pre">True</span></tt> if it succeeds, or <tt class="docutils literal"><span class="pre">False</span></tt>.  This
+method will fail if the stream does not exist or no deferred data
+exist.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.want_read">
+<tt class="descclassname">Session.</tt><tt class="descname">want_read</tt><big>(</big><big>)</big><a class="headerlink" href="#spdylay.Session.want_read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns <tt class="docutils literal"><span class="pre">True</span></tt> if session wants to receive data from the
+remote peer.</p>
+<p>If both <a class="reference internal" href="#spdylay.Session.want_read" title="spdylay.Session.want_read"><tt class="xref py py-meth docutils literal"><span class="pre">want_read()</span></tt></a> and <a class="reference internal" href="#spdylay.Session.want_write" title="spdylay.Session.want_write"><tt class="xref py py-meth docutils literal"><span class="pre">want_write()</span></tt></a> return
+<tt class="docutils literal"><span class="pre">False</span></tt>, the application should drop the connection.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.want_write">
+<tt class="descclassname">Session.</tt><tt class="descname">want_write</tt><big>(</big><big>)</big><a class="headerlink" href="#spdylay.Session.want_write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns <tt class="docutils literal"><span class="pre">True</span></tt> if session wants to send data to the remote peer.</p>
+<p>If both <a class="reference internal" href="#spdylay.Session.want_read" title="spdylay.Session.want_read"><tt class="xref py py-meth docutils literal"><span class="pre">want_read()</span></tt></a> and <a class="reference internal" href="#spdylay.Session.want_write" title="spdylay.Session.want_write"><tt class="xref py py-meth docutils literal"><span class="pre">want_write()</span></tt></a> return
+<tt class="docutils literal"><span class="pre">False</span></tt>, the application should drop the connection.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.get_stream_user_data">
+<tt class="descclassname">Session.</tt><tt class="descname">get_stream_user_data</tt><big>(</big><em>stream_id</em><big>)</big><a class="headerlink" href="#spdylay.Session.get_stream_user_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns stream_user_data for the stream <em>stream_id</em>. The
+stream_user_data is provided by <a class="reference internal" href="#spdylay.Session.submit_request" title="spdylay.Session.submit_request"><tt class="xref py py-meth docutils literal"><span class="pre">submit_request()</span></tt></a> or
+<a class="reference internal" href="#spdylay.Session.submit_syn_stream" title="spdylay.Session.submit_syn_stream"><tt class="xref py py-meth docutils literal"><span class="pre">submit_syn_stream()</span></tt></a>. If the stream is initiated by the
+remote endpoint, stream_user_data is always <tt class="docutils literal"><span class="pre">None</span></tt>. If the
+stream is initiated by the local endpoint and <tt class="docutils literal"><span class="pre">None</span></tt> is given in
+<a class="reference internal" href="#spdylay.Session.submit_request" title="spdylay.Session.submit_request"><tt class="xref py py-meth docutils literal"><span class="pre">submit_request()</span></tt></a> or <a class="reference internal" href="#spdylay.Session.submit_syn_stream" title="spdylay.Session.submit_syn_stream"><tt class="xref py py-meth docutils literal"><span class="pre">submit_syn_stream()</span></tt></a>,
+then this function returns <tt class="docutils literal"><span class="pre">None</span></tt>. If the stream does not exist,
+this function returns <tt class="docutils literal"><span class="pre">None</span></tt>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.get_outbound_queue_size">
+<tt class="descclassname">Session.</tt><tt class="descname">get_outbound_queue_size</tt><big>(</big><big>)</big><a class="headerlink" href="#spdylay.Session.get_outbound_queue_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of frames in the outbound queue. This does not
+include the deferred DATA frames.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.get_pri_lowest">
+<tt class="descclassname">Session.</tt><tt class="descname">get_pri_lowest</tt><big>(</big><big>)</big><a class="headerlink" href="#spdylay.Session.get_pri_lowest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns lowest priority value for the session.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.fail_session">
+<tt class="descclassname">Session.</tt><tt class="descname">fail_session</tt><big>(</big><em>status_code</em><big>)</big><a class="headerlink" href="#spdylay.Session.fail_session" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits GOAWAY frame. The status code <em>status_code</em> is ignored if
+the protocol version is <a class="reference internal" href="#spdylay.Session.PROTO_SPDY2" title="spdylay.Session.PROTO_SPDY2"><tt class="xref py py-const docutils literal"><span class="pre">PROTO_SPDY2</span></tt></a>.</p>
+<p>This method should be called when the connection should be
+terminated after sending GOAWAY. If the remaining streams should
+be processed after GOAWAY, use <a class="reference internal" href="#spdylay.Session.submit_goaway" title="spdylay.Session.submit_goaway"><tt class="xref py py-meth docutils literal"><span class="pre">submit_goaway()</span></tt></a> instead.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.submit_request">
+<tt class="descclassname">Session.</tt><tt class="descname">submit_request</tt><big>(</big><em>pri</em>, <em>nv</em>, <em>data_prd=None</em>, <em>stream_user_data=None</em><big>)</big><a class="headerlink" href="#spdylay.Session.submit_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits SYN_STREAM frame and optionally one or more DATA frames.</p>
+<p>The <em>pri</em> is priority of this request. <tt class="docutils literal"><span class="pre">0</span></tt> is the highest
+priority value. Use <a class="reference internal" href="#spdylay.Session.get_pri_lowest" title="spdylay.Session.get_pri_lowest"><tt class="xref py py-meth docutils literal"><span class="pre">get_pri_lowest()</span></tt></a> to know the lowest
+priority value for this session.</p>
+<p>The <em>nv</em> is a list containing the name/value pairs.  The each
+element is a pair of unicode strings: name and value (e.g.,
+<tt class="docutils literal"><span class="pre">(u'host',</span> <span class="pre">u'localhost')</span></tt>).</p>
+<p>The <em>nv</em> must include following name/value pairs:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">:method</span></tt></dt>
+<dd>HTTP method (e.g., <tt class="docutils literal"><span class="pre">GET</span></tt>, <tt class="docutils literal"><span class="pre">POST</span></tt>, <tt class="docutils literal"><span class="pre">HEAD</span></tt>, etc)</dd>
+<dt><tt class="docutils literal"><span class="pre">:scheme</span></tt></dt>
+<dd>URI scheme (e.g., <tt class="docutils literal"><span class="pre">https</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">:path</span></tt></dt>
+<dd>Absolute path and parameters of this request (e.g., <tt class="docutils literal"><span class="pre">/foo</span></tt>,
+<tt class="docutils literal"><span class="pre">/foo;bar;haz?h=j&amp;y=123</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">:version</span></tt></dt>
+<dd>HTTP version (e.g., <tt class="docutils literal"><span class="pre">HTTP/1.1</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">:host</span></tt></dt>
+<dd>The hostport portion of the URI for this request (e.g.,
+<tt class="docutils literal"><span class="pre">example.org:443</span></tt>). This is the same as the HTTP “Host”
+header field.</dd>
+</dl>
+<p>If the session is initialized with the version
+<a class="reference internal" href="#spdylay.Session.PROTO_SPDY2" title="spdylay.Session.PROTO_SPDY2"><tt class="xref py py-const docutils literal"><span class="pre">PROTO_SPDY2</span></tt></a>, the above names are translated to
+<tt class="docutils literal"><span class="pre">method</span></tt>, <tt class="docutils literal"><span class="pre">scheme</span></tt>, <tt class="docutils literal"><span class="pre">url</span></tt>, <tt class="docutils literal"><span class="pre">version</span></tt> and <tt class="docutils literal"><span class="pre">host</span></tt>
+respectively.</p>
+<p>The names in <em>nv</em> will be lower-cased when they are sent.</p>
+<p>If <em>data_prd</em> is not <tt class="docutils literal"><span class="pre">None</span></tt>, it provides data which will be sent
+in subsequent DATA frames. In this case, a method that allows
+request message bodies
+(<a class="reference external" href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9">http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9</a>) must
+be specified with <tt class="docutils literal"><span class="pre">:method</span></tt> key in nv (e.g. <tt class="docutils literal"><span class="pre">POST</span></tt>).  The type
+of <em>data_prd</em> is expected to be <a class="reference internal" href="#spdylay.DataProvider" title="spdylay.DataProvider"><tt class="xref py py-class docutils literal"><span class="pre">DataProvider</span></tt></a>. If
+<em>data_prd</em> is <tt class="docutils literal"><span class="pre">None</span></tt>, SYN_STREAM have FLAG_FIN set.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method does not increase reference count of <em>data_prd</em>,
+so the application must hold the reference to it until the
+stream is closed.</p>
+</div>
+<p>The <em>stream_user_data</em> is data associated to the stream opened by
+this request and can be an arbitrary object, which can be
+retrieved later by <a class="reference internal" href="#spdylay.Session.get_stream_user_data" title="spdylay.Session.get_stream_user_data"><tt class="xref py py-meth docutils literal"><span class="pre">get_stream_user_data()</span></tt></a>.</p>
+<p>Since the library reorders the frames and tries to send the
+highest prioritized one first and the SPDY specification requires
+the stream ID must be strictly increasing, the stream ID of this
+request cannot be known until it is about to sent. To know the
+stream ID of the request, the application can use
+<a class="reference internal" href="#spdylay.Session.before_ctrl_send_cb" title="spdylay.Session.before_ctrl_send_cb"><tt class="xref py py-func docutils literal"><span class="pre">before_ctrl_send_cb()</span></tt></a>. This callback is called just
+before the frame is sent. For SYN_STREAM frame, the argument frame
+has the stream ID assigned. Also since the stream is already
+opened, <a class="reference internal" href="#spdylay.Session.get_stream_user_data" title="spdylay.Session.get_stream_user_data"><tt class="xref py py-meth docutils literal"><span class="pre">get_stream_user_data()</span></tt></a> can be used to get
+stream_user_data to identify which SYN_STREAM we are processing.</p>
+<p>The <a class="reference internal" href="#spdylay.InvalidArgumentError" title="spdylay.InvalidArgumentError"><tt class="xref py py-class docutils literal"><span class="pre">InvalidArgumentError</span></tt></a> will be raised if the <em>pri</em>
+is invalid; or the <em>nv</em> includes empty name or <tt class="docutils literal"><span class="pre">None</span></tt> value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.submit_response">
+<tt class="descclassname">Session.</tt><tt class="descname">submit_response</tt><big>(</big><em>stream_id</em>, <em>nv</em>, <em>data_prd=None</em><big>)</big><a class="headerlink" href="#spdylay.Session.submit_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits SYN_REPLY frame and optionally one or more DATA frames
+against the stream <em>stream_id</em>.</p>
+<p>The <em>nv</em> is a list containing the name/value pairs.  The each
+element is a pair of unicode strings: name and value (e.g.,
+<tt class="docutils literal"><span class="pre">(u'host',</span> <span class="pre">u'localhost')</span></tt>).</p>
+<p>The <em>nv</em> must include following name/value pairs:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">:status</span></tt></dt>
+<dd>HTTP status code (e.g., <tt class="docutils literal"><span class="pre">200</span></tt> or <tt class="docutils literal"><span class="pre">200</span> <span class="pre">OK</span></tt>)</dd>
+<dt><tt class="docutils literal"><span class="pre">:version</span></tt></dt>
+<dd>HTTP response version (e.g., <tt class="docutils literal"><span class="pre">HTTP/1.1</span></tt>)</dd>
+</dl>
+<p>If the session is initialized with the version
+<a class="reference internal" href="#spdylay.Session.PROTO_SPDY2" title="spdylay.Session.PROTO_SPDY2"><tt class="xref py py-const docutils literal"><span class="pre">PROTO_SPDY2</span></tt></a>, the above names are translated to
+<tt class="docutils literal"><span class="pre">status</span></tt> and <tt class="docutils literal"><span class="pre">version</span></tt> respectively.</p>
+<p>The names in <em>nv</em> will be lower-cased when they are sent.</p>
+<p>If <em>data_prd</em> is not <tt class="docutils literal"><span class="pre">None</span></tt>, it provides data which will be sent
+in subsequent DATA frames. The type of <em>data_prd</em> is expected to
+be <a class="reference internal" href="#spdylay.DataProvider" title="spdylay.DataProvider"><tt class="xref py py-class docutils literal"><span class="pre">DataProvider</span></tt></a>.  If <em>data_prd</em> is <tt class="docutils literal"><span class="pre">None</span></tt>, SYN_REPLY
+have FLAG_FIN set.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method does not increase reference count of <em>data_prd</em>,
+so the application must hold the reference to it until the
+stream is closed.</p>
+</div>
+<p>The <a class="reference internal" href="#spdylay.InvalidArgumentError" title="spdylay.InvalidArgumentError"><tt class="xref py py-class docutils literal"><span class="pre">InvalidArgumentError</span></tt></a> will be raised if the <em>nv</em>
+includes empty name or <tt class="docutils literal"><span class="pre">None</span></tt> value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.submit_syn_stream">
+<tt class="descclassname">Session.</tt><tt class="descname">submit_syn_stream</tt><big>(</big><em>flags</em>, <em>pri</em>, <em>nv</em>, <em>assoc_stream_id=0</em>, <em>stream_user_data=None</em><big>)</big><a class="headerlink" href="#spdylay.Session.submit_syn_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits SYN_STREAM frame. The <em>flags</em> is bitwise OR of the
+following values:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#spdylay.CTRL_FLAG_FIN" title="spdylay.CTRL_FLAG_FIN"><tt class="xref py py-const docutils literal"><span class="pre">CTRL_FLAG_FIN</span></tt></a></li>
+<li><a class="reference internal" href="#spdylay.CTRL_FLAG_UNIDIRECTIONAL" title="spdylay.CTRL_FLAG_UNIDIRECTIONAL"><tt class="xref py py-const docutils literal"><span class="pre">CTRL_FLAG_UNIDIRECTIONAL</span></tt></a></li>
+</ul>
+<p>If <em>flags</em> includes <a class="reference internal" href="#spdylay.CTRL_FLAG_FIN" title="spdylay.CTRL_FLAG_FIN"><tt class="xref py py-const docutils literal"><span class="pre">CTRL_FLAG_FIN</span></tt></a>, this frame has
+FLAG_FIN flag set.</p>
+<p>The <em>assoc_stream_id</em> is used for server-push. Specify 0 if this
+stream is not server-push. If session is initialized for client
+use, <em>assoc_stream_id</em> is ignored.</p>
+<p>The <em>pri</em> is priority of this request. <tt class="docutils literal"><span class="pre">0</span></tt> is the highest
+priority value. Use <a class="reference internal" href="#spdylay.Session.get_pri_lowest" title="spdylay.Session.get_pri_lowest"><tt class="xref py py-meth docutils literal"><span class="pre">get_pri_lowest()</span></tt></a> to know the lowest
+priority value for this session.</p>
+<p>The <em>nv</em> is a list containing the name/value pairs.  The each
+element is a pair of unicode strings: name and value (e.g.,
+<tt class="docutils literal"><span class="pre">(u'host',</span> <span class="pre">u'localhost')</span></tt>).</p>
+<p>The names in <em>nv</em> will be lower-cased when they are sent.</p>
+<p>The <em>stream_user_data</em> is data associated to the stream opened by
+this request and can be an arbitrary object, which can be
+retrieved later by <a class="reference internal" href="#spdylay.Session.get_stream_user_data" title="spdylay.Session.get_stream_user_data"><tt class="xref py py-meth docutils literal"><span class="pre">get_stream_user_data()</span></tt></a>.</p>
+<p>This function is low-level in a sense that the application code
+can specify flags and the Associated-To-Stream-ID directly. For
+usual HTTP request, <a class="reference internal" href="#spdylay.Session.submit_request" title="spdylay.Session.submit_request"><tt class="xref py py-meth docutils literal"><span class="pre">submit_request()</span></tt></a> is useful.</p>
+<p>The <a class="reference internal" href="#spdylay.InvalidArgumentError" title="spdylay.InvalidArgumentError"><tt class="xref py py-class docutils literal"><span class="pre">InvalidArgumentError</span></tt></a> will be raised if the <em>pri</em>
+is invalid; or the <em>assoc_stream_id</em> is invalid; or the <em>nv</em>
+includes empty name or <tt class="docutils literal"><span class="pre">None</span></tt> value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.submit_syn_reply">
+<tt class="descclassname">Session.</tt><tt class="descname">submit_syn_reply</tt><big>(</big><em>flags</em>, <em>stream_id</em>, <em>nv</em><big>)</big><a class="headerlink" href="#spdylay.Session.submit_syn_reply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits SYN_REPLY frame. The <em>flags</em> is bitwise OR of the
+following values:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#spdylay.CTRL_FLAG_FIN" title="spdylay.CTRL_FLAG_FIN"><tt class="xref py py-const docutils literal"><span class="pre">CTRL_FLAG_FIN</span></tt></a></li>
+</ul>
+<p>If <em>flags</em> includes <a class="reference internal" href="#spdylay.CTRL_FLAG_FIN" title="spdylay.CTRL_FLAG_FIN"><tt class="xref py py-const docutils literal"><span class="pre">CTRL_FLAG_FIN</span></tt></a>, this frame has
+FLAG_FIN flag set.</p>
+<p>The stream which this frame belongs to is given in the
+<em>stream_id</em>. The <em>nv</em> is the name/value pairs in this frame.</p>
+<p>The <em>nv</em> is a list containing the name/value pairs.  The each
+element is a pair of unicode strings: name and value (e.g.,
+<tt class="docutils literal"><span class="pre">(u'host',</span> <span class="pre">u'localhost')</span></tt>).</p>
+<p>The names in <em>nv</em> will be lower-cased when they are sent.</p>
+<p>The <a class="reference internal" href="#spdylay.InvalidArgumentError" title="spdylay.InvalidArgumentError"><tt class="xref py py-class docutils literal"><span class="pre">InvalidArgumentError</span></tt></a> will be raised if the <em>nv</em>
+includes empty name or <tt class="docutils literal"><span class="pre">None</span></tt> value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.submit_headers">
+<tt class="descclassname">Session.</tt><tt class="descname">submit_headers</tt><big>(</big><em>flags</em>, <em>stream_id</em>, <em>nv</em><big>)</big><a class="headerlink" href="#spdylay.Session.submit_headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits HEADERS frame. The <em>flags</em> is bitwise OR of the following
+values:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#spdylay.CTRL_FLAG_FIN" title="spdylay.CTRL_FLAG_FIN"><tt class="xref py py-const docutils literal"><span class="pre">CTRL_FLAG_FIN</span></tt></a></li>
+</ul>
+<p>If <em>flags</em> includes <a class="reference internal" href="#spdylay.CTRL_FLAG_FIN" title="spdylay.CTRL_FLAG_FIN"><tt class="xref py py-const docutils literal"><span class="pre">CTRL_FLAG_FIN</span></tt></a>, this frame has
+FLAG_FIN flag set.</p>
+<p>The stream which this frame belongs to is given in the
+<em>stream_id</em>. The <em>nv</em> is the name/value pairs in this frame.</p>
+<p>The <em>nv</em> is a list containing the name/value pairs.  The each
+element is a pair of unicode strings: name and value (e.g.,
+<tt class="docutils literal"><span class="pre">(u'host',</span> <span class="pre">u'localhost')</span></tt>).</p>
+<p>The names in <em>nv</em> will be lower-cased when they are sent.</p>
+<p>The <a class="reference internal" href="#spdylay.InvalidArgumentError" title="spdylay.InvalidArgumentError"><tt class="xref py py-class docutils literal"><span class="pre">InvalidArgumentError</span></tt></a> will be raised if the <em>nv</em>
+includes empty name or <tt class="docutils literal"><span class="pre">None</span></tt> value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.submit_data">
+<tt class="descclassname">Session.</tt><tt class="descname">submit_data</tt><big>(</big><em>stream_id</em>, <em>flags</em>, <em>data_prd</em><big>)</big><a class="headerlink" href="#spdylay.Session.submit_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits one or more DATA frames to the stream <em>stream_id</em>. The
+data to be sent are provided by <em>data_prd</em>.  The type of
+<em>data_prd</em> is expected to be <a class="reference internal" href="#spdylay.DataProvider" title="spdylay.DataProvider"><tt class="xref py py-class docutils literal"><span class="pre">DataProvider</span></tt></a>. If <em>flags</em>
+contains <tt class="xref py py-const docutils literal"><span class="pre">DATA_FLAG_FIN</span></tt>, the last DATA frame has
+FLAG_FIN set.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This method does not increase reference count of <em>data_prd</em>,
+so the application must hold the reference to it until the
+stream is closed.</p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.submit_rst_stream">
+<tt class="descclassname">Session.</tt><tt class="descname">submit_rst_stream</tt><big>(</big><em>stream_id</em>, <em>status_code</em><big>)</big><a class="headerlink" href="#spdylay.Session.submit_rst_stream" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits RST_STREAM frame to cancel/reject the stream <em>stream_id</em>
+with the status code <em>status_code</em>. See <a class="reference internal" href="#stream-status-codes">Stream Status Codes</a> for
+available status codes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.submit_ping">
+<tt class="descclassname">Session.</tt><tt class="descname">submit_ping</tt><big>(</big><big>)</big><a class="headerlink" href="#spdylay.Session.submit_ping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits PING frame.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.submit_goaway">
+<tt class="descclassname">Session.</tt><tt class="descname">submit_goaway</tt><big>(</big><em>status_code</em><big>)</big><a class="headerlink" href="#spdylay.Session.submit_goaway" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits GOAWAY frame. The status code <em>status_code</em> is ignored if
+the protocol version is <a class="reference internal" href="#spdylay.Session.PROTO_SPDY2" title="spdylay.Session.PROTO_SPDY2"><tt class="xref py py-const docutils literal"><span class="pre">PROTO_SPDY2</span></tt></a>. See <a class="reference internal" href="#goaway-status-codes">GOAWAY
+Status Codes</a> for available status codes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.submit_settings">
+<tt class="descclassname">Session.</tt><tt class="descname">submit_settings</tt><big>(</big><em>flags</em>, <em>iv</em><big>)</big><a class="headerlink" href="#spdylay.Session.submit_settings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stores local settings and submits SETTINGS frame. The <em>flags</em> is
+bitwise OR of the values described in <a class="reference internal" href="#settings-frame-flags">SETTINGS Frame Flags</a>.</p>
+<p>The <em>iv</em> is a list of tuple <tt class="docutils literal"><span class="pre">(settings_id,</span> <span class="pre">flag,</span> <span class="pre">value)</span></tt>.  For
+settings_id, see <a class="reference internal" href="#settings-ids">SETTINGS IDs</a>. For flag, see <a class="reference internal" href="#settings-id-flags">SETTINGS ID
+Flags</a>.</p>
+<p>The <a class="reference internal" href="#spdylay.InvalidArgumentError" title="spdylay.InvalidArgumentError"><tt class="xref py py-class docutils literal"><span class="pre">InvalidArgumentError</span></tt></a> will be raised if the <em>iv</em>
+contains duplicate settings ID or invalid value.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.Session.submit_window_update">
+<tt class="descclassname">Session.</tt><tt class="descname">submit_window_update</tt><big>(</big><em>stream_id</em>, <em>delta_window_size</em><big>)</big><a class="headerlink" href="#spdylay.Session.submit_window_update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Submits WINDOW_UPDATE frame. The effective range of the
+<em>delta_window_size</em> is <tt class="docutils literal"><span class="pre">[1,</span> <span class="pre">(1</span> <span class="pre">&lt;&lt;</span> <span class="pre">31)-1]</span></tt>, inclusive. But the
+application must be responsible to keep the resulting window
+<tt class="docutils literal"><span class="pre">size</span> <span class="pre">&lt;=</span> <span class="pre">(1</span> <span class="pre">&lt;&lt;</span> <span class="pre">31)-1</span></tt>.</p>
+<p>The <a class="reference internal" href="#spdylay.InvalidArgumentError" title="spdylay.InvalidArgumentError"><tt class="xref py py-class docutils literal"><span class="pre">InvalidArgumentError</span></tt></a> will be raised if the
+<em>delta_window_size</em> is 0 or negative. The
+<a class="reference internal" href="#spdylay.StreamClosedError" title="spdylay.StreamClosedError"><tt class="xref py py-class docutils literal"><span class="pre">StreamClosedError</span></tt></a> will be raised if the stream is
+already closed or does not exist.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="helper-functions">
+<h2>Helper Functions<a class="headerlink" href="#helper-functions" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="spdylay.get_npn_protocols">
+<tt class="descclassname">spdylay.</tt><tt class="descname">get_npn_protocols</tt><big>(</big><big>)</big><a class="headerlink" href="#spdylay.get_npn_protocols" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns SPDY version strings which can be directly passed to
+<tt class="docutils literal"><span class="pre">ssl.SSLContext.set_npn_protocols()</span></tt>. Please note that the
+returned list only includes SPDY version strings this library
+supports. If the application intends to support other fallback
+protocols (e.g., <tt class="docutils literal"><span class="pre">http/1.1</span></tt>), the application should add them to
+the returned list.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="spdylay.npn_get_version">
+<tt class="descclassname">spdylay.</tt><tt class="descname">npn_get_version</tt><big>(</big><em>proto</em><big>)</big><a class="headerlink" href="#spdylay.npn_get_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns SPDY version which spdylay library supports from the given
+protocol name. The <em>proto</em> is the unicode string to the protocol
+name. Currently, <tt class="docutils literal"><span class="pre">spdy/2</span></tt> and <tt class="docutils literal"><span class="pre">spdy/3</span></tt> are supported.  The
+returned nonzero SPDY version can be passed as the version
+argument in <a class="reference internal" href="#spdylay.Session" title="spdylay.Session"><tt class="xref py py-class docutils literal"><span class="pre">Session</span></tt></a> constructor.</p>
+<p>This function returns nonzero SPDY version if it succeeds, or 0.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="data-provider-objects">
+<h2>Data Provider Objects<a class="headerlink" href="#data-provider-objects" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="spdylay.DataProvider">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">DataProvider</tt><big>(</big><em>source</em>, <em>read_cb</em><big>)</big><a class="headerlink" href="#spdylay.DataProvider" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class represents the data source and the way to read a chunk
+of data from it. The <em>source</em> is expected to be the data source to
+read, but the application can freely pass any object including
+<tt class="docutils literal"><span class="pre">None</span></tt>. The <em>read_cb</em> is the callback function invoked when the
+library needs to read data. The data read will be sent as DATA
+frame.</p>
+<dl class="function">
+<dt id="spdylay.DataProvider.read_cb">
+<tt class="descname">read_cb</tt><big>(</big><em>session</em>, <em>stream_id</em>, <em>length</em>, <em>read_ctrl</em>, <em>source</em><big>)</big><a class="headerlink" href="#spdylay.DataProvider.read_cb" title="Permalink to this definition">¶</a></dt>
+<dd><p>The <em>session</em> is the <a class="reference internal" href="#spdylay.Session" title="spdylay.Session"><tt class="xref py py-class docutils literal"><span class="pre">Session</span></tt></a> object. The
+<em>stream_id</em> is the stream to send data. The <em>source</em> is the
+object passed as a <em>source</em> in DataProvider constructor. The
+implementation of this callback must read at most <em>length</em>
+bytes of data and return it as bytestring. When all data is
+read, assign <a class="reference internal" href="#spdylay.READ_EOF" title="spdylay.READ_EOF"><tt class="xref py py-const docutils literal"><span class="pre">READ_EOF</span></tt></a> to <tt class="docutils literal"><span class="pre">read_ctrl.flags</span></tt>.  If
+the application wants to postpone DATA frames, (e.g.,
+asynchronous I/O, or reading data blocks for long time), it is
+achieved by returning <a class="reference internal" href="#spdylay.ERR_DEFERRED" title="spdylay.ERR_DEFERRED"><tt class="xref py py-const docutils literal"><span class="pre">ERR_DEFERRED</span></tt></a> without reading
+any data in this invocation. The library removes DATA frame
+from the outgoing queue temporarily. To move back deferred
+DATA frame to outgoing queue, call
+<a class="reference internal" href="#spdylay.Session.resume_data" title="spdylay.Session.resume_data"><tt class="xref py py-meth docutils literal"><span class="pre">Session.resume_data()</span></tt></a>. In case of error, there are
+2 choices. Raising <a class="reference internal" href="#spdylay.TemporalCallbackFailureError" title="spdylay.TemporalCallbackFailureError"><tt class="xref py py-class docutils literal"><span class="pre">TemporalCallbackFailureError</span></tt></a>
+will close the stream by issuing RST_STREAM with
+<a class="reference internal" href="#spdylay.INTERNAL_ERROR" title="spdylay.INTERNAL_ERROR"><tt class="xref py py-const docutils literal"><span class="pre">INTERNAL_ERROR</span></tt></a>. Raising
+<a class="reference internal" href="#spdylay.CallbackFailureError" title="spdylay.CallbackFailureError"><tt class="xref py py-class docutils literal"><span class="pre">CallbackFailureError</span></tt></a> will signal the entire
+session failure.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.DataProvider.source">
+<tt class="descclassname">DataProvider.</tt><tt class="descname">source</tt><a class="headerlink" href="#spdylay.DataProvider.source" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<tt class="descclassname">DataProvider.</tt><tt class="descname">read_cb</tt></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="control-frame-objects">
+<h2>Control Frame Objects<a class="headerlink" href="#control-frame-objects" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="spdylay.CtrlFrame">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">CtrlFrame</tt><a class="headerlink" href="#spdylay.CtrlFrame" title="Permalink to this definition">¶</a></dt>
+<dd><p>The base class of SPDY control frames.</p>
+<dl class="attribute">
+<dt id="spdylay.CtrlFrame.version">
+<tt class="descname">version</tt><a class="headerlink" href="#spdylay.CtrlFrame.version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Version</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.CtrlFrame.frame_type">
+<tt class="descname">frame_type</tt><a class="headerlink" href="#spdylay.CtrlFrame.frame_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Frame type. See <a class="reference internal" href="#frame-types">Frame Types</a>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.CtrlFrame.flags">
+<tt class="descname">flags</tt><a class="headerlink" href="#spdylay.CtrlFrame.flags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flags. See <a class="reference internal" href="#control-frame-flags">Control Frame Flags</a>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.CtrlFrame.length">
+<tt class="descname">length</tt><a class="headerlink" href="#spdylay.CtrlFrame.length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Frame payload length</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>The following frame classes inherit <a class="reference internal" href="#spdylay.CtrlFrame" title="spdylay.CtrlFrame"><tt class="xref py py-class docutils literal"><span class="pre">CtrlFrame</span></tt></a> class.</p>
+<dl class="class">
+<dt id="spdylay.SynStreamFrame">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">SynStreamFrame</tt><a class="headerlink" href="#spdylay.SynStreamFrame" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="spdylay.SynStreamFrame.stream_id">
+<tt class="descname">stream_id</tt><a class="headerlink" href="#spdylay.SynStreamFrame.stream_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stream ID</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.SynStreamFrame.assoc_stream_id">
+<tt class="descname">assoc_stream_id</tt><a class="headerlink" href="#spdylay.SynStreamFrame.assoc_stream_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Associated-To-Stream-ID</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.SynStreamFrame.pri">
+<tt class="descname">pri</tt><a class="headerlink" href="#spdylay.SynStreamFrame.pri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Priority</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.SynStreamFrame.slot">
+<tt class="descname">slot</tt><a class="headerlink" href="#spdylay.SynStreamFrame.slot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Credential slot</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.SynStreamFrame.nv">
+<tt class="descname">nv</tt><a class="headerlink" href="#spdylay.SynStreamFrame.nv" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of name/value pair.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spdylay.SynReplyFrame">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">SynReplyFrame</tt><a class="headerlink" href="#spdylay.SynReplyFrame" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="spdylay.SynReplyFrame.stream_id">
+<tt class="descname">stream_id</tt><a class="headerlink" href="#spdylay.SynReplyFrame.stream_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stream ID</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.SynReplyFrame.nv">
+<tt class="descname">nv</tt><a class="headerlink" href="#spdylay.SynReplyFrame.nv" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of name/value pair.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spdylay.HeadersFrame">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">HeadersFrame</tt><a class="headerlink" href="#spdylay.HeadersFrame" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="spdylay.HeadersFrame.stream_id">
+<tt class="descname">stream_id</tt><a class="headerlink" href="#spdylay.HeadersFrame.stream_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stream ID</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.HeadersFrame.nv">
+<tt class="descname">nv</tt><a class="headerlink" href="#spdylay.HeadersFrame.nv" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of name/value pair.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spdylay.RstStreamFrame">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">RstStreamFrame</tt><a class="headerlink" href="#spdylay.RstStreamFrame" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="spdylay.RstStreamFrame.stream_id">
+<tt class="descname">stream_id</tt><a class="headerlink" href="#spdylay.RstStreamFrame.stream_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stream ID</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.RstStreamFrame.status_code">
+<tt class="descname">status_code</tt><a class="headerlink" href="#spdylay.RstStreamFrame.status_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Status code</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spdylay.SettingsFrame">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">SettingsFrame</tt><a class="headerlink" href="#spdylay.SettingsFrame" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="spdylay.SettingsFrame.iv">
+<tt class="descname">iv</tt><a class="headerlink" href="#spdylay.SettingsFrame.iv" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of tuple <tt class="docutils literal"><span class="pre">(settings_id,</span> <span class="pre">flags,</span> <span class="pre">value)</span></tt></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spdylay.PingFrame">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">PingFrame</tt><a class="headerlink" href="#spdylay.PingFrame" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="spdylay.PingFrame.unique_id">
+<tt class="descname">unique_id</tt><a class="headerlink" href="#spdylay.PingFrame.unique_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unique ID</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spdylay.GoawayFrame">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">GoawayFrame</tt><a class="headerlink" href="#spdylay.GoawayFrame" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="spdylay.GoawayFrame.last_good_stream_id">
+<tt class="descname">last_good_stream_id</tt><a class="headerlink" href="#spdylay.GoawayFrame.last_good_stream_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Last good stream ID</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.GoawayFrame.status_code">
+<tt class="descname">status_code</tt><a class="headerlink" href="#spdylay.GoawayFrame.status_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Status code</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="spdylay.WindowUpdateFrame">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">WindowUpdateFrame</tt><a class="headerlink" href="#spdylay.WindowUpdateFrame" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="spdylay.WindowUpdateFrame.stream_id">
+<tt class="descname">stream_id</tt><a class="headerlink" href="#spdylay.WindowUpdateFrame.stream_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stream ID</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.WindowUpdateFrame.delta_window_size">
+<tt class="descname">delta_window_size</tt><a class="headerlink" href="#spdylay.WindowUpdateFrame.delta_window_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Delta window size</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="exceptions">
+<h2>Exceptions<a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="spdylay.EOFError">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">EOFError</tt><a class="headerlink" href="#spdylay.EOFError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="spdylay.CallbackFailureError">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">CallbackFailureError</tt><a class="headerlink" href="#spdylay.CallbackFailureError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="spdylay.TemporalCallbackFailureError">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">TemporalCallbackFailureError</tt><a class="headerlink" href="#spdylay.TemporalCallbackFailureError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="spdylay.InvalidArgumentError">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">InvalidArgumentError</tt><a class="headerlink" href="#spdylay.InvalidArgumentError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="spdylay.ZlibError">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">ZlibError</tt><a class="headerlink" href="#spdylay.ZlibError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="spdylay.UnsupportedVersionError">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">UnsupportedVersionError</tt><a class="headerlink" href="#spdylay.UnsupportedVersionError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="class">
+<dt id="spdylay.StreamClosedError">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">StreamClosedError</tt><a class="headerlink" href="#spdylay.StreamClosedError" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="read-callback-flags">
+<h2>Read Callback Flags<a class="headerlink" href="#read-callback-flags" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="spdylay.READ_EOF">
+<tt class="descclassname">spdylay.</tt><tt class="descname">READ_EOF</tt><a class="headerlink" href="#spdylay.READ_EOF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="error-codes">
+<h2>Error Codes<a class="headerlink" href="#error-codes" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="spdylay.ERR_INVALID_ARGUMENT">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_INVALID_ARGUMENT</tt><a class="headerlink" href="#spdylay.ERR_INVALID_ARGUMENT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_ZLIB">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_ZLIB</tt><a class="headerlink" href="#spdylay.ERR_ZLIB" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_UNSUPPORTED_VERSION">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_UNSUPPORTED_VERSION</tt><a class="headerlink" href="#spdylay.ERR_UNSUPPORTED_VERSION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_WOULDBLOCK">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_WOULDBLOCK</tt><a class="headerlink" href="#spdylay.ERR_WOULDBLOCK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_PROTO">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_PROTO</tt><a class="headerlink" href="#spdylay.ERR_PROTO" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_INVALID_FRAME">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_INVALID_FRAME</tt><a class="headerlink" href="#spdylay.ERR_INVALID_FRAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_EOF">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_EOF</tt><a class="headerlink" href="#spdylay.ERR_EOF" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_DEFERRED">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_DEFERRED</tt><a class="headerlink" href="#spdylay.ERR_DEFERRED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_STREAM_ID_NOT_AVAILABLE">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_STREAM_ID_NOT_AVAILABLE</tt><a class="headerlink" href="#spdylay.ERR_STREAM_ID_NOT_AVAILABLE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_STREAM_CLOSED">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_STREAM_CLOSED</tt><a class="headerlink" href="#spdylay.ERR_STREAM_CLOSED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_STREAM_CLOSING">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_STREAM_CLOSING</tt><a class="headerlink" href="#spdylay.ERR_STREAM_CLOSING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_STREAM_SHUT_WR">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_STREAM_SHUT_WR</tt><a class="headerlink" href="#spdylay.ERR_STREAM_SHUT_WR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_INVALID_STREAM_ID">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_INVALID_STREAM_ID</tt><a class="headerlink" href="#spdylay.ERR_INVALID_STREAM_ID" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_INVALID_STREAM_STATE">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_INVALID_STREAM_STATE</tt><a class="headerlink" href="#spdylay.ERR_INVALID_STREAM_STATE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_DEFERRED_DATA_EXIST">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_DEFERRED_DATA_EXIST</tt><a class="headerlink" href="#spdylay.ERR_DEFERRED_DATA_EXIST" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_SYN_STREAM_NOT_ALLOWED">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_SYN_STREAM_NOT_ALLOWED</tt><a class="headerlink" href="#spdylay.ERR_SYN_STREAM_NOT_ALLOWED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_GOAWAY_ALREADY_SENT">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_GOAWAY_ALREADY_SENT</tt><a class="headerlink" href="#spdylay.ERR_GOAWAY_ALREADY_SENT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_INVALID_HEADER_BLOCK">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_INVALID_HEADER_BLOCK</tt><a class="headerlink" href="#spdylay.ERR_INVALID_HEADER_BLOCK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_INVALID_STATE">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_INVALID_STATE</tt><a class="headerlink" href="#spdylay.ERR_INVALID_STATE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_GZIP">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_GZIP</tt><a class="headerlink" href="#spdylay.ERR_GZIP" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_TEMPORAL_CALLBACK_FAILURE">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_TEMPORAL_CALLBACK_FAILURE</tt><a class="headerlink" href="#spdylay.ERR_TEMPORAL_CALLBACK_FAILURE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Following error codes indicate fatal error.</p>
+<dl class="data">
+<dt id="spdylay.ERR_FATAL">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_FATAL</tt><a class="headerlink" href="#spdylay.ERR_FATAL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_NOMEM">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_NOMEM</tt><a class="headerlink" href="#spdylay.ERR_NOMEM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ERR_CALLBACK_FAILURE">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ERR_CALLBACK_FAILURE</tt><a class="headerlink" href="#spdylay.ERR_CALLBACK_FAILURE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="frame-types">
+<h2>Frame Types<a class="headerlink" href="#frame-types" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="spdylay.SYN_STREAM">
+<tt class="descclassname">spdylay.</tt><tt class="descname">SYN_STREAM</tt><a class="headerlink" href="#spdylay.SYN_STREAM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.SYN_REPLY">
+<tt class="descclassname">spdylay.</tt><tt class="descname">SYN_REPLY</tt><a class="headerlink" href="#spdylay.SYN_REPLY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.RST_STREAM">
+<tt class="descclassname">spdylay.</tt><tt class="descname">RST_STREAM</tt><a class="headerlink" href="#spdylay.RST_STREAM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.SETTINGS">
+<tt class="descclassname">spdylay.</tt><tt class="descname">SETTINGS</tt><a class="headerlink" href="#spdylay.SETTINGS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.NOOP">
+<tt class="descclassname">spdylay.</tt><tt class="descname">NOOP</tt><a class="headerlink" href="#spdylay.NOOP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Note that this was deprecated in SPDY/3.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="spdylay.PING">
+<tt class="descclassname">spdylay.</tt><tt class="descname">PING</tt><a class="headerlink" href="#spdylay.PING" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.GOAWAY">
+<tt class="descclassname">spdylay.</tt><tt class="descname">GOAWAY</tt><a class="headerlink" href="#spdylay.GOAWAY" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.HEADERS">
+<tt class="descclassname">spdylay.</tt><tt class="descname">HEADERS</tt><a class="headerlink" href="#spdylay.HEADERS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.WINDOW_UPDATE">
+<tt class="descclassname">spdylay.</tt><tt class="descname">WINDOW_UPDATE</tt><a class="headerlink" href="#spdylay.WINDOW_UPDATE" title="Permalink to this definition">¶</a></dt>
+<dd><p>This first appeared in SPDY/3.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="spdylay.CREDENTIAL">
+<tt class="descclassname">spdylay.</tt><tt class="descname">CREDENTIAL</tt><a class="headerlink" href="#spdylay.CREDENTIAL" title="Permalink to this definition">¶</a></dt>
+<dd><p>This first appeared in SPDY/3.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="control-frame-flags">
+<h2>Control Frame Flags<a class="headerlink" href="#control-frame-flags" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="spdylay.CTRL_FLAG_NONE">
+<tt class="descclassname">spdylay.</tt><tt class="descname">CTRL_FLAG_NONE</tt><a class="headerlink" href="#spdylay.CTRL_FLAG_NONE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicates no flags set.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="spdylay.CTRL_FLAG_FIN">
+<tt class="descclassname">spdylay.</tt><tt class="descname">CTRL_FLAG_FIN</tt><a class="headerlink" href="#spdylay.CTRL_FLAG_FIN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.CTRL_FLAG_UNIDIRECTIONAL">
+<tt class="descclassname">spdylay.</tt><tt class="descname">CTRL_FLAG_UNIDIRECTIONAL</tt><a class="headerlink" href="#spdylay.CTRL_FLAG_UNIDIRECTIONAL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="stream-status-codes">
+<h2>Stream Status Codes<a class="headerlink" href="#stream-status-codes" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="spdylay.OK">
+<tt class="descclassname">spdylay.</tt><tt class="descname">OK</tt><a class="headerlink" href="#spdylay.OK" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is not a valid status code for RST_STREAM. Don&#8217;t use this in
+<a class="reference internal" href="#spdylay.Session.submit_rst_stream" title="spdylay.Session.submit_rst_stream"><tt class="xref py py-meth docutils literal"><span class="pre">Session.submit_rst_stream()</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="spdylay.PROTOCOL_ERROR">
+<tt class="descclassname">spdylay.</tt><tt class="descname">PROTOCOL_ERROR</tt><a class="headerlink" href="#spdylay.PROTOCOL_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.INVALID_STREAM">
+<tt class="descclassname">spdylay.</tt><tt class="descname">INVALID_STREAM</tt><a class="headerlink" href="#spdylay.INVALID_STREAM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.REFUSED_STREAM">
+<tt class="descclassname">spdylay.</tt><tt class="descname">REFUSED_STREAM</tt><a class="headerlink" href="#spdylay.REFUSED_STREAM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.UNSUPPORTED_VERSION">
+<tt class="descclassname">spdylay.</tt><tt class="descname">UNSUPPORTED_VERSION</tt><a class="headerlink" href="#spdylay.UNSUPPORTED_VERSION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.CANCEL">
+<tt class="descclassname">spdylay.</tt><tt class="descname">CANCEL</tt><a class="headerlink" href="#spdylay.CANCEL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.INTERNAL_ERROR">
+<tt class="descclassname">spdylay.</tt><tt class="descname">INTERNAL_ERROR</tt><a class="headerlink" href="#spdylay.INTERNAL_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.FLOW_CONTROL_ERROR">
+<tt class="descclassname">spdylay.</tt><tt class="descname">FLOW_CONTROL_ERROR</tt><a class="headerlink" href="#spdylay.FLOW_CONTROL_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Following status codes were introduced in SPDY/3.</p>
+<dl class="data">
+<dt id="spdylay.STREAM_IN_USE">
+<tt class="descclassname">spdylay.</tt><tt class="descname">STREAM_IN_USE</tt><a class="headerlink" href="#spdylay.STREAM_IN_USE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.STREAM_ALREADY_CLOSED">
+<tt class="descclassname">spdylay.</tt><tt class="descname">STREAM_ALREADY_CLOSED</tt><a class="headerlink" href="#spdylay.STREAM_ALREADY_CLOSED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.INVALID_CREDENTIALS">
+<tt class="descclassname">spdylay.</tt><tt class="descname">INVALID_CREDENTIALS</tt><a class="headerlink" href="#spdylay.INVALID_CREDENTIALS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.FRAME_TOO_LARGE">
+<tt class="descclassname">spdylay.</tt><tt class="descname">FRAME_TOO_LARGE</tt><a class="headerlink" href="#spdylay.FRAME_TOO_LARGE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="goaway-status-codes">
+<h2>GOAWAY Status Codes<a class="headerlink" href="#goaway-status-codes" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="spdylay.GOAWAY_OK">
+<tt class="descclassname">spdylay.</tt><tt class="descname">GOAWAY_OK</tt><a class="headerlink" href="#spdylay.GOAWAY_OK" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.GOAWAY_PROTOCOL_ERROR">
+<tt class="descclassname">spdylay.</tt><tt class="descname">GOAWAY_PROTOCOL_ERROR</tt><a class="headerlink" href="#spdylay.GOAWAY_PROTOCOL_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.GOAWAY_INTERNAL_ERROR">
+<tt class="descclassname">spdylay.</tt><tt class="descname">GOAWAY_INTERNAL_ERROR</tt><a class="headerlink" href="#spdylay.GOAWAY_INTERNAL_ERROR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="settings-frame-flags">
+<h2>SETTINGS Frame Flags<a class="headerlink" href="#settings-frame-flags" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="spdylay.FLAG_SETTINGS_NONE">
+<tt class="descclassname">spdylay.</tt><tt class="descname">FLAG_SETTINGS_NONE</tt><a class="headerlink" href="#spdylay.FLAG_SETTINGS_NONE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.FLAG_SETTINGS_CLEAR_SETTINGS">
+<tt class="descclassname">spdylay.</tt><tt class="descname">FLAG_SETTINGS_CLEAR_SETTINGS</tt><a class="headerlink" href="#spdylay.FLAG_SETTINGS_CLEAR_SETTINGS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="settings-ids">
+<h2>SETTINGS IDs<a class="headerlink" href="#settings-ids" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="spdylay.SETTINGS_UPLOAD_BANDWIDTH">
+<tt class="descclassname">spdylay.</tt><tt class="descname">SETTINGS_UPLOAD_BANDWIDTH</tt><a class="headerlink" href="#spdylay.SETTINGS_UPLOAD_BANDWIDTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.SETTINGS_DOWNLOAD_BANDWIDTH">
+<tt class="descclassname">spdylay.</tt><tt class="descname">SETTINGS_DOWNLOAD_BANDWIDTH</tt><a class="headerlink" href="#spdylay.SETTINGS_DOWNLOAD_BANDWIDTH" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.SETTINGS_ROUND_TRIP_TIME">
+<tt class="descclassname">spdylay.</tt><tt class="descname">SETTINGS_ROUND_TRIP_TIME</tt><a class="headerlink" href="#spdylay.SETTINGS_ROUND_TRIP_TIME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.SETTINGS_MAX_CONCURRENT_STREAMS">
+<tt class="descclassname">spdylay.</tt><tt class="descname">SETTINGS_MAX_CONCURRENT_STREAMS</tt><a class="headerlink" href="#spdylay.SETTINGS_MAX_CONCURRENT_STREAMS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.SETTINGS_CURRENT_CWND">
+<tt class="descclassname">spdylay.</tt><tt class="descname">SETTINGS_CURRENT_CWND</tt><a class="headerlink" href="#spdylay.SETTINGS_CURRENT_CWND" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.SETTINGS_DOWNLOAD_RETRANS_RATE">
+<tt class="descclassname">spdylay.</tt><tt class="descname">SETTINGS_DOWNLOAD_RETRANS_RATE</tt><a class="headerlink" href="#spdylay.SETTINGS_DOWNLOAD_RETRANS_RATE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.SETTINGS_INITIAL_WINDOW_SIZE">
+<tt class="descclassname">spdylay.</tt><tt class="descname">SETTINGS_INITIAL_WINDOW_SIZE</tt><a class="headerlink" href="#spdylay.SETTINGS_INITIAL_WINDOW_SIZE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.SETTINGS_CLIENT_CERTIFICATE_VECTOR_SIZE">
+<tt class="descclassname">spdylay.</tt><tt class="descname">SETTINGS_CLIENT_CERTIFICATE_VECTOR_SIZE</tt><a class="headerlink" href="#spdylay.SETTINGS_CLIENT_CERTIFICATE_VECTOR_SIZE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.SETTINGS_MAX">
+<tt class="descclassname">spdylay.</tt><tt class="descname">SETTINGS_MAX</tt><a class="headerlink" href="#spdylay.SETTINGS_MAX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="settings-id-flags">
+<h2>SETTINGS ID Flags<a class="headerlink" href="#settings-id-flags" title="Permalink to this headline">¶</a></h2>
+<dl class="data">
+<dt id="spdylay.ID_FLAG_SETTINGS_NONE">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ID_FLAG_SETTINGS_NONE</tt><a class="headerlink" href="#spdylay.ID_FLAG_SETTINGS_NONE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ID_FLAG_SETTINGS_PERSIST_VALUE">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ID_FLAG_SETTINGS_PERSIST_VALUE</tt><a class="headerlink" href="#spdylay.ID_FLAG_SETTINGS_PERSIST_VALUE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="spdylay.ID_FLAG_SETTINGS_PERSISTED">
+<tt class="descclassname">spdylay.</tt><tt class="descname">ID_FLAG_SETTINGS_PERSISTED</tt><a class="headerlink" href="#spdylay.ID_FLAG_SETTINGS_PERSISTED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="simple-spdy-client">
+<h2>Simple SPDY Client<a class="headerlink" href="#simple-spdy-client" title="Permalink to this headline">¶</a></h2>
+<p>This module offers a simple SPDY client implementation.  The function
+<a class="reference internal" href="#spdylay.urlfetch" title="spdylay.urlfetch"><tt class="xref py py-func docutils literal"><span class="pre">urlfetch()</span></tt></a> fetches given URLs. For each URL,
+<em>StreamHandlerClass</em> is instantiated and its methods are called when
+certain event occurs. The <em>StreamHandlerClass</em> must be a subclass of
+<a class="reference internal" href="#spdylay.BaseSPDYStreamHandler" title="spdylay.BaseSPDYStreamHandler"><tt class="xref py py-class docutils literal"><span class="pre">BaseSPDYStreamHandler</span></tt></a>.</p>
+<dl class="function">
+<dt id="spdylay.urlfetch">
+<tt class="descclassname">spdylay.</tt><tt class="descname">urlfetch</tt><big>(</big><em>url_or_urls</em>, <em>StreamHandlerClass</em><big>)</big><a class="headerlink" href="#spdylay.urlfetch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens URL and handles the response from the servers.</p>
+<p>The <em>url_or_urls</em> is either one URL string or list of URL string.
+For each URL, <em>StreamHandlerClass</em> is instantiated and it handles
+the request to and response from the server. If successive URLs in
+<em>url_or_urls</em> list have same origin, they are processed in one
+SPDY session.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="spdylay.BaseSPDYStreamHandler">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">BaseSPDYStreamHandler</tt><big>(</big><em>url</em>, <em>fetcher</em><big>)</big><a class="headerlink" href="#spdylay.BaseSPDYStreamHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class handles one URL retrieval, which corresponds one SPDY
+stream. The <em>url</em> is the URL to fetch. The <em>fetcher</em> is a driver
+object to call methods of this object. For now it is opaque
+object. This class is intended to be subclassed by the application
+to add specific behavior.</p>
+<p><tt class="docutils literal"><span class="pre">BaseSPDYStreamHandler</span></tt> has the following instance variables:</p>
+<dl class="attribute">
+<dt id="spdylay.BaseSPDYStreamHandler.url">
+<tt class="descname">url</tt><a class="headerlink" href="#spdylay.BaseSPDYStreamHandler.url" title="Permalink to this definition">¶</a></dt>
+<dd><p>The URL for this stream.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.BaseSPDYStreamHandler.stream_id">
+<tt class="descname">stream_id</tt><a class="headerlink" href="#spdylay.BaseSPDYStreamHandler.stream_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The stream ID for this stream.</p>
+</dd></dl>
+
+<p><tt class="docutils literal"><span class="pre">BaseSPDYStreamHandler</span></tt> has the following methods:</p>
+<dl class="method">
+<dt id="spdylay.BaseSPDYStreamHandler.on_header">
+<tt class="descname">on_header</tt><big>(</big><em>nv</em><big>)</big><a class="headerlink" href="#spdylay.BaseSPDYStreamHandler.on_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when name/value pairs (headers) <em>nv</em> is received.  This
+method may be overridden by subclasses. The default
+implementation does nothing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.BaseSPDYStreamHandler.on_data">
+<tt class="descname">on_data</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#spdylay.BaseSPDYStreamHandler.on_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when <em>data</em> is received. This method may be overridden
+by subclass. The default implementation does nothing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.BaseSPDYStreamHandler.on_close">
+<tt class="descname">on_close</tt><big>(</big><em>status_code</em><big>)</big><a class="headerlink" href="#spdylay.BaseSPDYStreamHandler.on_close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called when this stream is closed. The <em>status_code</em> indicates
+the reason of the closure. See <a class="reference internal" href="#stream-status-codes">Stream Status Codes</a>.  This
+method may be overridden by subclass. The default
+implementation does nothing.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>The example follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+
+<span class="c"># The example SPDY client.  You need Python 3.3 or later because we</span>
+<span class="c"># use TLS NPN.</span>
+<span class="c">#</span>
+<span class="c"># Usage: spdyclient.py URL...</span>
+<span class="c">#</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">spdylay</span>
+
+<span class="k">class</span> <span class="nc">MyStreamHandler</span><span class="p">(</span><span class="n">spdylay</span><span class="o">.</span><span class="n">BaseSPDYStreamHandler</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nv</span><span class="p">):</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;Stream#{}</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stream_id</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">nv</span><span class="p">:</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;{}: {}</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">on_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;Stream#{}</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stream_id</span><span class="p">))</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status_code</span><span class="p">):</span>
+        <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;Stream#{} closed</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stream_id</span><span class="p">))</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">uris</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+    <span class="n">spdylay</span><span class="o">.</span><span class="n">urlfetch</span><span class="p">(</span><span class="n">uris</span><span class="p">,</span> <span class="n">MyStreamHandler</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="simple-spdy-server">
+<h2>Simple SPDY Server<a class="headerlink" href="#simple-spdy-server" title="Permalink to this headline">¶</a></h2>
+<p>This module offers a simple SPDY server implementation to ready for
+use with little additional code.</p>
+<p>The <a class="reference internal" href="#spdylay.ThreadedSPDYServer" title="spdylay.ThreadedSPDYServer"><tt class="xref py py-class docutils literal"><span class="pre">ThreadedSPDYServer</span></tt></a> is a <tt class="docutils literal"><span class="pre">socketserver.TCPServer</span></tt>
+subclass.  As the name of the class suggests, it is multi threaded.
+It only supports SPDY connection and does not fallback to HTTP/1.1.
+Since it uses TLS NPN extension, Python 3.3.0 or later is required.</p>
+<dl class="class">
+<dt id="spdylay.ThreadedSPDYServer">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">ThreadedSPDYServer</tt><big>(</big><em>server_address</em>, <em>RequestHandlerCalss</em>, <em>cert_file</em>, <em>key_file</em><big>)</big><a class="headerlink" href="#spdylay.ThreadedSPDYServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class builds on <tt class="docutils literal"><span class="pre">TCPServer</span></tt> class by passing
+<em>server_address</em> and <em>RequestHandlerCalss</em>. The request is handled
+by the instance of <em>RequestHandlerCalss</em>.</p>
+</dd></dl>
+
+<p>The <a class="reference internal" href="#spdylay.ThreadedSPDYServer" title="spdylay.ThreadedSPDYServer"><tt class="xref py py-class docutils literal"><span class="pre">ThreadedSPDYServer</span></tt></a> requires a <em>RequestHandlerCalss</em> on
+instantiation, which must be a subclass of
+<a class="reference internal" href="#spdylay.BaseSPDYRequestHandler" title="spdylay.BaseSPDYRequestHandler"><tt class="xref py py-class docutils literal"><span class="pre">BaseSPDYRequestHandler</span></tt></a>.</p>
+<p>Most texts are copied (and modified) from <tt class="docutils literal"><span class="pre">http.server</span></tt>
+documentation.</p>
+<dl class="class">
+<dt id="spdylay.BaseSPDYRequestHandler">
+<em class="property">class </em><tt class="descclassname">spdylay.</tt><tt class="descname">BaseSPDYRequestHandler</tt><big>(</big><em>request</em>, <em>client_address</em>, <em>server</em><big>)</big><a class="headerlink" href="#spdylay.BaseSPDYRequestHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is used to handle the SPDY requests (streams) that
+arrive at the server. By itself, it cannot respond to any actual
+SPDY requests; it must be subclassed to handle each request method
+(e.g. <tt class="docutils literal"><span class="pre">GET</span></tt> or <tt class="docutils literal"><span class="pre">POST</span></tt>). <tt class="docutils literal"><span class="pre">BaseSPDYRequestHandler</span></tt> provides a
+number of class and instance variables, and methods for use by
+subclasses.</p>
+<p>The handler will gather headers (name/value pairs in SPDY terms)
+and read POST data (if any), then call a method specific to the
+request type. The method name is constructed from the request. For
+example, for the request method <tt class="docutils literal"><span class="pre">SPAM</span></tt>, the <tt class="docutils literal"><span class="pre">do_SPAM()</span></tt> method
+will be called with no arguments. All of the relevant information
+is stored in instance variables of the handler. Subclasses should
+not need to override or extend the <tt class="docutils literal"><span class="pre">__init__()</span></tt> method.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Currently, this implementation accepts request body only if
+method is POST and the request body will be stored in memory.</p>
+</div>
+<p><tt class="docutils literal"><span class="pre">BaseSPDYRequestHandler</span></tt> has the following instance variables:</p>
+<dl class="attribute">
+<dt id="spdylay.BaseSPDYRequestHandler.client_address">
+<tt class="descname">client_address</tt><a class="headerlink" href="#spdylay.BaseSPDYRequestHandler.client_address" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains a tuple of the form <tt class="docutils literal"><span class="pre">(host,</span> <span class="pre">port)</span></tt> referring to the
+client&#8217;s address.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.BaseSPDYRequestHandler.server">
+<tt class="descname">server</tt><a class="headerlink" href="#spdylay.BaseSPDYRequestHandler.server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the server instance.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.BaseSPDYRequestHandler.command">
+<tt class="descname">command</tt><a class="headerlink" href="#spdylay.BaseSPDYRequestHandler.command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the command (request type, method). For example,
+<tt class="docutils literal"><span class="pre">GET</span></tt>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.BaseSPDYRequestHandler.path">
+<tt class="descname">path</tt><a class="headerlink" href="#spdylay.BaseSPDYRequestHandler.path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the request path.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.BaseSPDYRequestHandler.request_version">
+<tt class="descname">request_version</tt><a class="headerlink" href="#spdylay.BaseSPDYRequestHandler.request_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the version string from the request. For example,
+<tt class="docutils literal"><span class="pre">HTTP/1.1</span></tt>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.BaseSPDYRequestHandler.headers">
+<tt class="descname">headers</tt><a class="headerlink" href="#spdylay.BaseSPDYRequestHandler.headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the request headers. Each name/value pair is a tuple
+of the form <tt class="docutils literal"><span class="pre">(name,</span> <span class="pre">value)</span></tt>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.BaseSPDYRequestHandler.rfile">
+<tt class="descname">rfile</tt><a class="headerlink" href="#spdylay.BaseSPDYRequestHandler.rfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains an input stream, positioned at the start of the
+optional input data. If there is no optional input data, it
+may be <tt class="docutils literal"><span class="pre">None</span></tt>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.BaseSPDYRequestHandler.wfile">
+<tt class="descname">wfile</tt><a class="headerlink" href="#spdylay.BaseSPDYRequestHandler.wfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the output stream for writing a response back to the
+client.</p>
+</dd></dl>
+
+<p><tt class="docutils literal"><span class="pre">BaseSPDYRequestHandler</span></tt> has the following class variables:</p>
+<dl class="attribute">
+<dt id="spdylay.BaseSPDYRequestHandler.server_version">
+<tt class="descname">server_version</tt><a class="headerlink" href="#spdylay.BaseSPDYRequestHandler.server_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies the server software version.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="spdylay.BaseSPDYRequestHandler.sys_version">
+<tt class="descname">sys_version</tt><a class="headerlink" href="#spdylay.BaseSPDYRequestHandler.sys_version" title="Permalink to this definition">¶</a></dt>
+<dd><p>Contains the Python system version.</p>
+</dd></dl>
+
+<p>A <tt class="docutils literal"><span class="pre">BaseSPDYRequestHandler</span></tt> instance has the following methods:</p>
+<dl class="method">
+<dt id="spdylay.BaseSPDYRequestHandler.handle">
+<tt class="descname">handle</tt><big>(</big><big>)</big><a class="headerlink" href="#spdylay.BaseSPDYRequestHandler.handle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interacts client exchanging SPDY frames. When a request is
+completely received, it calls appropriate <tt class="docutils literal"><span class="pre">do_*()</span></tt> method.
+This method will handle multiple requests (streams) until SPDY
+session is over.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.BaseSPDYRequestHandler.send_error">
+<tt class="descname">send_error</tt><big>(</big><em>code</em>, <em>message=None</em><big>)</big><a class="headerlink" href="#spdylay.BaseSPDYRequestHandler.send_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send a complete error reply to the client The numeric <em>code</em>
+specifies the HTTP error code, with <em>message</em> as optional,
+more specific text. A complete set of headers is sent,
+followed by HTML text.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.BaseSPDYRequestHandler.send_response">
+<tt class="descname">send_response</tt><big>(</big><em>code</em>, <em>message=None</em><big>)</big><a class="headerlink" href="#spdylay.BaseSPDYRequestHandler.send_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a response code and, optionally, short message.
+This will be formatted as &#8216;:status&#8217; response header field.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="spdylay.BaseSPDYRequestHandler.send_header">
+<tt class="descname">send_header</tt><big>(</big><em>keyword</em>, <em>value</em><big>)</big><a class="headerlink" href="#spdylay.BaseSPDYRequestHandler.send_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds the HTTP header. The <em>keyword</em> and <em>value</em> must be
+unicode strings and not <tt class="docutils literal"><span class="pre">None</span></tt>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<p>The example of <tt class="docutils literal"><span class="pre">BaseSPDYRequestHandler</span></tt> and <tt class="docutils literal"><span class="pre">ThreadedSPDYServer</span></tt>
+follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#!/usr/bin/env python</span>
+
+<span class="c"># The example SPDY server. Python 3.3 or later is required because TLS</span>
+<span class="c"># NPN is used in spdylay.ThreadedSPDYServer. Put private key and</span>
+<span class="c"># certificate file in the current working directory.</span>
+
+<span class="kn">import</span> <span class="nn">spdylay</span>
+
+<span class="c"># private key file</span>
+<span class="n">KEY_FILE</span><span class="o">=</span><span class="s">&#39;server.key&#39;</span>
+<span class="c"># certificate file</span>
+<span class="n">CERT_FILE</span><span class="o">=</span><span class="s">&#39;server.crt&#39;</span>
+
+<span class="k">class</span> <span class="nc">MySPDYRequestHandler</span><span class="p">(</span><span class="n">spdylay</span><span class="o">.</span><span class="n">BaseSPDYRequestHandler</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">do_GET</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">==</span> <span class="s">&#39;/notfound&#39;</span><span class="p">:</span>
+            <span class="c"># Example code to return error</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send_error</span><span class="p">(</span><span class="mi">404</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_response</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send_header</span><span class="p">(</span><span class="s">&#39;content-type&#39;</span><span class="p">,</span> <span class="s">&#39;text/html; charset=UTF-8&#39;</span><span class="p">)</span>
+
+        <span class="n">content</span> <span class="o">=</span> <span class="s">&#39;&#39;&#39;</span><span class="se">\</span>
+<span class="s">&lt;html&gt;</span>
+<span class="s">&lt;head&gt;&lt;title&gt;SPDY FTW&lt;/title&gt;&lt;/head&gt;</span>
+<span class="s">&lt;body&gt;</span>
+<span class="s">&lt;h1&gt;SPDY FTW&lt;/h1&gt;</span>
+<span class="s">&lt;p&gt;The age of HTTP/1.1 is over. The time of SPDY has come.&lt;/p&gt;</span>
+<span class="s">&lt;/body&gt;</span>
+<span class="s">&lt;/html&gt;&#39;&#39;&#39;</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s">&#39;UTF-8&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">wfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">HOST</span><span class="p">,</span> <span class="n">PORT</span> <span class="o">=</span> <span class="s">&quot;localhost&quot;</span><span class="p">,</span> <span class="mi">3000</span>
+
+    <span class="n">server</span> <span class="o">=</span> <span class="n">spdylay</span><span class="o">.</span><span class="n">ThreadedSPDYServer</span><span class="p">((</span><span class="n">HOST</span><span class="p">,</span> <span class="n">PORT</span><span class="p">),</span>
+                                        <span class="n">MySPDYRequestHandler</span><span class="p">,</span>
+                                        <span class="n">cert_file</span><span class="o">=</span><span class="n">CERT_FILE</span><span class="p">,</span>
+                                        <span class="n">key_file</span><span class="o">=</span><span class="n">KEY_FILE</span><span class="p">)</span>
+    <span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper"><h3>Menu</h3>
+<ul>
+  <li><a href="http://sourceforge.net/projects/spdylay/files/stable/">Download</a></li>
+  <li><a href="https://github.com/tatsuhiro-t/spdylay/issues">Issues</a></li>
+  <li><a href="https://github.com/tatsuhiro-t/spdylay">Source</a></li>
+  <li><a href="http://sourceforge.net/projects/spdylay">SF.net Project Page</a></li>
+</ul>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Python-spdylay - Spdylay Python Extension Module</a><ul>
+<li><a class="reference internal" href="#build">Build</a></li>
+<li><a class="reference internal" href="#session-objects">Session Objects</a></li>
+<li><a class="reference internal" href="#helper-functions">Helper Functions</a></li>
+<li><a class="reference internal" href="#data-provider-objects">Data Provider Objects</a></li>
+<li><a class="reference internal" href="#control-frame-objects">Control Frame Objects</a></li>
+<li><a class="reference internal" href="#exceptions">Exceptions</a></li>
+<li><a class="reference internal" href="#read-callback-flags">Read Callback Flags</a></li>
+<li><a class="reference internal" href="#error-codes">Error Codes</a></li>
+<li><a class="reference internal" href="#frame-types">Frame Types</a></li>
+<li><a class="reference internal" href="#control-frame-flags">Control Frame Flags</a></li>
+<li><a class="reference internal" href="#stream-status-codes">Stream Status Codes</a></li>
+<li><a class="reference internal" href="#goaway-status-codes">GOAWAY Status Codes</a></li>
+<li><a class="reference internal" href="#settings-frame-flags">SETTINGS Frame Flags</a></li>
+<li><a class="reference internal" href="#settings-ids">SETTINGS IDs</a></li>
+<li><a class="reference internal" href="#settings-id-flags">SETTINGS ID Flags</a></li>
+<li><a class="reference internal" href="#simple-spdy-client">Simple SPDY Client</a></li>
+<li><a class="reference internal" href="#simple-spdy-server">Simple SPDY Server</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="apiref.html"
+                        title="previous chapter">API Reference</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="android-spdy-proxy.html"
+                        title="next chapter">SPDY Proxy with Firefox for Android</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/python.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="android-spdy-proxy.html" title="SPDY Proxy with Firefox for Android"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="apiref.html" title="API Reference"
+             >previous</a> |</li>
+        <li><a href="index.html">Spdylay 1.2.0-DEV documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, 2013, Tatsuhiro Tsujikawa.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
