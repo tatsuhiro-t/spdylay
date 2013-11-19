@@ -3103,20 +3103,10 @@ int32_t spdylay_session_get_stream_recv_data_length
   return stream->recv_window_size;
 }
 
-int32_t spdylay_session_get_stream_local_window_size(spdylay_session *session)
-{
-  return session->local_settings[SPDYLAY_SETTINGS_INITIAL_WINDOW_SIZE];
-}
-
 int32_t spdylay_session_get_recv_data_length(spdylay_session *session)
 {
   if((session->flow_control &= SPDYLAY_FLOW_CONTROL_CONNECTION) == 0) {
     return 0;
   }
   return session->recv_window_size;
-}
-
-int32_t spdylay_session_get_local_window_size(spdylay_session *session)
-{
-  return SPDYLAY_INITIAL_WINDOW_SIZE;
 }

@@ -1591,18 +1591,6 @@ int32_t spdylay_session_get_stream_recv_data_length(spdylay_session *session,
 /**
  * @function
  *
- * Returns the local (receive) window size for a stream. Because SPDY
- * protocol always uses the initial window size as local window size,
- * this function returns the current local settings of
- * SETTINGS_INITIAL_WINDOW_SIZE.
- *
- * This function returns -1 if it fails.
- */
-int32_t spdylay_session_get_stream_local_window_size(spdylay_session *session);
-
-/**
- * @function
- *
  * Returns the number of DATA payload in bytes received without
  * WINDOW_UPDATE transmission for a connection.
  *
@@ -1612,18 +1600,6 @@ int32_t spdylay_session_get_stream_local_window_size(spdylay_session *session);
  * This function returns -1 if it fails.
  */
 int32_t spdylay_session_get_recv_data_length(spdylay_session *session);
-
-/**
- * @function
- *
- * Returns the local (receive) window size for a connection. Because
- * SPDY protocol always uses the initial window size as local window
- * size, this fucntion always returns
- * :enum:`SPDYLAY_INITIAL_WINDOW_SIZE`.
- *
- * This function returns -1 if it fails.
- */
-int32_t spdylay_session_get_local_window_size(spdylay_session *session);
 
 /**
  * @function
