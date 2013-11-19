@@ -169,6 +169,7 @@ the command-line::
                            filename. Not implemented yet.
         -2, --spdy2        Only use SPDY/2.
         -3, --spdy3        Only use SPDY/3.
+        --spdy3-1          Only use SPDY/3.1.
         -t, --timeout=<N>  Timeout each request after <N> seconds.
         -w, --window-bits=<N>
                            Sets the initial window size to 2**<N>.
@@ -183,25 +184,30 @@ the command-line::
                            The file must be in PEM format.
         --key=<KEY>        Use the client private key file. The file
                            must be in PEM format.
-        --no-tls           Disable SSL/TLS. Use -2 or -3 to specify
-                           SPDY protocol version to use.
+        --no-tls           Disable SSL/TLS. Use -2, -3 or --spdy3-1 to
+                           specify SPDY protocol version to use.
         -d, --data=<FILE>  Post FILE to server. If - is given, data
                            will be read from stdin.
         -m, --multiply=<N> Request each URI <N> times. By default, same
                            URI is not requested twice. This option
                            disables it too.
+        --color            Force colored log output.
 
     $ src/spdycat -nv https://www.google.com/
-    [  0.025] NPN select next protocol: the remote server offers:
+    [  0.021] NPN select next protocol: the remote server offers:
+              * spdy/4a4
+              * spdy/3.1
               * spdy/3
-              * spdy/2
               * http/1.1
-              NPN selected the protocol: spdy/3
-    [  0.035] recv SETTINGS frame <version=3, flags=0, length=20>
+              NPN selected the protocol: spdy/3.1
+    [  0.029] Handshake complete
+    [  0.029] recv SETTINGS frame <version=3, flags=0, length=20>
               (niv=2)
               [4(1):100]
-              [7(0):12288]
-    [  0.035] send SYN_STREAM frame <version=3, flags=1, length=106>
+              [7(0):1048576]
+    [  0.029] recv WINDOW_UPDATE frame <version=3, flags=0, length=8>
+              (stream_id=0, delta_window_size=983040)
+    [  0.029] send SYN_STREAM frame <version=3, flags=1, length=221>
               (stream_id=1, assoc_stream_id=0, pri=3)
               :host: www.google.com
               :method: GET
@@ -209,21 +215,23 @@ the command-line::
               :scheme: https
               :version: HTTP/1.1
               accept: */*
-              user-agent: spdylay/0.2.0
-    [  0.077] recv SYN_REPLY frame <version=3, flags=0, length=558>
+              accept-encoding: gzip, deflate
+              user-agent: spdylay/1.2.0-DEV
+    [  0.080] recv SYN_REPLY frame <version=3, flags=0, length=619>
               (stream_id=1)
               :status: 302 Found
               :version: HTTP/1.1
+              alternate-protocol: 443:quic
               cache-control: private
-              content-length: 222
+              content-length: 262
               content-type: text/html; charset=UTF-8
-              date: Sun, 13 May 2012 08:02:54 GMT
+              date: Tue, 19 Nov 2013 13:47:18 GMT
               location: https://www.google.co.jp/
               server: gws
               x-frame-options: SAMEORIGIN
               x-xss-protection: 1; mode=block
-    [  0.077] recv DATA frame (stream_id=1, flags=1, length=222)
-    [  0.077] send GOAWAY frame <version=3, flags=0, length=8>
+    [  0.080] recv DATA frame (stream_id=1, flags=1, length=262)
+    [  0.080] send GOAWAY frame <version=3, flags=0, length=8>
               (last_good_stream_id=0)
 
 Spdyd - SPDY server
@@ -237,11 +245,11 @@ speaks SPDY/2 and SPDY/3::
     $ src/spdyd --htdocs=/your/htdocs/ -v 3000 server.key server.crt
     IPv4: listen on port 3000
     IPv6: listen on port 3000
-    The negotiated next protocol: spdy/3
-    [id=1] [ 17.456] send SETTINGS frame <version=3, flags=0, length=12>
+    The negotiated next protocol: spdy/3.1
+    [id=1] [  1.296] send SETTINGS frame <version=3, flags=0, length=12>
               (niv=1)
               [4(0):100]
-    [id=1] [ 17.457] recv SYN_STREAM frame <version=3, flags=1, length=108>
+    [id=1] [  1.297] recv SYN_STREAM frame <version=3, flags=1, length=228>
               (stream_id=1, assoc_stream_id=0, pri=3)
               :host: localhost:3000
               :method: GET
@@ -249,22 +257,23 @@ speaks SPDY/2 and SPDY/3::
               :scheme: https
               :version: HTTP/1.1
               accept: */*
-              user-agent: spdylay/0.2.0
-    [id=1] [ 17.457] send SYN_REPLY frame <version=3, flags=0, length=113>
+              accept-encoding: gzip, deflate
+              user-agent: spdylay/1.2.0-DEV
+    [id=1] [  1.297] send SYN_REPLY frame <version=3, flags=0, length=116>
               (stream_id=1)
               :status: 200 OK
               :version: HTTP/1.1
               cache-control: max-age=3600
-              content-length: 15
-              date: Sun, 13 May 2012 08:06:12 GMT
+              content-length: 66
+              date: Tue, 19 Nov 2013 14:35:24 GMT
               last-modified: Tue, 17 Jan 2012 15:39:01 GMT
-              server: spdyd spdylay/0.2.0
-    [id=1] [ 17.467] send DATA frame (stream_id=1, flags=0, length=15)
-    [id=1] [ 17.467] send DATA frame (stream_id=1, flags=1, length=0)
-    [id=1] [ 17.468] stream_id=1 closed
-    [id=1] [ 17.468] recv GOAWAY frame <version=3, flags=0, length=8>
+              server: spdyd spdylay/1.2.0-DEV
+    [id=1] [  1.297] send DATA frame (stream_id=1, flags=0, length=66)
+    [id=1] [  1.297] send DATA frame (stream_id=1, flags=1, length=0)
+    [id=1] [  1.297] stream_id=1 closed
+    [id=1] [  1.297] recv GOAWAY frame <version=3, flags=0, length=8>
               (last_good_stream_id=0)
-    [id=1] [ 17.468] closed
+    [id=1] [  1.297] closed
 
 Currently, ``spdyd`` needs ``epoll`` or ``kqueue``.
 
@@ -341,6 +350,25 @@ Here is the command-line options::
         -n, --workers=<CORES>
                            Set the number of worker threads.
                            Default: 1
+        --read-rate=<RATE> Set maximum average read rate on frontend
+                           connection. Setting 0 to this option means
+                           read rate is unlimited.
+                           Default: 1048576
+        --read-burst=<SIZE>
+                           Set maximum read burst size on frontend
+                           connection. Setting 0 to this option means
+                           read burst size is unlimited.
+                           Default: 4194304
+        --write-rate=<RATE>
+                           Set maximum average write rate on frontend
+                           connection. Setting 0 to this option means
+                           write rate is unlimited.
+                           Default: 0
+        --write-burst=<SIZE>
+                           Set maximum write burst size on frontend
+                           connection. Setting 0 to this option means
+                           write burst size is unlimited.
+                           Default: 0
 
       Timeout:
         --frontend-spdy-read-timeout=<SEC>
@@ -414,6 +442,12 @@ Here is the command-line options::
                            Path to file that contains DH parameters in
                            PEM format. Without this option, DHE cipher
                            suites are not available.
+        --verify-client    Require and verify client certificate.
+        --verify-client-cacert=<PATH>
+                           Path to file that contains CA certificates
+                           to verify client certificate.
+                           The file must be in PEM format. It can
+                           contain multiple certificates.
 
       SPDY:
         -c, --spdy-max-concurrent-streams=<NUM>
@@ -421,7 +455,11 @@ Here is the command-line options::
                            streams in one SPDY session.
                            Default: 100
         --frontend-spdy-window-bits=<N>
-                           Sets the initial window size of SPDY
+                           Sets the per-stream initial window size of
+                           SPDY frontend connection to 2**<N>.
+                           Default: 16
+        --frontend-spdy-connection-window-bits=<N>
+                           Sets the per-connection window size of SPDY
                            frontend connection to 2**<N>.
                            Default: 16
         --frontend-spdy-no-tls
@@ -432,9 +470,13 @@ Here is the command-line options::
         --frontend-spdy-proto
                            Specify SPDY protocol used in frontend
                            connection if --frontend-spdy-no-tls is
-                           used. Default: spdy/3
+                           used. Default: spdy/3.1
         --backend-spdy-window-bits=<N>
-                           Sets the initial window size of SPDY
+                           Sets the per-stream initial window size of
+                           SPDY backend connection to 2**<N>.
+                           Default: 16
+        --backend-spdy-connection-window-bits=<N>
+                           Sets the per-connection window size of SPDY
                            backend connection to 2**<N>.
                            Default: 16
         --backend-spdy-no-tls
@@ -444,7 +486,7 @@ Here is the command-line options::
         --backend-spdy-proto
                            Specify SPDY protocol used in backend
                            connection if --backend-spdy-no-tls is used.
-                           Default: spdy/3
+                           Default: spdy/3.1
 
       Mode:
         -s, --spdy-proxy   Enable secure SPDY proxy mode.
