@@ -399,7 +399,8 @@ int SpdyDownstreamConnection::resume_read(IOCtrlReason reason)
      spdy_->get_flow_control()) {
     int32_t delta;
     delta = http::determine_window_update_transmission
-      (spdy_->get_session(), 0);
+      (spdy_->get_session(), 0,
+       1 << get_config()->spdy_downstream_connection_window_bits);
     if(delta != -1) {
       rv1 = spdy_->submit_window_update(0, delta);
       if(rv1 == 0) {
@@ -408,7 +409,8 @@ int SpdyDownstreamConnection::resume_read(IOCtrlReason reason)
     }
     if(downstream_ && downstream_->get_downstream_stream_id() != -1) {
       delta = http::determine_window_update_transmission
-        (spdy_->get_session(), downstream_->get_downstream_stream_id());
+        (spdy_->get_session(), downstream_->get_downstream_stream_id(),
+         1 << get_config()->spdy_downstream_window_bits);
       if(delta != -1) {
         rv2 = spdy_->submit_window_update(this, delta);
         if(rv2 == 0) {

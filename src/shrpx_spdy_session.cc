@@ -900,13 +900,14 @@ void on_data_chunk_recv_callback(spdylay_session *session,
   if(spdy->get_flow_control()) {
     if(spdylay_session_get_recv_data_length(session) >
        std::max(SPDYLAY_INITIAL_WINDOW_SIZE,
-                spdylay_session_get_local_window_size(session))) {
+                1 << get_config()->spdy_downstream_connection_window_bits)) {
       if(LOG_ENABLED(INFO)) {
-        SSLOG(INFO, spdy) << "Flow control error on connection: "
-                          << "recv_window_size="
-                          << spdylay_session_get_recv_data_length(session)
-                          << ", initial_window_size="
-                          << spdylay_session_get_local_window_size(session);
+        SSLOG(INFO, spdy)
+          << "Flow control error on connection: "
+          << "recv_window_size="
+          << spdylay_session_get_recv_data_length(session)
+          << ", window_size="
+          << (1 << get_config()->spdy_downstream_connection_window_bits);
       }
       spdylay_session_fail_session(session, SPDYLAY_GOAWAY_PROTOCOL_ERROR);
       downstream->set_response_state(Downstream::MSG_RESET);
@@ -915,13 +916,13 @@ void on_data_chunk_recv_callback(spdylay_session *session,
     }
     if(spdylay_session_get_stream_recv_data_length(session, stream_id) >
        std::max(SPDYLAY_INITIAL_WINDOW_SIZE,
-                spdylay_session_get_stream_local_window_size(session))) {
+                1 << get_config()->spdy_downstream_window_bits)) {
       if(LOG_ENABLED(INFO)) {
         SSLOG(INFO, spdy)
           << "Flow control error: recv_window_size="
           << spdylay_session_get_stream_recv_data_length(session, stream_id)
           << ", initial_window_size="
-          << spdylay_session_get_stream_local_window_size(session);
+          << (1 << get_config()->spdy_downstream_window_bits);
       }
       spdylay_submit_rst_stream(session, stream_id,
                                 SPDYLAY_FLOW_CONTROL_ERROR);
@@ -1098,6 +1099,18 @@ int SpdySession::on_connect()
   if(rv != 0) {
     return -1;
   }
+
+  if(version >= SPDYLAY_PROTO_SPDY3_1 &&
+     get_config()->spdy_downstream_connection_window_bits > 16) {
+    int32_t delta =
+      (1 << get_config()->spdy_downstream_connection_window_bits)
+      - SPDYLAY_INITIAL_WINDOW_SIZE;
+    rv = spdylay_submit_window_update(session_, 0, delta);
+    if(rv != 0) {
+      return -1;
+    }
+  }
+
   rv = send();
   if(rv != 0) {
     return -1;

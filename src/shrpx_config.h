@@ -70,6 +70,8 @@ extern const char SHRPX_OPT_ACCESSLOG[];
 extern const char SHRPX_OPT_BACKEND_KEEP_ALIVE_TIMEOUT[];
 extern const char SHRPX_OPT_FRONTEND_SPDY_WINDOW_BITS[];
 extern const char SHRPX_OPT_BACKEND_SPDY_WINDOW_BITS[];
+extern const char SHRPX_OPT_FRONTEND_SPDY_CONNECTION_WINDOW_BITS[];
+extern const char SHRPX_OPT_BACKEND_SPDY_CONNECTION_WINDOW_BITS[];
 extern const char SHRPX_OPT_FRONTEND_SPDY_NO_TLS[];
 extern const char SHRPX_OPT_FRONTEND_SPDY_PROTO[];
 extern const char SHRPX_OPT_BACKEND_SPDY_NO_TLS[];
@@ -141,6 +143,8 @@ struct Config {
   bool accesslog;
   size_t spdy_upstream_window_bits;
   size_t spdy_downstream_window_bits;
+  size_t spdy_upstream_connection_window_bits;
+  size_t spdy_downstream_connection_window_bits;
   bool spdy_upstream_no_tls;
   uint16_t spdy_upstream_version;
   bool spdy_downstream_no_tls;

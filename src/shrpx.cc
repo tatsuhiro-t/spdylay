@@ -359,6 +359,10 @@ void fill_default_config()
   // 64KiB, which is SPDY/3 default.
   mod_config()->spdy_upstream_window_bits = 16;
   mod_config()->spdy_downstream_window_bits = 16;
+  // SPDY/3.1 has connection-level flow control. The default window
+  // size is 64KB.
+  mod_config()->spdy_upstream_connection_window_bits = 16;
+  mod_config()->spdy_downstream_connection_window_bits = 16;
 
   mod_config()->spdy_upstream_no_tls = false;
   mod_config()->spdy_upstream_version = SPDYLAY_PROTO_SPDY3_1;
@@ -592,10 +596,15 @@ void print_help(std::ostream& out)
       << "                       Default: "
       << get_config()->spdy_max_concurrent_streams << "\n"
       << "    --frontend-spdy-window-bits=<N>\n"
-      << "                       Sets the initial window size of SPDY\n"
-      << "                       frontend connection to 2**<N>.\n"
+      << "                       Sets the per-stream initial window size of\n"
+      << "                       SPDY frontend connection to 2**<N>.\n"
       << "                       Default: "
       << get_config()->spdy_upstream_window_bits << "\n"
+      << "    --frontend-spdy-connection-window-bits=<N>\n"
+      << "                       Sets the per-connection window size of SPDY\n"
+      << "                       frontend connection to 2**<N>.\n"
+      << "                       Default: "
+      << get_config()->spdy_upstream_connection_window_bits << "\n"
       << "    --frontend-spdy-no-tls\n"
       << "                       Disable SSL/TLS on frontend SPDY\n"
       << "                       connections. SPDY protocol must be specified\n"
@@ -606,10 +615,15 @@ void print_help(std::ostream& out)
       << "                       connection if --frontend-spdy-no-tls is\n"
       << "                       used. Default: spdy/3.1\n"
       << "    --backend-spdy-window-bits=<N>\n"
-      << "                       Sets the initial window size of SPDY\n"
-      << "                       backend connection to 2**<N>.\n"
+      << "                       Sets the per-stream initial window size of\n"
+      << "                       SPDY backend connection to 2**<N>.\n"
       << "                       Default: "
       << get_config()->spdy_downstream_window_bits << "\n"
+      << "    --backend-spdy-connection-window-bits=<N>\n"
+      << "                       Sets the per-connection window size of SPDY\n"
+      << "                       backend connection to 2**<N>.\n"
+      << "                       Default: "
+      << get_config()->spdy_downstream_connection_window_bits << "\n"
       << "    --backend-spdy-no-tls\n"
       << "                       Disable SSL/TLS on backend SPDY connections.\n"
       << "                       SPDY protocol must be specified using\n"
@@ -729,6 +743,8 @@ int main(int argc, char **argv)
       {"write-burst", required_argument, &flag, 37},
       {"verify-client", no_argument, &flag, 38},
       {"verify-client-cacert", required_argument, &flag, 39},
+      {"frontend-spdy-connection-window-bits", required_argument, &flag, 40},
+      {"backend-spdy-connection-window-bits", required_argument, &flag, 41},
       {0, 0, 0, 0 }
     };
     int option_index = 0;
@@ -946,6 +962,18 @@ int main(int argc, char **argv)
         // --verify-client-cacert
         cmdcfgs.push_back(std::make_pair(SHRPX_OPT_VERIFY_CLIENT_CACERT,
                                          optarg));
+        break;
+      case 40:
+        // --frontend-spdy-connection-window-bits
+        cmdcfgs.push_back(std::make_pair
+                          (SHRPX_OPT_FRONTEND_SPDY_CONNECTION_WINDOW_BITS,
+                           optarg));
+        break;
+      case 41:
+        // --backend-spdy-connection-window-bits
+        cmdcfgs.push_back(std::make_pair
+                          (SHRPX_OPT_BACKEND_SPDY_CONNECTION_WINDOW_BITS,
+                           optarg));
         break;
       default:
         break;

@@ -60,11 +60,13 @@ void copy_url_component(std::string& dest, http_parser_url *u, int field,
 // Return positive window_size_increment if WINDOW_UPDATE should be
 // sent for the stream |stream_id|. If |stream_id| == 0, this function
 // determines the necessity of the WINDOW_UPDATE for a connection.
+// The receiver window size is given in the |window_size|.
 //
 // If the function determines WINDOW_UPDATE is not necessary at the
 // moment, it returns -1.
 int32_t determine_window_update_transmission(spdylay_session *session,
-                                             int32_t stream_id);
+                                             int32_t stream_id,
+                                             int32_t window_size);
 
 } // namespace http
 

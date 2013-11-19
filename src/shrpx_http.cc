@@ -176,21 +176,18 @@ void copy_url_component(std::string& dest, http_parser_url *u, int field,
 }
 
 int32_t determine_window_update_transmission(spdylay_session *session,
-                                             int32_t stream_id)
+                                             int32_t stream_id,
+                                             int32_t window_size)
 {
-  int32_t recv_length, window_size;
+  int32_t recv_length;
   if(stream_id == 0) {
     recv_length = spdylay_session_get_recv_data_length(session);
-    window_size = spdylay_session_get_local_window_size(session);
   } else {
     recv_length = spdylay_session_get_stream_recv_data_length
       (session, stream_id);
-    window_size = spdylay_session_get_stream_local_window_size(session);
   }
-  if(recv_length != -1 && window_size != -1) {
-    if(recv_length >= window_size / 2) {
-      return recv_length;
-    }
+  if(recv_length != -1 && recv_length >= window_size / 2) {
+    return recv_length;
   }
   return -1;
 }

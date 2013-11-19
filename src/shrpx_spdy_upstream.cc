@@ -263,27 +263,27 @@ void on_data_chunk_recv_callback(spdylay_session *session,
       // returns 0.
       if(spdylay_session_get_recv_data_length(session) >
          std::max(SPDYLAY_INITIAL_WINDOW_SIZE,
-                  spdylay_session_get_local_window_size(session))) {
+                  1 << get_config()->spdy_upstream_connection_window_bits)) {
         if(LOG_ENABLED(INFO)) {
           ULOG(INFO, upstream)
             << "Flow control error on connection: "
             << "recv_window_size="
             << spdylay_session_get_recv_data_length(session)
-            << ", initial_window_size="
-            << spdylay_session_get_local_window_size(session);
+            << ", window_size="
+            << (1 << get_config()->spdy_upstream_connection_window_bits);
         }
         spdylay_session_fail_session(session, SPDYLAY_GOAWAY_PROTOCOL_ERROR);
         return;
       }
       if(spdylay_session_get_stream_recv_data_length(session, stream_id) >
          std::max(SPDYLAY_INITIAL_WINDOW_SIZE,
-                  spdylay_session_get_stream_local_window_size(session))) {
+                  1 << get_config()->spdy_upstream_window_bits)) {
         if(LOG_ENABLED(INFO)) {
           ULOG(INFO, upstream)
             << "Flow control error: recv_window_size="
             << spdylay_session_get_stream_recv_data_length(session, stream_id)
             << ", initial_window_size="
-            << spdylay_session_get_stream_local_window_size(session);
+            << (1 << get_config()->spdy_upstream_window_bits);
         }
         upstream->rst_stream(downstream, SPDYLAY_FLOW_CONTROL_ERROR);
         return;
@@ -422,6 +422,15 @@ SpdyUpstream::SpdyUpstream(uint16_t version, ClientHandler *handler)
     (session_, SPDYLAY_FLAG_SETTINGS_NONE,
      entry, sizeof(entry)/sizeof(spdylay_settings_entry));
   assert(rv == 0);
+
+  if(version >= SPDYLAY_PROTO_SPDY3_1 &&
+     get_config()->spdy_upstream_connection_window_bits > 16) {
+    int32_t delta = (1 << get_config()->spdy_upstream_connection_window_bits)
+      - SPDYLAY_INITIAL_WINDOW_SIZE;
+    rv = spdylay_submit_window_update(session_, 0, delta);
+    assert(rv == 0);
+  }
+
   // TODO Maybe call from outside?
   send();
 }
@@ -941,12 +950,14 @@ int SpdyUpstream::resume_read(IOCtrlReason reason, Downstream *downstream)
 {
   if(get_flow_control()) {
     int32_t delta;
-    delta = http::determine_window_update_transmission(session_, 0);
+    delta = http::determine_window_update_transmission
+      (session_, 0, 1 << get_config()->spdy_upstream_connection_window_bits);
     if(delta != -1) {
       window_update(0, delta);
     }
     delta = http::determine_window_update_transmission
-      (session_, downstream->get_stream_id());
+      (session_, downstream->get_stream_id(),
+       1 << get_config()->spdy_upstream_window_bits);
     if(delta != -1) {
       window_update(downstream, delta);
     }
