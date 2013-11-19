@@ -443,6 +443,11 @@ void Downstream::set_priority(int pri)
   priority_ = pri;
 }
 
+int Downstream::get_priority() const
+{
+  return priority_;
+}
+
 bool Downstream::tunnel_established() const
 {
   return request_method_ == "CONNECT" &&

@@ -341,16 +341,19 @@ int SpdyDownstreamConnection::push_request_headers()
     }
     DCLOG(INFO, this) << "HTTP request headers\n" << ss.str();
   }
-
+  int pri = downstream_->get_priority();
+  if(pri == -1) {
+    pri = spdylay_session_get_pri_lowest(spdy_->get_session());
+  }
   if(downstream_->get_request_method() == "CONNECT" ||
      chunked_encoding || content_length) {
     // Request-body is expected.
     spdylay_data_provider data_prd;
     data_prd.source.ptr = this;
     data_prd.read_callback = spdy_data_read_callback;
-    rv = spdy_->submit_request(this, 0, nv, &data_prd);
+    rv = spdy_->submit_request(this, pri, nv, &data_prd);
   } else {
-    rv = spdy_->submit_request(this, 0, nv, 0);
+    rv = spdy_->submit_request(this, pri, nv, 0);
   }
   delete [] nv;
   if(rv != 0) {

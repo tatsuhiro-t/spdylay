@@ -51,6 +51,7 @@ public:
   Upstream* get_upstream() const;
   int32_t get_stream_id() const;
   void set_priority(int pri);
+  int get_priority() const;
   void pause_read(IOCtrlReason reason);
   int resume_read(IOCtrlReason reason);
   void force_resume_read();

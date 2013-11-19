@@ -78,7 +78,7 @@ int htp_msg_begin(http_parser *htp)
     ULOG(INFO, upstream) << "HTTP request started";
   }
   upstream->reset_current_header_length();
-  Downstream *downstream = new Downstream(upstream, 0, 0);
+  Downstream *downstream = new Downstream(upstream, 0, -1);
   upstream->attach_downstream(downstream);
   return 0;
 }
