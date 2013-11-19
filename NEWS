@@ -1,57 +1,74 @@
-spdylay 1.1.0
+spdylay 1.2.0
 =============
 
 Release Note
 ------------
 
-This release fixes several bugs in shrpx and spdycat. It is strongly
-recommended for the users who use shrpx and spdycat to upgrade to this
-version.  Historically, spdylay.h header defined
-SPDYLAY_INITIAL_MAX_CONCURRENT_STREAMS macro as 100 and all internal
-code and utility programs (spdycat and spdyd) use that. However, this
-limit is not specified in the SPDY specification and may trigger
-unexpected stream closure to the other SPDY
-implementations. Therefore, it is now defined the large enough value.
+This release adds SPDY/3.1 support and fixes flow control bug.  The
+shrpx, SPDY proxy, got client certificate authentication.  It now also
+supports custom HTTP-version string (e.g., ICY).  The spdycat and
+spdyd got --color option to force ANSI color escape in output.
 
 Changes
 -------
 
-* shrpx: Enable --honor-cipher-order automatically when --ciphers is used
+* shrpx: Add options to specify per-connection window size
 
-* spdycat: allocate sufficient memory, patch from soyer.
+* Interleave streams with same priority
 
-* shrpx: Add DHE cipher suite support
+* Add SPDY/3.1 support
 
-  Use --dh-param-file option to specify a file including DH parameters
-  in PEM format.
+  The added feature is connection-level flow control.
 
-* shrpx: Add ECDH cipher support
+* src/http-parser: Allow custom HTTP-version string (e.g., ICY)
 
-* shrpx: Close upstream connection if CONNECT failed in downstream
+  We need HTTP major and minor version later, so we assume it is
+  HTTP/1.0 equivalent if custom HTTP-version string is used.
 
-* shrpx: Replace \r\n in the header field to SPC in http downstream
+* src/http-parser: Update to HEAD
 
-* shrpx: Require content-length in SPDY upstream if FIN flag is not set
+* shrpx: Add --verify-client-cacert option
 
-* Return error if spdylay_gzip_inflate is invoked after Z_STREAM_END
+  Using --cacert to load certificate for client certificate
+  authentication is problematic since, --cacert is also used for
+  client mode.  This commit adds --verify-client-cacert option which
+  specify the CA certficate file used only for client certificate
+  validation.  This change also removes the default certficate load
+  function for client certificate validation.
 
-* shrpx: Limit read rate on upstream-end
+* shrpx: Add --verify-client option
 
-* shrpx: Make "dconn_ is NULL" message INFO level
+  This option requires client certificate and successful verification.
+  Use --cacert option to add CA certificates as necessary.
 
-* shrpx: Save pid file after daemon() call
+* spdycat, spdyd: Add --color option to force colored log output
 
-* shrpx: Accept incoming bytes at least initial window size (65536 bytes)
+* shrpx: Check DATA_FLAG_FIN on on_data_recv_callback
 
-* shrpx: Fix possible multiple replies on SPDY upstream
+* tests: Fix main test fail with address-sanitizer
 
-* shrpx: Return -1 if dconn_ is nullptr on push_upload_data_chunk
+* Fix outbound flow control count
 
-* Change SPDYLAY_INITIAL_MAX_CONCURRENT_STREAMS
+  We wrongly added the whole payload length even if we sent part of it.
 
-  The previous value 100 is non-standard, and if it is not sent with
-  SETTINGS, session will be closed with protocol error.
+* shrpx: Fix missing extension HTTP status code in response
 
-* src: Send out data in output buffer before SPDY session tear down
+* shrpx: Add rate limit options
 
-* shrpx: Fix bug: end marker of chunked encoding is written twice
+* shrpx: Replace \r\n with space when constructing HTTP/1 headers
+
+* shrpx: Guard ecdh use with !OPENSSL_NO_EC
+
+* spdylay_ssl: fix the user-agent position
+
+  Patch from soyer
+
+* spdycat: Add missing verbose output for upload DATA
+
+* Call on_stream_close_callback for stream in SPDYLAY_STREAM_INITIAL state
+
+  We call on_stream_close_callback even if stream->state is
+  SPDYLAY_STREAM_INITIAL. This will happen while sending request
+  HEADERS, a local endpoint receives RST_STREAM for that stream. It
+  may be PROTOCOL_ERROR, but without notifying stream closure will
+  hang the stream in a local endpoint.
