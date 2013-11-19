@@ -1371,16 +1371,6 @@ Functions
     
     This function returns -1 if it fails.
 
-.. function:: int32_t spdylay_session_get_stream_local_window_size(spdylay_session *session)
-
-    
-    Returns the local (receive) window size for a stream. Because SPDY
-    protocol always uses the initial window size as local window size,
-    this function returns the current local settings of
-    SETTINGS_INITIAL_WINDOW_SIZE.
-    
-    This function returns -1 if it fails.
-
 .. function:: int32_t spdylay_session_get_recv_data_length(spdylay_session *session)
 
     
@@ -1389,16 +1379,6 @@ Functions
     
     If flow control is disabled by the protocol, this function returns
     0.
-    
-    This function returns -1 if it fails.
-
-.. function:: int32_t spdylay_session_get_local_window_size(spdylay_session *session)
-
-    
-    Returns the local (receive) window size for a connection. Because
-    SPDY protocol always uses the initial window size as local window
-    size, this fucntion always returns
-    :macro:`SPDYLAY_INITIAL_WINDOW_SIZE`.
     
     This function returns -1 if it fails.
 

@@ -1895,32 +1895,12 @@ returns 0.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="spdylay_session_get_stream_local_window_size">
-int32_t <tt class="descname">spdylay_session_get_stream_local_window_size</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em><big>)</big><a class="headerlink" href="#spdylay_session_get_stream_local_window_size" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the local (receive) window size for a stream. Because SPDY
-protocol always uses the initial window size as local window size,
-this function returns the current local settings of
-SETTINGS_INITIAL_WINDOW_SIZE.</p>
-<p>This function returns -1 if it fails.</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="spdylay_session_get_recv_data_length">
 int32_t <tt class="descname">spdylay_session_get_recv_data_length</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em><big>)</big><a class="headerlink" href="#spdylay_session_get_recv_data_length" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the number of DATA payload in bytes received without
 WINDOW_UPDATE transmission for a connection.</p>
 <p>If flow control is disabled by the protocol, this function returns
 0.</p>
-<p>This function returns -1 if it fails.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="spdylay_session_get_local_window_size">
-int32_t <tt class="descname">spdylay_session_get_local_window_size</tt><big>(</big><a class="reference internal" href="#spdylay_session" title="spdylay_session">spdylay_session</a><em>&nbsp;*session</em><big>)</big><a class="headerlink" href="#spdylay_session_get_local_window_size" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the local (receive) window size for a connection. Because
-SPDY protocol always uses the initial window size as local window
-size, this fucntion always returns
-<a class="reference internal" href="#SPDYLAY_INITIAL_WINDOW_SIZE" title="SPDYLAY_INITIAL_WINDOW_SIZE"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_INITIAL_WINDOW_SIZE</span></tt></a>.</p>
 <p>This function returns -1 if it fails.</p>
 </dd></dl>
 
@@ -2399,6 +2379,8 @@ negative error codes:</p>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper"><h3>Menu</h3>
 <ul>
+  <li><a href="https://github.com/tatsuhiro-t/spdylay/releases">Downloads</a></li>
+  <li><a href="http://sourceforge.net/projects/spdylay/files/">Old downloads</a></li>
   <li><a href="https://github.com/tatsuhiro-t/spdylay/issues">Issues</a></li>
   <li><a href="https://github.com/tatsuhiro-t/spdylay">Source</a></li>
 </ul>
