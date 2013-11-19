@@ -457,7 +457,6 @@ int spdylay_session_add_frame(spdylay_session *session,
     free(item);
     return r;
   }
-  item->inipri = item->pri;
   return 0;
 }
 
@@ -1275,20 +1274,6 @@ spdylay_outbound_item* spdylay_session_pop_next_ob_item
 }
 
 /*
- * Adjust priority of item so that the higher priority long DATA
- * frames don't starve lower priority streams.
- */
-static void spdylay_outbound_item_adjust_pri(spdylay_session *session,
-                                             spdylay_outbound_item *item)
-{
-  if(item->pri > spdylay_session_get_pri_lowest(session)) {
-    item->pri = item->inipri;
-  } else {
-    ++item->pri;
-  }
-}
-
-/*
  * Called after a frame is sent.
  *
  * This function returns 0 if it succeeds, or one of the following
@@ -1442,11 +1427,10 @@ static int spdylay_session_after_frame_sent(spdylay_session *session)
     } else {
       spdylay_outbound_item* next_item;
       next_item = spdylay_session_get_next_ob_item(session);
-      spdylay_outbound_item_adjust_pri(session, session->aob.item);
       /* If priority of this stream is higher or equal to other stream
          waiting at the top of the queue, we continue to send this
          data. */
-      if(next_item == NULL || session->aob.item->pri <= next_item->pri) {
+      if(next_item == NULL || session->aob.item->pri < next_item->pri) {
         size_t next_readmax;
         spdylay_stream *stream;
         stream = spdylay_session_get_stream(session, data_frame->stream_id);
@@ -1490,6 +1474,7 @@ static int spdylay_session_after_frame_sent(spdylay_session *session)
           session->aob.framebufoff = 0;
         }
       } else {
+        session->aob.item->seq = session->next_seq++;
         r = spdylay_pq_push(&session->ob_pq, session->aob.item);
         if(r == 0) {
           session->aob.item = NULL;
