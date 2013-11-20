@@ -1,3 +1,19 @@
+spdylay 1.2.1
+=============
+
+Release Note
+------------
+
+This release fixes the bug which makes shrpx crash on downstream
+connection failure.
+
+Changes
+-------
+
+* shrpx: Fix crash on downstream connection failure
+
+
+
 spdylay 1.2.0
 =============
 
