@@ -3105,7 +3105,7 @@ int32_t spdylay_session_get_stream_recv_data_length
 
 int32_t spdylay_session_get_recv_data_length(spdylay_session *session)
 {
-  if((session->flow_control && SPDYLAY_FLOW_CONTROL_CONNECTION) == 0) {
+  if((session->flow_control & SPDYLAY_FLOW_CONTROL_CONNECTION) == 0) {
     return 0;
   }
   return session->recv_window_size;
