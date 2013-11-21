@@ -150,7 +150,6 @@ void notify_readcb(bufferevent *bev, void *arg)
     rv = spdy->initiate_connection();
     if(rv != 0) {
       SSLOG(FATAL, spdy) << "Could not initiate notification connection";
-      DIE();
     }
     break;
   case SpdySession::CONNECTED:
