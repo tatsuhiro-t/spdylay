@@ -32,26 +32,31 @@
 #include <spdylay/spdylay.h>
 #include "spdylay_int.h"
 
-/* Implementation of ordered map */
+/* Implementation of unordered map */
 
 typedef uint32_t key_type;
-typedef uint32_t pri_type;
 
 typedef struct spdylay_map_entry {
+  struct spdylay_map_entry *next;
   key_type key;
-  struct spdylay_map_entry *parent, *left, *right;
-  pri_type priority;
 } spdylay_map_entry;
 
 typedef struct {
-  spdylay_map_entry *root;
+  spdylay_map_entry **table;
+  size_t tablelen;
   size_t size;
 } spdylay_map;
 
 /*
  * Initializes the map |map|.
+ *
+ * This function returns 0 if it succeeds, or one of the following
+ * negative error codes:
+ *
+ * SPDYLAY_ERR_NOMEM
+ *   Out of memory
  */
-void spdylay_map_init(spdylay_map *map);
+int spdylay_map_init(spdylay_map *map);
 
 /*
  * Deallocates any resources allocated for |map|. The stored entries
@@ -80,10 +85,12 @@ void spdylay_map_entry_init(spdylay_map_entry *entry, key_type key);
  * Inserts the new |entry| with the key |entry->key| to the map |map|.
  *
  * This function returns 0 if it succeeds, or one of the following
- * negative error code:
+ * negative error codes:
  *
  * SPDYLAY_ERR_INVALID_ARGUMENT
  *     The item associated by |key| already exists.
+ * SPDYLAY_ERR_NOMEM
+ *   Out of memory
  */
 int spdylay_map_insert(spdylay_map *map, spdylay_map_entry *entry);
 

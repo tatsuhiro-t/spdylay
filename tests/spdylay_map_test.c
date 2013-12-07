@@ -149,6 +149,7 @@ void test_spdylay_map_functional(void)
     CU_ASSERT(0 == spdylay_map_insert(&map, &arr[i].map_entry));
   }
   spdylay_map_each_free(&map, eachfun, NULL);
+  spdylay_map_free(&map);
 }
 
 static int entry_free(spdylay_map_entry *entry, void *ptr)
@@ -177,4 +178,5 @@ void test_spdylay_map_each_free(void)
   spdylay_map_insert(&map, &shrubbery->map_entry);
 
   spdylay_map_each_free(&map, entry_free, NULL);
+  spdylay_map_free(&map);
 }

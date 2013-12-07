@@ -196,7 +196,10 @@ static int spdylay_session_new(spdylay_session **session_ptr,
   if(r != 0) {
     goto fail_hd_inflater;
   }
-  spdylay_map_init(&(*session_ptr)->streams);
+  r = spdylay_map_init(&(*session_ptr)->streams);
+  if(r != 0) {
+    goto fail_streams;
+  }
   r = spdylay_pq_init(&(*session_ptr)->ob_pq, spdylay_outbound_item_compar);
   if(r != 0) {
     goto fail_ob_pq;
@@ -267,7 +270,8 @@ static int spdylay_session_new(spdylay_session **session_ptr,
  fail_ob_ss_pq:
   spdylay_pq_free(&(*session_ptr)->ob_pq);
  fail_ob_pq:
-  /* No need to free (*session_ptr)->streams) here. */
+  spdylay_map_free(&(*session_ptr)->streams);
+ fail_streams:
   spdylay_zlib_inflate_free(&(*session_ptr)->hd_inflater);
  fail_hd_inflater:
   spdylay_zlib_deflate_free(&(*session_ptr)->hd_deflater);
@@ -347,6 +351,7 @@ void spdylay_session_del(spdylay_session *session)
     return;
   }
   spdylay_map_each_free(&session->streams, spdylay_free_streams, NULL);
+  spdylay_map_free(&session->streams);
   spdylay_session_ob_pq_free(&session->ob_pq);
   spdylay_session_ob_pq_free(&session->ob_ss_pq);
   spdylay_zlib_deflate_free(&session->hd_deflater);
