@@ -45,18 +45,13 @@ typedef struct {
 } spdylay_syn_stream_aux_data;
 
 typedef struct {
-  int64_t seq;
-  void *frame;
-  void *aux_data;
   /* Type of |frame|. SPDYLAY_CTRL: spdylay_frame*, SPDYLAY_DATA:
      spdylay_data* */
   spdylay_frame_category frame_cat;
-  /* The priority used in priority comparion */
+  void *frame;
+  void *aux_data;
   int pri;
-  /* The initial priority */
-  int inipri;
-  /* The amount of priority decrement in next time */
-  int pri_decay;
+  int64_t seq;
 } spdylay_outbound_item;
 
 /*
