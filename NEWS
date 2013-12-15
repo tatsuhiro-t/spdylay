@@ -1,3 +1,23 @@
+spdylay 1.2.2
+=============
+
+Release Note
+------------
+
+This release fixes the bug that shrpx exits when SPDY backend
+connection cannot be established.
+
+Changes
+-------
+
+* shrpx: Don't DIE when establishing backend SPDY connection failed
+
+* spdylay_map: Implement hash table
+
+* Tear down connection on invalid DATA frame reception
+
+
+
 spdylay 1.2.1
 =============
 
