@@ -44,15 +44,15 @@ namespace spdylay {
 
 struct Config {
   std::string htdocs;
-  bool verbose;
-  bool daemon;
   std::string host;
-  uint16_t port;
   std::string private_key_file;
   std::string cert_file;
   spdylay_on_request_recv_callback on_request_recv_callback;
   void *data_ptr;
+  uint16_t port;
   uint16_t version;
+  bool verbose;
+  bool daemon;
   bool verify_client;
   bool no_tls;
   Config();
@@ -87,10 +87,10 @@ private:
 };
 
 struct Request {
-  int32_t stream_id;
   std::vector<std::pair<std::string, std::string> > headers;
-  int file;
   std::pair<std::string, size_t> response_body;
+  int32_t stream_id;
+  int file;
   Request(int32_t stream_id);
   ~Request();
 };
@@ -137,13 +137,13 @@ public:
   Request* get_stream(int32_t stream_id);
   int64_t session_id() const;
 private:
-  spdylay_session *session_;
-  int fd_;
-  SSL* ssl_;
-  uint16_t version_;
-  int64_t session_id_;
-  uint8_t io_flags_;
   std::map<int32_t, Request*> id2req_;
+  spdylay_session *session_;
+  SSL* ssl_;
+  int64_t session_id_;
+  int fd_;
+  uint16_t version_;
+  uint8_t io_flags_;
 };
 
 class SpdyServer {

@@ -51,10 +51,10 @@ public:
   // Adds/Modifies event to watch.
   int ctl_event(int op, int fd, int events, void *user_data);
 private:
-  int epfd_;
-  size_t max_events_;
   epoll_event *evlist_;
+  size_t max_events_;
   size_t num_events_;
+  int epfd_;
 };
 
 } // namespace spdylay

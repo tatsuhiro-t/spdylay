@@ -45,13 +45,13 @@ typedef struct {
 } spdylay_syn_stream_aux_data;
 
 typedef struct {
+  void *frame;
+  void *aux_data;
+  int64_t seq;
   /* Type of |frame|. SPDYLAY_CTRL: spdylay_frame*, SPDYLAY_DATA:
      spdylay_data* */
   spdylay_frame_category frame_cat;
-  void *frame;
-  void *aux_data;
   int pri;
-  int64_t seq;
 } spdylay_outbound_item;
 
 /*

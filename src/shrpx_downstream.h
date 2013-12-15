@@ -135,37 +135,44 @@ public:
 
   static const size_t OUTPUT_UPPER_THRES = 64*1024;
 private:
+  Headers request_headers_;
+  Headers response_headers_;
+
   Upstream *upstream_;
   DownstreamConnection *dconn_;
+  // This buffer is used to temporarily store downstream response
+  // body. Spdylay reads data from this in the callback.
+  evbuffer *response_body_buf_;
+
+  std::string request_method_;
+  std::string request_path_;
+
   int32_t stream_id_;
-  int priority_;
   // stream ID in backend connection
   int32_t downstream_stream_id_;
 
+  // RST_STREAM status_code from downstream SPDY connection
+  uint32_t response_rst_stream_status_code_;
+
+  int priority_;
+
   int request_state_;
-  std::string request_method_;
-  std::string request_path_;
   int request_major_;
   int request_minor_;
-  bool chunked_request_;
-  bool request_connection_close_;
-  bool request_expect_100_continue_;
-  Headers request_headers_;
-  bool request_header_key_prev_;
 
   int response_state_;
   unsigned int response_http_status_;
   int response_major_;
   int response_minor_;
+
+  bool chunked_request_;
+  bool request_connection_close_;
+  bool request_expect_100_continue_;
+  bool request_header_key_prev_;
+
   bool chunked_response_;
   bool response_connection_close_;
-  Headers response_headers_;
   bool response_header_key_prev_;
-  // This buffer is used to temporarily store downstream response
-  // body. Spdylay reads data from this in the callback.
-  evbuffer *response_body_buf_;
-  // RST_STREAM status_code from downstream SPDY connection
-  uint32_t response_rst_stream_status_code_;
 };
 
 } // namespace shrpx

@@ -53,7 +53,7 @@ bool ssl_debug = false;
 Spdylay::Spdylay(int fd, SSL *ssl, uint16_t version,
                  const spdylay_session_callbacks *callbacks,
                  void *user_data)
-  : fd_(fd), ssl_(ssl), version_(version), user_data_(user_data),
+  : ssl_(ssl), user_data_(user_data), fd_(fd), version_(version),
     io_flags_(0)
 {
   int r = spdylay_session_client_new(&session_, version_, callbacks, this);

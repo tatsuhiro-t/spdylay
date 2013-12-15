@@ -64,16 +64,16 @@ public:
   void set_spdy_session(SpdySession *spdy);
   SpdySession* get_spdy_session() const;
 private:
+  std::set<DownstreamConnection*> dconn_pool_;
+  std::string ipaddr_;
   bufferevent *bev_;
-  int fd_;
   SSL *ssl_;
   Upstream *upstream_;
-  std::string ipaddr_;
-  bool should_close_after_write_;
-  std::set<DownstreamConnection*> dconn_pool_;
   // Shared SPDY session for each thread. NULL if backend is not
   // SPDY. Not deleted by this object.
   SpdySession *spdy_;
+  int fd_;
+  bool should_close_after_write_;
 };
 
 } // namespace shrpx

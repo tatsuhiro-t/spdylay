@@ -120,13 +120,13 @@ void upstream_eventcb(bufferevent *bev, short events, void *arg)
 
 ClientHandler::ClientHandler(bufferevent *bev, int fd, SSL *ssl,
                              const char *ipaddr)
-  : bev_(bev),
-    fd_(fd),
+  : ipaddr_(ipaddr),
+    bev_(bev),
     ssl_(ssl),
     upstream_(0),
-    ipaddr_(ipaddr),
-    should_close_after_write_(false),
-    spdy_(0)
+    spdy_(0),
+    fd_(fd),
+    should_close_after_write_(false)
 {
   bufferevent_set_rate_limit(bev_, get_config()->rate_limit_cfg);
   bufferevent_enable(bev_, EV_READ | EV_WRITE);

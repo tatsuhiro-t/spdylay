@@ -65,27 +65,27 @@ struct Connection {
 
 struct Request {
   char *host;
-  uint16_t port;
   /* In this program, path contains query component as well. */
   char *path;
   /* This is the concatenation of host and port with ":" in
      between. */
   char *hostport;
-  /* Stream ID for this request. */
-  int32_t stream_id;
   /* The gzip stream inflater for the compressed response. */
   spdylay_gzip *inflater;
+  /* Stream ID for this request. */
+  int32_t stream_id;
+  uint16_t port;
 };
 
 struct URI {
   const char *host;
-  size_t hostlen;
-  uint16_t port;
   /* In this program, path contains query component as well. */
   const char *path;
-  size_t pathlen;
   const char *hostport;
+  size_t hostlen;
+  size_t pathlen;
   size_t hostportlen;
+  uint16_t port;
 };
 
 /*

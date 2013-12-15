@@ -79,36 +79,36 @@ typedef enum {
 typedef struct {
   /* Intrusive Map */
   spdylay_map_entry map_entry;
-  /* stream ID */
-  int32_t stream_id;
-  spdylay_stream_state state;
-  /* Use same value in SYN_STREAM frame */
-  uint8_t flags;
-  /* Use same scheme in SYN_STREAM frame */
-  uint8_t pri;
-  /* Bitwise OR of zero or more spdylay_shut_flag values */
-  uint8_t shut_flags;
   /* The array of server-pushed stream IDs which associate them to
      this stream. */
   int32_t *pushed_streams;
+  /* The arbitrary data provided by user for this stream. */
+  void *stream_user_data;
+  /* Deferred DATA frame */
+  spdylay_outbound_item *deferred_data;
   /* The number of stored pushed stream ID in |pushed_streams| */
   size_t pushed_streams_length;
   /* The maximum number of stream ID the |pushed_streams| can
      store. */
   size_t pushed_streams_capacity;
-  /* The arbitrary data provided by user for this stream. */
-  void *stream_user_data;
-  /* Deferred DATA frame */
-  spdylay_outbound_item *deferred_data;
-  /* The flags for defered DATA. Bitwise OR of zero or more
-     spdylay_deferred_flag values */
-  uint8_t deferred_flags;
+  spdylay_stream_state state;
+  /* stream ID */
+  int32_t stream_id;
   /* Current sender window size. This value is computed against the
      current initial window size of remote endpoint. */
   int32_t window_size;
   /* Keep track of the number of bytes received without
      WINDOW_UPDATE. */
   int32_t recv_window_size;
+  /* Use same value in SYN_STREAM frame */
+  uint8_t flags;
+  /* Use same scheme in SYN_STREAM frame */
+  uint8_t pri;
+  /* Bitwise OR of zero or more spdylay_shut_flag values */
+  uint8_t shut_flags;
+  /* The flags for defered DATA. Bitwise OR of zero or more
+     spdylay_deferred_flag values */
+  uint8_t deferred_flags;
 } spdylay_stream;
 
 void spdylay_stream_init(spdylay_stream *stream, int32_t stream_id,

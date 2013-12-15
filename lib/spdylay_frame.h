@@ -80,6 +80,10 @@ typedef enum {
  */
 typedef struct {
   /**
+   * The data to be sent for this DATA frame.
+   */
+  spdylay_data_provider data_prd;
+  /**
    * The stream ID.
    */
   int32_t stream_id;
@@ -92,10 +96,6 @@ typedef struct {
    * |eof| is 0. It becomes 1 after all data were read.
    */
   uint8_t eof;
-  /**
-   * The data to be sent for this DATA frame.
-   */
-  spdylay_data_provider data_prd;
 } spdylay_data;
 
 /*

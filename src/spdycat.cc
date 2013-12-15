@@ -68,24 +68,32 @@
 namespace spdylay {
 
 struct Config {
+  std::map<std::string,std::string> headers;
+  std::string certfile;
+  std::string keyfile;
+  std::string datafile;
+  int multiply;
+  int spdy_version;
+  // milliseconds
+  int timeout;
+  int window_bits;
   bool null_out;
   bool remote_name;
   bool verbose;
   bool get_assets;
   bool stat;
   bool no_tls;
-  int multiply;
-  int spdy_version;
-  // milliseconds
-  int timeout;
-  std::string certfile;
-  std::string keyfile;
-  int window_bits;
-  std::map<std::string,std::string> headers;
-  std::string datafile;
-  Config():null_out(false), remote_name(false), verbose(false),
-           get_assets(false), stat(false), no_tls(false), multiply(1),
-           spdy_version(-1), timeout(-1), window_bits(-1)
+  Config()
+    : multiply(1),
+      spdy_version(-1),
+      timeout(-1),
+      window_bits(-1),
+      null_out(false),
+      remote_name(false),
+      verbose(false),
+      get_assets(false),
+      stat(false),
+      no_tls(false)
   {}
 };
 
@@ -203,9 +211,11 @@ std::string strip_fragment(const char *raw_uri)
 }
 
 struct Request {
+  http_parser_url u;
+  RequestStat stat;
   // URI without fragment
   std::string uri;
-  http_parser_url u;
+  std::string status;
   spdylay_gzip *inflater;
   HtmlParser *html_parser;
   const spdylay_data_provider *data_prd;
@@ -213,12 +223,10 @@ struct Request {
   int64_t data_offset;
   // Recursion level: 0: first entity, 1: entity linked from first entity
   int level;
-  RequestStat stat;
-  std::string status;
   Request(const std::string& uri, const http_parser_url &u,
           const spdylay_data_provider *data_prd, int64_t data_length,
           int level = 0)
-    : uri(uri), u(u),
+    : u(u), uri(uri),
       inflater(0), html_parser(0), data_prd(data_prd),
       data_length(data_length),data_offset(0),
       level(level)

@@ -66,11 +66,11 @@ public:
   bool would_block();
   void* user_data();
 private:
-  int fd_;
   SSL *ssl_;
-  uint16_t version_;
   spdylay_session *session_;
   void *user_data_;
+  int fd_;
+  uint16_t version_;
   uint8_t io_flags_;
 };
 

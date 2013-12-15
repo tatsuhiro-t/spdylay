@@ -50,15 +50,15 @@ SpdySession::SpdySession(event_base *evbase, SSL_CTX *ssl_ctx)
   : evbase_(evbase),
     ssl_ctx_(ssl_ctx),
     ssl_(0),
-    fd_(-1),
     session_(0),
     bev_(0),
-    state_(DISCONNECTED),
-    notified_(false),
     wrbev_(0),
     rdbev_(0),
-    flow_control_(false),
-    proxy_htp_(0)
+    proxy_htp_(0),
+    fd_(-1),
+    state_(DISCONNECTED),
+    notified_(false),
+    flow_control_(false)
 {}
 
 SpdySession::~SpdySession()

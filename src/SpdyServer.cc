@@ -59,9 +59,15 @@ const std::string DEFAULT_HTML = "index.html";
 const std::string SPDYD_SERVER = "spdyd spdylay/" SPDYLAY_VERSION;
 } // namespace
 
-Config::Config(): verbose(false), daemon(false), port(0),
-                  on_request_recv_callback(0), data_ptr(0),
-                  version(0), verify_client(false), no_tls(false)
+Config::Config()
+  : on_request_recv_callback(0),
+    data_ptr(0),
+    port(0),
+    version(0),
+    verbose(false),
+    daemon(false),
+    verify_client(false),
+    no_tls(false)
 {}
 
 Request::Request(int32_t stream_id)
@@ -179,7 +185,10 @@ SpdyEventHandler::SpdyEventHandler(const Config* config,
                                    const spdylay_session_callbacks *callbacks,
                                    int64_t session_id)
   : EventHandler(config),
-    fd_(fd), ssl_(ssl), version_(version), session_id_(session_id),
+    ssl_(ssl),
+    session_id_(session_id),
+    fd_(fd),
+    version_(version),
     io_flags_(0)
 {
   int r;
@@ -696,9 +705,13 @@ public:
   SSLAcceptEventHandler(const Config *config,
                         int fd, SSL *ssl, int64_t session_id)
     : EventHandler(config),
-      fd_(fd), ssl_(ssl), version_(0), fail_(false), finish_(false),
+      ssl_(ssl),
+      session_id_(session_id),
+      fd_(fd),
+      version_(0),
       io_flags_(WANT_READ),
-      session_id_(session_id)
+      fail_(false),
+      finish_(false)
   {}
   virtual ~SSLAcceptEventHandler()
   {
@@ -789,12 +802,12 @@ private:
     }
   }
 
-  int fd_;
   SSL *ssl_;
-  uint16_t version_;
-  bool fail_, finish_;
-  uint8_t io_flags_;
   int64_t session_id_;
+  int fd_;
+  uint16_t version_;
+  uint8_t io_flags_;
+  bool fail_, finish_;
 };
 
 class ListenEventHandler : public EventHandler {
@@ -802,7 +815,9 @@ public:
   ListenEventHandler(const Config* config,
                      int fd, int64_t *session_id_seed_ptr)
     : EventHandler(config),
-      fd_(fd), session_id_seed_ptr_(session_id_seed_ptr) {}
+      session_id_seed_ptr_(session_id_seed_ptr),
+      fd_(fd)
+  {}
   virtual ~ListenEventHandler()
   {}
   virtual int execute(Sessions *sessions)
@@ -869,8 +884,8 @@ private:
     }
   }
 
-  int fd_;
   int64_t *session_id_seed_ptr_;
+  int fd_;
 };
 
 namespace {

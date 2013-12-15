@@ -40,24 +40,25 @@ namespace shrpx {
 Downstream::Downstream(Upstream *upstream, int stream_id, int priority)
   : upstream_(upstream),
     dconn_(0),
+    response_body_buf_(0),
     stream_id_(stream_id),
-    priority_(priority),
     downstream_stream_id_(-1),
+    response_rst_stream_status_code_(0),
+    priority_(priority),
     request_state_(INITIAL),
     request_major_(1),
     request_minor_(1),
-    chunked_request_(false),
-    request_connection_close_(false),
-    request_expect_100_continue_(false),
-    request_header_key_prev_(false),
     response_state_(INITIAL),
     response_http_status_(0),
     response_major_(1),
     response_minor_(1),
+    chunked_request_(false),
+    request_connection_close_(false),
+    request_expect_100_continue_(false),
+    request_header_key_prev_(false),
     chunked_response_(false),
     response_connection_close_(false),
-    response_header_key_prev_(false),
-    response_body_buf_(0)
+    response_header_key_prev_(false)
 {}
 
 Downstream::~Downstream()
