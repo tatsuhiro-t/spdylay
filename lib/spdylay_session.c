@@ -2451,7 +2451,7 @@ int spdylay_session_on_data_received(spdylay_session *session,
               (session, flags, stream_id, length, session->user_data);
           }
         } else if(stream->state != SPDYLAY_STREAM_CLOSING) {
-          status_code = SPDYLAY_PROTOCOL_ERROR;
+          status_code = SPDYLAY_GOAWAY_PROTOCOL_ERROR;
         }
       } else if(stream->state != SPDYLAY_STREAM_CLOSING) {
         /* It is OK if this is remote peer initiated stream and we did
@@ -2474,7 +2474,7 @@ int spdylay_session_on_data_received(spdylay_session *session,
       }
     } else {
       if(stream->state != SPDYLAY_STREAM_CLOSING) {
-        status_code = SPDYLAY_PROTOCOL_ERROR;
+        status_code = SPDYLAY_GOAWAY_PROTOCOL_ERROR;
       }
     }
   } else {
@@ -2484,7 +2484,9 @@ int spdylay_session_on_data_received(spdylay_session *session,
     /* status_code = SPDYLAY_INVALID_STREAM; */
   }
   if(status_code != 0) {
-    r = spdylay_session_add_rst_stream(session, stream_id, status_code);
+    /* Currently all error conditions can be considered as violation
+       of the protocol. Just tear down the session. */
+    r = spdylay_session_fail_session(session, status_code);
   }
   return r;
 }
