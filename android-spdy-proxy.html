@@ -1,56 +1,154 @@
 
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>SPDY Proxy with Firefox for Android &mdash; Spdylay 1.2.1 documentation</title>
+  
 
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>SPDY Proxy with Firefox for Android &mdash; Spdylay 1.3.0-DEV documentation</title>
-    
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/default2.css" type="text/css" />
-    
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700' rel='stylesheet' type='text/css'>
+
+  
+  
+
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
-        VERSION:     '1.3.0-DEV',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
+        URL_ROOT:'',
+        VERSION:'1.2.1',
+        COLLAPSE_INDEX:false,
+        FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
       };
     </script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Spdylay 1.3.0-DEV documentation" href="index.html" />
-    <link rel="prev" title="Python-spdylay - Spdylay Python Extension Module" href="python.html" /> 
-  </head>
-  <body>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="python.html" title="Python-spdylay - Spdylay Python Extension Module"
-             accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Spdylay 1.3.0-DEV documentation</a> &raquo;</li> 
-      </ul>
-    </div>  
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body">
-            
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+    <link rel="top" title="Spdylay 1.2.1 documentation" href="index.html"/>
+        <link rel="prev" title="Python-spdylay - Spdylay Python Extension Module" href="python.html"/> 
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        <a href="index.html" class="icon icon-home"> Spdylay</a>
+        <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search docs" />
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix">
+        
+        
+            <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="package_README.html">Spdylay - SPDY C Library</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="package_README.html#development-status">Development Status</a></li>
+<li class="toctree-l2"><a class="reference internal" href="package_README.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="package_README.html#build-from-git">Build from git</a></li>
+<li class="toctree-l2"><a class="reference internal" href="package_README.html#building-documentation">Building documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="package_README.html#building-android-binary">Building Android binary</a></li>
+<li class="toctree-l2"><a class="reference internal" href="package_README.html#api">API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="package_README.html#spdy-client-and-server-programs">SPDY Client and Server Programs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="package_README.html#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="package_README.html#python-spdylay-python-wrapper">Python-Spdylay - Python Wrapper</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="apiref.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="apiref.html#includes">Includes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apiref.html#remarks">Remarks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apiref.html#macros">Macros</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apiref.html#enums">Enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apiref.html#types-structs-unions-and-typedefs">Types (structs, unions and typedefs)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apiref.html#functions">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="python.html">Python-spdylay - Spdylay Python Extension Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="python.html#build">Build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#session-objects">Session Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#helper-functions">Helper Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#data-provider-objects">Data Provider Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#control-frame-objects">Control Frame Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#exceptions">Exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#read-callback-flags">Read Callback Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#error-codes">Error Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#frame-types">Frame Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#control-frame-flags">Control Frame Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#stream-status-codes">Stream Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#goaway-status-codes">GOAWAY Status Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#settings-frame-flags">SETTINGS Frame Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#settings-ids">SETTINGS IDs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#settings-id-flags">SETTINGS ID Flags</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#simple-spdy-client">Simple SPDY Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="python.html#simple-spdy-server">Simple SPDY Server</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">SPDY Proxy with Firefox for Android</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#setting-up-spdy-proxy">Setting up SPDY Proxy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#building-spdylay-library-and-shrpx">Building spdylay library and shrpx</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setup-shrpx-on-android-device">Setup shrpx on Android device</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setup-firefox-to-use-spdy-proxy">Setup Firefox to use SPDY proxy</a></li>
+</ul>
+</li>
+</ul>
+
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top">
+        <i data-toggle="wy-nav-top" class="icon icon-reorder"></i>
+        <a href="index.html">Spdylay</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <ul class="wy-breadcrumbs">
+  <li><a href="index.html">Docs</a> &raquo;</li>
+  <li><a href="">SPDY Proxy with Firefox for Android</a></li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="_sources/android-spdy-proxy.txt" rel="nofollow"> View page source</a>
+      
+    </li>
+</ul>
+<hr/>
+
+          
   <div class="section" id="spdy-proxy-with-firefox-for-android">
 <h1>SPDY Proxy with Firefox for Android<a class="headerlink" href="#spdy-proxy-with-firefox-for-android" title="Permalink to this headline">¶</a></h1>
 <p>This document describes how to use SPDY proxy from Android device
@@ -190,71 +288,31 @@ get resources on behalf of the client and sent back the response.</p>
 </div>
 
 
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar">
-        <div class="sphinxsidebarwrapper"><h3>Menu</h3>
-<ul>
-  <li><a href="https://github.com/tatsuhiro-t/spdylay/releases">Downloads</a></li>
-  <li><a href="http://sourceforge.net/projects/spdylay/files/">Old downloads</a></li>
-  <li><a href="https://github.com/tatsuhiro-t/spdylay/issues">Issues</a></li>
-  <li><a href="https://github.com/tatsuhiro-t/spdylay">Source</a></li>
-</ul>
-  <h3><a href="index.html">Table Of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">SPDY Proxy with Firefox for Android</a><ul>
-<li><a class="reference internal" href="#setting-up-spdy-proxy">Setting up SPDY Proxy</a></li>
-<li><a class="reference internal" href="#building-spdylay-library-and-shrpx">Building spdylay library and shrpx</a></li>
-<li><a class="reference internal" href="#setup-shrpx-on-android-device">Setup shrpx on Android device</a></li>
-<li><a class="reference internal" href="#setup-firefox-to-use-spdy-proxy">Setup Firefox to use SPDY proxy</a></li>
-</ul>
-</li>
-</ul>
+          <footer>
+  
+    <div class="rst-footer-buttons">
+      
+      
+        <a href="python.html" class="btn btn-neutral" title="Python-spdylay - Spdylay Python Extension Module"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="python.html"
-                        title="previous chapter">Python-spdylay - Spdylay Python Extension Module</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/android-spdy-proxy.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
-<div id="searchbox" style="display: none">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-    <p class="searchtip" style="font-size: 90%">
-    Enter search terms or a module, class or function name.
-    </p>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+  <hr/>
+
+  <p>
+      &copy; Copyright 2012, 2013, Tatsuhiro Tsujikawa.
+  </p>
+
+  <a href="https://www.github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="http://readthedocs.org">Read the Docs</a>
+</footer>
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="python.html" title="Python-spdylay - Spdylay Python Extension Module"
-             >previous</a> |</li>
-        <li><a href="index.html">Spdylay 1.3.0-DEV documentation</a> &raquo;</li> 
-      </ul>
-    </div>
-    <div class="footer">
-        &copy; Copyright 2012, 2013, Tatsuhiro Tsujikawa.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
-    </div>
-  </body>
+
+    </section>
+
+  </div>
+  
+
+</body>
 </html>
