@@ -2437,7 +2437,7 @@ int spdylay_session_on_data_received(spdylay_session *session,
                                      int32_t stream_id)
 {
   int r = 0;
-  spdylay_status_code status_code = 0;
+  spdylay_goaway_status_code status_code = 0;
   spdylay_stream *stream;
   stream = spdylay_session_get_stream(session, stream_id);
   if(stream) {
