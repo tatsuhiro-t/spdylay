@@ -27,6 +27,10 @@ Contents:
    apiref
    python
    android-spdy-proxy
+   Download <https://github.com/tatsuhiro-t/spdylay/releases>
+   Old download <http://sourceforge.net/projects/spdylay/files/>
+   Source <https://github.com/tatsuhiro-t/spdylay>
+   Issues <https://github.com/tatsuhiro-t/spdylay/issues>
 
 Resources
 ---------
