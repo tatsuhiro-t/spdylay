@@ -2027,7 +2027,8 @@ int <tt class="descname">spdylay_submit_request</tt><big>(</big><a class="refere
 frames.</p>
 <p>The <em>pri</em> is priority of this request. 0 is the highest priority
 value. Use <a class="reference internal" href="#spdylay_session_get_pri_lowest" title="spdylay_session_get_pri_lowest"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_get_pri_lowest()</span></tt></a> to know the lowest
-priority value for this <em>session</em>.</p>
+priority value for this <em>session</em>. If the <em>pri</em> is larger than the
+lowest value, the lowest value is used silently.</p>
 <p>The <em>nv</em> contains the name/value pairs. For i &gt;= 0, <tt class="docutils literal"><span class="pre">nv[2*i]</span></tt>
 contains a pointer to the name string and <tt class="docutils literal"><span class="pre">nv[2*i+1]</span></tt> contains a
 pointer to the value string. The one beyond last value must be
@@ -2081,8 +2082,7 @@ the stream is already opened,
 negative error codes:</p>
 <dl class="docutils">
 <dt><a class="reference internal" href="#SPDYLAY_ERR_INVALID_ARGUMENT" title="SPDYLAY_ERR_INVALID_ARGUMENT"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_INVALID_ARGUMENT</span></tt></a></dt>
-<dd>The <em>pri</em> is invalid; or the <em>nv</em> includes empty name or NULL
-value.</dd>
+<dd>The <em>nv</em> includes empty name or NULL value.</dd>
 <dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
 <dd>Out of memory.</dd>
 </dl>
@@ -2141,7 +2141,8 @@ stream is not server-push. If <em>session</em> is initialized for client
 use, <em>assoc_stream_id</em> is ignored.</p>
 <p>The <em>pri</em> is priority of this request. 0 is the highest priority
 value. Use <a class="reference internal" href="#spdylay_session_get_pri_lowest" title="spdylay_session_get_pri_lowest"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_get_pri_lowest()</span></tt></a> to know the lowest
-priority value for this <em>session</em>.</p>
+priority value for this <em>session</em>. If the <em>pri</em> is larger than the
+lowest value, the lowest value is used silently.</p>
 <p>The <em>nv</em> contains the name/value pairs. For i &gt;= 0, <tt class="docutils literal"><span class="pre">nv[2*i]</span></tt>
 contains a pointer to the name string and <tt class="docutils literal"><span class="pre">nv[2*i+1]</span></tt> contains a
 pointer to the value string. The one beyond last value must be
@@ -2158,7 +2159,7 @@ HTTP request, <a class="reference internal" href="#spdylay_submit_request" title
 negative error codes:</p>
 <dl class="docutils">
 <dt><a class="reference internal" href="#SPDYLAY_ERR_INVALID_ARGUMENT" title="SPDYLAY_ERR_INVALID_ARGUMENT"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_INVALID_ARGUMENT</span></tt></a></dt>
-<dd>The <em>pri</em> is invalid; or the <em>assoc_stream_id</em> is invalid; or
+<dd>The <em>assoc_stream_id</em> is invalid; or
 the <em>nv</em> includes empty name or NULL value.</dd>
 <dt><a class="reference internal" href="#SPDYLAY_ERR_NOMEM" title="SPDYLAY_ERR_NOMEM"><tt class="xref c c-macro docutils literal"><span class="pre">SPDYLAY_ERR_NOMEM</span></tt></a></dt>
 <dd>Out of memory.</dd>

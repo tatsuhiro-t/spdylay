@@ -1412,7 +1412,8 @@ Functions
     
     The *pri* is priority of this request. 0 is the highest priority
     value. Use `spdylay_session_get_pri_lowest()` to know the lowest
-    priority value for this *session*.
+    priority value for this *session*. If the *pri* is larger than the
+    lowest value, the lowest value is used silently.
     
     The *nv* contains the name/value pairs. For i >= 0, ``nv[2*i]``
     contains a pointer to the name string and ``nv[2*i+1]`` contains a
@@ -1472,8 +1473,7 @@ Functions
     negative error codes:
     
     :macro:`SPDYLAY_ERR_INVALID_ARGUMENT`
-        The *pri* is invalid; or the *nv* includes empty name or NULL
-        value.
+        The *nv* includes empty name or NULL value.
     :macro:`SPDYLAY_ERR_NOMEM`
         Out of memory.
 
@@ -1535,7 +1535,8 @@ Functions
     
     The *pri* is priority of this request. 0 is the highest priority
     value. Use `spdylay_session_get_pri_lowest()` to know the lowest
-    priority value for this *session*.
+    priority value for this *session*. If the *pri* is larger than the
+    lowest value, the lowest value is used silently.
     
     The *nv* contains the name/value pairs. For i >= 0, ``nv[2*i]``
     contains a pointer to the name string and ``nv[2*i+1]`` contains a
@@ -1557,7 +1558,7 @@ Functions
     negative error codes:
     
     :macro:`SPDYLAY_ERR_INVALID_ARGUMENT`
-        The *pri* is invalid; or the *assoc_stream_id* is invalid; or
+        The *assoc_stream_id* is invalid; or
         the *nv* includes empty name or NULL value.
     :macro:`SPDYLAY_ERR_NOMEM`
         Out of memory.
