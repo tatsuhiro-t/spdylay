@@ -1636,7 +1636,8 @@ const char* spdylay_strerror(int error_code);
  *
  * The |pri| is priority of this request. 0 is the highest priority
  * value. Use `spdylay_session_get_pri_lowest()` to know the lowest
- * priority value for this |session|.
+ * priority value for this |session|. If the |pri| is larger than the
+ * lowest value, the lowest value is used silently.
  *
  * The |nv| contains the name/value pairs. For i >= 0, ``nv[2*i]``
  * contains a pointer to the name string and ``nv[2*i+1]`` contains a
@@ -1696,8 +1697,7 @@ const char* spdylay_strerror(int error_code);
  * negative error codes:
  *
  * :enum:`SPDYLAY_ERR_INVALID_ARGUMENT`
- *     The |pri| is invalid; or the |nv| includes empty name or NULL
- *     value.
+ *     The |nv| includes empty name or NULL value.
  * :enum:`SPDYLAY_ERR_NOMEM`
  *     Out of memory.
  */
@@ -1768,7 +1768,8 @@ int spdylay_submit_response(spdylay_session *session,
  *
  * The |pri| is priority of this request. 0 is the highest priority
  * value. Use `spdylay_session_get_pri_lowest()` to know the lowest
- * priority value for this |session|.
+ * priority value for this |session|. If the |pri| is larger than the
+ * lowest value, the lowest value is used silently.
  *
  * The |nv| contains the name/value pairs. For i >= 0, ``nv[2*i]``
  * contains a pointer to the name string and ``nv[2*i+1]`` contains a
@@ -1790,7 +1791,7 @@ int spdylay_submit_response(spdylay_session *session,
  * negative error codes:
  *
  * :enum:`SPDYLAY_ERR_INVALID_ARGUMENT`
- *     The |pri| is invalid; or the |assoc_stream_id| is invalid; or
+ *     The |assoc_stream_id| is invalid; or
  *     the |nv| includes empty name or NULL value.
  * :enum:`SPDYLAY_ERR_NOMEM`
  *     Out of memory.

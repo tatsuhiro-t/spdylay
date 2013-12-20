@@ -46,7 +46,7 @@ static int spdylay_submit_syn_stream_shared
   spdylay_data_provider *data_prd_copy = NULL;
   spdylay_syn_stream_aux_data *aux_data;
   if(pri > spdylay_session_get_pri_lowest(session)) {
-    return SPDYLAY_ERR_INVALID_ARGUMENT;
+    pri = spdylay_session_get_pri_lowest(session);
   }
   if(assoc_stream_id != 0 && session->server == 0) {
     assoc_stream_id = 0;
