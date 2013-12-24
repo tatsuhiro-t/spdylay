@@ -1672,7 +1672,8 @@ static int spdylay_session_validate_syn_stream(spdylay_session *session,
     return SPDYLAY_UNSUPPORTED_VERSION;
   }
   if(session->server) {
-    if(frame->assoc_stream_id != 0) {
+    if(frame->assoc_stream_id != 0 ||
+       (frame->hd.flags & SPDYLAY_CTRL_FLAG_UNIDIRECTIONAL)) {
       return SPDYLAY_PROTOCOL_ERROR;
     }
   } else {
