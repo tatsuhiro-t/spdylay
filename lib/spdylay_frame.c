@@ -194,7 +194,7 @@ int spdylay_frame_unpack_nv(char ***nv_ptr, spdylay_buffer *in,
     spdylay_buffer_reader_data(&reader, (uint8_t*)data, len);
     for(stop = data+len; data != stop; ++data) {
       unsigned char c = *data;
-      if(c < 0x20 || c > 0x7e || ('A' <= c && c <= 'Z')) {
+      if(c < 0x20u || c > 0x7eu || ('A' <= c && c <= 'Z')) {
         invalid_header_block = 1;
       }
     }
@@ -215,6 +215,8 @@ int spdylay_frame_unpack_nv(char ***nv_ptr, spdylay_buffer *in,
         }
         val = data+1;
         multival = 1;
+      } else if((unsigned char)*data < 0x20u || (unsigned char)*data > 0x7eu) {
+        invalid_header_block = 1;
       }
     }
     *data = '\0';
