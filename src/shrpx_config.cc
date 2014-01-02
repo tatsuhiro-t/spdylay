@@ -102,6 +102,7 @@ const char SHRPX_OPT_READ_RATE[] = "read-rate";
 const char SHRPX_OPT_READ_BURST[] = "read-burst";
 const char SHRPX_OPT_WRITE_RATE[] = "write-rate";
 const char SHRPX_OPT_WRITE_BURST[] = "write-burst";
+const char SHRPX_OPT_TLS_PROTO_LIST[] = "tls-proto-list";
 const char SHRPX_OPT_VERIFY_CLIENT[] = "verify-client";
 const char SHRPX_OPT_VERIFY_CLIENT_CACERT[] = "verify-client-cacert";
 
@@ -215,6 +216,28 @@ int parse_spdy_proto(const char *optarg)
   return version;
 }
 } // namespace
+
+char** parse_config_str_list(size_t *outlen, const char *s)
+{
+  size_t len = 1;
+  for(const char *first = s, *p = 0; (p = strchr(first, ','));
+      ++len, first = p + 1);
+  char **list = new char*[len];
+  char *first = strdup(s);
+  len = 0;
+  for(;;) {
+    char *p = strchr(first, ',');
+    if(!p) {
+      break;
+    }
+    list[len++] = first;
+    *p = '\0';
+    first = p + 1;
+  }
+  list[len++] = first;
+  *outlen = len;
+  return list;
+}
 
 int parse_config(const char *opt, const char *optarg)
 {
@@ -434,6 +457,10 @@ int parse_config(const char *opt, const char *optarg)
     mod_config()->write_rate = strtoul(optarg, 0, 10);
   } else if(util::strieq(opt, SHRPX_OPT_WRITE_BURST)) {
     mod_config()->write_burst = strtoul(optarg, 0, 10);
+  } else if(util::strieq(opt, SHRPX_OPT_TLS_PROTO_LIST)) {
+    delete [] mod_config()->tls_proto_list;
+    mod_config()->tls_proto_list = parse_config_str_list
+      (&mod_config()->tls_proto_list_len, optarg);
   } else if(util::strieq(opt, SHRPX_OPT_VERIFY_CLIENT)) {
     mod_config()->verify_client = util::strieq(optarg, "yes");
   } else if(util::strieq(opt, SHRPX_OPT_VERIFY_CLIENT_CACERT)) {

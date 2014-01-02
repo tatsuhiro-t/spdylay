@@ -129,6 +129,29 @@ int servername_callback(SSL *ssl, int *al, void *arg)
 }
 } // namespace
 
+namespace {
+const char *names[] = { "TLSv1.2", "TLSv1.1", "TLSv1.0", "SSLv3" };
+const size_t namelen = sizeof(names)/sizeof(names[0]);
+const long int masks[] = { SSL_OP_NO_TLSv1_2, SSL_OP_NO_TLSv1_1,
+                           SSL_OP_NO_TLSv1, SSL_OP_NO_SSLv3 };
+long int create_tls_proto_mask(char **tls_proto_list, size_t len)
+{
+  long int res = 0;
+  for(size_t i = 0; i < namelen; ++i) {
+    size_t j;
+    for(j = 0; j < len; ++j) {
+      if(strcasecmp(names[i], tls_proto_list[j]) == 0) {
+        break;
+      }
+    }
+    if(j == len) {
+      res |= masks[i];
+    }
+  }
+  return res;
+}
+} // namespace
+
 SSL_CTX* create_ssl_context(const char *private_key_file,
                             const char *cert_file)
 {
@@ -142,7 +165,9 @@ SSL_CTX* create_ssl_context(const char *private_key_file,
                       SSL_OP_ALL | SSL_OP_NO_SSLv2 | SSL_OP_NO_COMPRESSION |
                       SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION |
                       SSL_OP_SINGLE_ECDH_USE | SSL_OP_SINGLE_DH_USE |
-                      SSL_OP_NO_TICKET);
+                      SSL_OP_NO_TICKET |
+                      create_tls_proto_mask(get_config()->tls_proto_list,
+                                            get_config()->tls_proto_list_len));
 
   const unsigned char sid_ctx[] = "shrpx";
   SSL_CTX_set_session_id_context(ssl_ctx, sid_ctx, sizeof(sid_ctx)-1);
@@ -264,7 +289,9 @@ SSL_CTX* create_ssl_client_context()
   }
   SSL_CTX_set_options(ssl_ctx,
                       SSL_OP_ALL | SSL_OP_NO_SSLv2 | SSL_OP_NO_COMPRESSION |
-                      SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION);
+                      SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION |
+                      create_tls_proto_mask(get_config()->tls_proto_list,
+                                            get_config()->tls_proto_list_len));
 
   if(get_config()->ciphers) {
     if(SSL_CTX_set_cipher_list(ssl_ctx, get_config()->ciphers) == 0) {

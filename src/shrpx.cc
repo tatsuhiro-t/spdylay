@@ -320,6 +320,10 @@ bool conf_exists(const char *path)
 } // namespace
 
 namespace {
+const char *DEFAULT_TLS_PROTO_LIST = "TLSv1.2,TLSv1.1,TLSv1.0";
+} // namespace
+
+namespace {
 void fill_default_config()
 {
   memset(mod_config(), 0, sizeof(*mod_config()));
@@ -588,6 +592,17 @@ void print_help(std::ostream& out)
       << "                       to verify client certificate.\n"
       << "                       The file must be in PEM format. It can\n"
       << "                       contain multiple certificates.\n"
+      << "    --tls-proto-list=<LIST>\n"
+      << "                       Comma delimited list of SSL/TLS protocol to\n"
+      << "                       be enabled.\n"
+      << "                       The following protocols are available:\n"
+      << "                       TLSv1.2, TLSv1.1, TLSv1.0, SSLv3\n"
+      << "                       The name matching is done in case-insensitive\n"
+      << "                       manner.\n"
+      << "                       The parameter must be delimited by a single\n"
+      << "                       comma only and any white spaces are treated\n"
+      << "                       as a part of protocol string.\n"
+      << "                       Default: " << DEFAULT_TLS_PROTO_LIST << "\n"
       << "\n"
       << "  SPDY:\n"
       << "    -c, --spdy-max-concurrent-streams=<NUM>\n"
@@ -745,6 +760,7 @@ int main(int argc, char **argv)
       {"verify-client-cacert", required_argument, &flag, 39},
       {"frontend-spdy-connection-window-bits", required_argument, &flag, 40},
       {"backend-spdy-connection-window-bits", required_argument, &flag, 41},
+      {"tls-proto-list", required_argument, &flag, 42},
       {0, 0, 0, 0 }
     };
     int option_index = 0;
@@ -975,6 +991,10 @@ int main(int argc, char **argv)
                           (SHRPX_OPT_BACKEND_SPDY_CONNECTION_WINDOW_BITS,
                            optarg));
         break;
+      case 42:
+        // --tls-proto-list
+        cmdcfgs.push_back(std::make_pair(SHRPX_OPT_TLS_PROTO_LIST, optarg));
+        break;
       default:
         break;
       }
@@ -1011,6 +1031,11 @@ int main(int argc, char **argv)
       LOG(FATAL) << "Failed to parse command-line argument.";
       exit(EXIT_FAILURE);
     }
+  }
+
+  if(!get_config()->tls_proto_list) {
+    mod_config()->tls_proto_list = parse_config_str_list
+      (&mod_config()->tls_proto_list_len, DEFAULT_TLS_PROTO_LIST);
   }
 
   if(!get_config()->subcerts.empty()) {

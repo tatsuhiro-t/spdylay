@@ -94,6 +94,7 @@ extern const char SHRPX_OPT_READ_RATE[];
 extern const char SHRPX_OPT_READ_BURST[];
 extern const char SHRPX_OPT_WRITE_RATE[];
 extern const char SHRPX_OPT_WRITE_BURST[];
+extern const char SHRPX_OPT_TLS_PROTO_LIST[];
 extern const char SHRPX_OPT_VERIFY_CLIENT[];
 extern const char SHRPX_OPT_VERIFY_CLIENT_CACERT[];
 
@@ -142,6 +143,9 @@ struct Config {
   char *downstream_http_proxy_host;
   // Rate limit configuration
   ev_token_bucket_cfg *rate_limit_cfg;
+  // list of supported SSL/TLS protocol strings. The each element of
+  // this list is a NULL-terminated string.
+  char **tls_proto_list;
   // Path to file containing CA certificate solely used for client
   // certificate validation
   char *verify_client_cacert;
@@ -158,6 +162,8 @@ struct Config {
   size_t read_burst;
   size_t write_rate;
   size_t write_burst;
+  // The number of elements in tls_proto_list
+  size_t tls_proto_list_len;
   // downstream protocol; this will be determined by given options.
   shrpx_proto downstream_proto;
   int syslog_facility;
@@ -211,6 +217,17 @@ int load_config(const char *filename);
 
 // Read passwd from |filename|
 std::string read_passwd_from_file(const char *filename);
+
+// Parses comma delimited strings in |s| and returns the array of
+// pointers, each element points to the each substring in |s|. The
+// number of elements are stored in |*outlen|. The |s| must be comma
+// delimited list of strings. The strings must be delimited by a
+// single comma and any white spaces around it are treated as a part
+// of protocol strings. This function may modify |s| and the caller
+// must leave it as is after this call. This function allocates memory
+// to store the parsed strings and it is caller's responsibility to
+// deallocate the memory.
+char** parse_config_str_list(size_t *outlen, const char *s);
 
 // Copies NULL-terminated string |val| to |*destp|. If |*destp| is not
 // NULL, it is freed before copying.
