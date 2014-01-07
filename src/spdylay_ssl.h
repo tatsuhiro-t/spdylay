@@ -61,7 +61,10 @@ public:
                      uint8_t pri,
                      const spdylay_data_provider *data_prd,
                      int64_t data_length,
-                     void *stream_user_data);
+                     void *stream_user_data,
+                     bool useProxy,
+                     const std::string& proxyHost,
+                     uint16_t proxyPort);
   int submit_settings(int flags, spdylay_settings_entry *iv, size_t niv);
   bool would_block();
   void* user_data();
