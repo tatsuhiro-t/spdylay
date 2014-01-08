@@ -212,6 +212,7 @@ SpdyEventHandler::~SpdyEventHandler()
     delete (*i).second;
   }
   if(ssl_) {
+    SSL_set_shutdown(ssl_, SSL_RECEIVED_SHUTDOWN);
     SSL_shutdown(ssl_);
     SSL_free(ssl_);
   }
@@ -717,6 +718,7 @@ public:
   {
     if(fail_) {
       on_session_closed(this, session_id_);
+      SSL_set_shutdown(ssl_, SSL_RECEIVED_SHUTDOWN);
       SSL_shutdown(ssl_);
       SSL_free(ssl_);
       shutdown(fd_, SHUT_WR);

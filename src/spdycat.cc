@@ -788,6 +788,7 @@ int communicate(const std::string& host, uint16_t port,
   result = spdy_evloop(fd, ssl, spdy_version, spdySession, callbacks, timeout);
  fin:
   if(ssl) {
+    SSL_set_shutdown(ssl, SSL_RECEIVED_SHUTDOWN);
     SSL_shutdown(ssl);
     SSL_free(ssl);
     SSL_CTX_free(ssl_ctx);
