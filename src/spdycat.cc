@@ -874,7 +874,7 @@ int run(char **uris, int n)
       uint16_t port = has_uri_field(u, UF_PORT) ?
         u.port : get_default_port(uri.c_str(), u);
       if(!fieldeq(uri.c_str(), u, UF_HOST, prev_host.c_str()) ||
-         u.port != prev_port) {
+         port != prev_port) {
         if(!spdySession.reqvec.empty()) {
           spdySession.update_hostport();
           if (communicate(prev_host, prev_port, spdySession, &callbacks) != 0) {
