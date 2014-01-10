@@ -151,6 +151,7 @@ void notify_readcb(bufferevent *bev, void *arg)
     rv = spdy->initiate_connection();
     if(rv != 0) {
       SSLOG(FATAL, spdy) << "Could not initiate notification connection";
+      spdy->disconnect();
     }
     break;
   case SpdySession::CONNECTED:
@@ -380,8 +381,6 @@ int SpdySession::initiate_connection()
       SSLOG(ERROR, this) << "Failed to connect to the proxy "
                          << get_config()->downstream_http_proxy_host << ":"
                          << get_config()->downstream_http_proxy_port;
-      bufferevent_free(bev_);
-      bev_ = 0;
       return SHRPX_ERR_NETWORK;
     }
     proxy_htp_ = new http_parser();
@@ -446,8 +445,6 @@ int SpdySession::initiate_connection()
       }
     }
     if(rv != 0) {
-      bufferevent_free(bev_);
-      bev_ = 0;
       return SHRPX_ERR_NETWORK;
     }
 
