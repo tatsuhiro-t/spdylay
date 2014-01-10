@@ -139,22 +139,6 @@ void* Spdylay::user_data()
   return user_data_;
 }
 
-std::string convertInt(int number)
-{
-    if (number == 0)
-        return "0";
-    std::string temp="";
-    std::string returnvalue="";
-    while (number>0)
-    {
-        temp+=number%10+48;
-        number/=10;
-    }
-    for (int i=0;i<temp.length();i++)
-        returnvalue+=temp[temp.length()-i-1];
-    return returnvalue;
-}
-
 int Spdylay::submit_request(const std::string& scheme,
                             const std::string& hostport,
                             const std::string& path,
@@ -179,26 +163,19 @@ int Spdylay::submit_request(const std::string& scheme,
     POS_USERAGENT
   };
 
-  std::string newPath = "";
-  if(!useProxy) newPath.assign(path);
-  else {
-    newPath += scheme;
-    newPath += "://";
-    newPath += hostport;
-    newPath += path;
-  }
-
   std::string proxyHostPort;
   proxyHostPort.assign(proxyHost);
   proxyHostPort += ":";
-  if(proxyPort == 0)
+  if(proxyPort == 0) {
     proxyHostPort += ":443";
-  else
-    proxyHostPort += convertInt(proxyPort);
+  }
+  else {
+    proxyHostPort += util::utos(proxyPort);
+  }
 
   const char *static_nv[] = {
     ":method", data_prd ? "POST" : "GET",
-    ":path", newPath.c_str(),
+    ":path", path.c_str(),
     ":version", "HTTP/1.1",
     ":scheme", scheme.c_str(),
     ":host", hostport.c_str(),

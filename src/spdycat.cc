@@ -882,8 +882,9 @@ int run(char **uris, int n)
           spdySession.update_hostport();
           if(!config.proxy_host.empty()) {
             uint16_t port = 443;
-            if(config.proxy_port != 0)
+            if(config.proxy_port != 0) {
               port = config.proxy_port;
+            }
             if (communicate(config.proxy_host.c_str(), port, spdySession, &callbacks) != 0) {
               ++failures;
             }
@@ -907,8 +908,9 @@ int run(char **uris, int n)
     spdySession.update_hostport();
     if(!config.proxy_host.empty()) {
       uint16_t port = 443;
-      if(config.proxy_port != 0)
+      if(config.proxy_port != 0) {
         port = config.proxy_port;
+      }
       if (communicate(config.proxy_host.c_str(), port, spdySession, &callbacks) != 0) {
         ++failures;
       }
@@ -924,7 +926,7 @@ int run(char **uris, int n)
 void print_usage(std::ostream& out)
 {
   out << "Usage: spdycat [-Oansv23] [-t <SECONDS>] [-w <WINDOW_BITS>] [--cert=<CERT>]\n"
-      << "               [--key=<KEY>] [--no-tls] [-d <FILE>] [-m <N>] [-p <PROXY_URL>]\n"
+      << "               [--key=<KEY>] [--no-tls] [-d <FILE>] [-m <N>] [-p <PROXY_HOST>]\n"
       << "               [-P <PROXY_PORT>] <URI>..."
       << std::endl;
 }
