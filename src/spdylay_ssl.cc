@@ -146,7 +146,10 @@ int Spdylay::submit_request(const std::string& scheme,
                             uint8_t pri,
                             const spdylay_data_provider *data_prd,
                             int64_t data_length,
-                            void *stream_user_data)
+                            void *stream_user_data,
+                            bool useProxy,
+                            const std::string& proxyHost,
+                            uint16_t proxyPort)
 {
   enum eStaticHeaderPosition
   {
@@ -159,6 +162,16 @@ int Spdylay::submit_request(const std::string& scheme,
     POS_ACCEPTENCODING,
     POS_USERAGENT
   };
+
+  std::string proxyHostPort;
+  proxyHostPort.assign(proxyHost);
+  proxyHostPort += ":";
+  if(proxyPort == 0) {
+    proxyHostPort += ":443";
+  }
+  else {
+    proxyHostPort += util::utos(proxyPort);
+  }
 
   const char *static_nv[] = {
     ":method", data_prd ? "POST" : "GET",

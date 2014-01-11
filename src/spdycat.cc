@@ -72,6 +72,8 @@ struct Config {
   std::string certfile;
   std::string keyfile;
   std::string datafile;
+  std::string proxy_host;
+  int proxy_port;
   int multiply;
   int spdy_version;
   // milliseconds
@@ -84,7 +86,8 @@ struct Config {
   bool stat;
   bool no_tls;
   Config()
-    : multiply(1),
+    : proxy_port(0),
+      multiply(1),
       spdy_version(-1),
       timeout(-1),
       window_bits(-1),
@@ -378,12 +381,13 @@ extern bool ssl_debug;
 
 void submit_request(Spdylay& sc, const std::string& hostport,
                     const std::map<std::string,std::string> &headers,
-                    Request* req)
+                    Request* req,
+                    const std::string& proxy_host, int proxy_port)
 {
   std::string path = req->make_reqpath();
   int r = sc.submit_request(get_uri_field(req->uri.c_str(), req->u, UF_SCHEMA),
                             hostport, path, headers, 3, req->data_prd,
-                            req->data_length, req);
+                            req->data_length, req, !proxy_host.empty(), proxy_host, proxy_port);
   assert(r == 0);
 }
 
@@ -406,7 +410,7 @@ void update_html_parser(SpdySession *spdySession, Request *req,
       // No POST data for assets
       if ( spdySession->add_request(uri, u, 0, 0, req->level+1) ) {
         submit_request(*spdySession->sc, spdySession->hostport, config.headers,
-                       spdySession->reqvec.back());
+                       spdySession->reqvec.back(), config.proxy_host, config.proxy_port);
       }
     }
   }
@@ -612,7 +616,7 @@ int spdy_evloop(int fd, SSL *ssl, int spdy_version, SpdySession& spdySession,
   }
   for(int i = 0, n = spdySession.reqvec.size(); i < n; ++i) {
     submit_request(sc, spdySession.hostport, config.headers,
-                   spdySession.reqvec[i]);
+                   spdySession.reqvec[i], config.proxy_host, config.proxy_port);
   }
   pollfds[0].fd = fd;
   ctl_poll(pollfds, &sc);
@@ -681,7 +685,7 @@ int communicate(const std::string& host, uint16_t port,
   SSL *ssl = 0;
   int fd = nonblock_connect_to(host, port, timeout);
   if(fd == -1) {
-    std::cerr << "Could not connect to the host: " << spdySession.hostport
+    std::cerr << "Could not connect to the host: " << host << ":" << port
               << std::endl;
     result = -1;
     goto fin;
@@ -877,8 +881,18 @@ int run(char **uris, int n)
          port != prev_port) {
         if(!spdySession.reqvec.empty()) {
           spdySession.update_hostport();
-          if (communicate(prev_host, prev_port, spdySession, &callbacks) != 0) {
-            ++failures;
+          if(!config.proxy_host.empty()) {
+            uint16_t port = 443;
+            if(config.proxy_port != 0) {
+              port = config.proxy_port;
+            }
+            if (communicate(config.proxy_host.c_str(), port, spdySession, &callbacks) != 0) {
+              ++failures;
+            }
+          } else {
+            if (communicate(prev_host, prev_port, spdySession, &callbacks) != 0) {
+              ++failures;
+            }
           }
           spdySession = SpdySession();
         }
@@ -893,8 +907,18 @@ int run(char **uris, int n)
   }
   if(!spdySession.reqvec.empty()) {
     spdySession.update_hostport();
-    if (communicate(prev_host, prev_port, spdySession, &callbacks) != 0) {
-      ++failures;
+    if(!config.proxy_host.empty()) {
+      uint16_t port = 443;
+      if(config.proxy_port != 0) {
+        port = config.proxy_port;
+      }
+      if (communicate(config.proxy_host.c_str(), port, spdySession, &callbacks) != 0) {
+        ++failures;
+      }
+    } else {
+      if (communicate(prev_host, prev_port, spdySession, &callbacks) != 0) {
+        ++failures;
+      }
     }
   }
   return failures;
@@ -903,7 +927,8 @@ int run(char **uris, int n)
 void print_usage(std::ostream& out)
 {
   out << "Usage: spdycat [-Oansv23] [-t <SECONDS>] [-w <WINDOW_BITS>] [--cert=<CERT>]\n"
-      << "               [--key=<KEY>] [--no-tls] [-d <FILE>] [-m <N>] <URI>..."
+      << "               [--key=<KEY>] [--no-tls] [-d <FILE>] [-m <N>] [-p <PROXY_HOST>]\n"
+      << "               [-P <PROXY_PORT>] <URI>..."
       << std::endl;
 }
 
@@ -943,6 +968,10 @@ void print_help(std::ostream& out)
       << "    -m, --multiply=<N> Request each URI <N> times. By default, same\n"
       << "                       URI is not requested twice. This option\n"
       << "                       disables it too.\n"
+      << "    -p, --proxy=<HOST> Use this host as a SPDY proxy\n"
+      << "    -P, --proxy-port=<PORT>\n"
+      << "                       Use this as the port of the SPDY proxy if\n"
+      << "                       one is set\n"
       << "    --color            Force colored log output.\n"
       << std::endl;
 }
@@ -966,6 +995,8 @@ int main(int argc, char **argv)
       {"header", required_argument, 0, 'H' },
       {"data", required_argument, 0, 'd' },
       {"multiply", required_argument, 0, 'm' },
+      {"proxy", required_argument, 0, 'p' },
+      {"proxyport", required_argument, 0, 'P' },
       {"cert", required_argument, &flag, 1 },
       {"key", required_argument, &flag, 2 },
       {"no-tls", no_argument, &flag, 3 },
@@ -974,7 +1005,7 @@ int main(int argc, char **argv)
       {0, 0, 0, 0 }
     };
     int option_index = 0;
-    int c = getopt_long(argc, argv, "Oad:m:nhH:v23st:w:", long_options,
+    int c = getopt_long(argc, argv, "Oad:m:nhH:v23st:w:p:P:", long_options,
                         &option_index);
     if(c == -1) {
       break;
@@ -1053,6 +1084,12 @@ int main(int argc, char **argv)
       break;
     case 'm':
       config.multiply = strtoul(optarg, 0, 10);
+      break;
+    case 'p':
+      config.proxy_host = optarg;
+      break;
+    case 'P':
+      config.proxy_port = strtoul(optarg, 0, 10);
       break;
     case '?':
       exit(EXIT_FAILURE);
