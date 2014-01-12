@@ -97,6 +97,8 @@ extern const char SHRPX_OPT_WRITE_BURST[];
 extern const char SHRPX_OPT_TLS_PROTO_LIST[];
 extern const char SHRPX_OPT_VERIFY_CLIENT[];
 extern const char SHRPX_OPT_VERIFY_CLIENT_CACERT[];
+extern const char SHRPX_OPT_CLIENT_PRIVATE_KEY_FILE[];
+extern const char SHRPX_OPT_CLIENT_CERT_FILE[];
 
 union sockaddr_union {
   sockaddr sa;
@@ -149,6 +151,8 @@ struct Config {
   // Path to file containing CA certificate solely used for client
   // certificate validation
   char *verify_client_cacert;
+  char *client_private_key_file;
+  char *client_cert_file;
   size_t downstream_addrlen;
   size_t num_worker;
   size_t spdy_max_concurrent_streams;

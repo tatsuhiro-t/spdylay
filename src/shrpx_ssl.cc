@@ -332,6 +332,27 @@ SSL_CTX* create_ssl_client_context()
     }
   }
 
+  if(get_config()->client_private_key_file) {
+    if(SSL_CTX_use_PrivateKey_file(ssl_ctx,
+                                   get_config()->client_private_key_file,
+                                   SSL_FILETYPE_PEM) != 1) {
+      LOG(FATAL) << "Could not load client private key from "
+                 << get_config()->client_private_key_file << ": "
+                 << ERR_error_string(ERR_get_error(), NULL);
+      DIE();
+    }
+  }
+  if(get_config()->client_cert_file) {
+    if(SSL_CTX_use_certificate_chain_file(ssl_ctx,
+                                          get_config()->client_cert_file)
+       != 1) {
+      LOG(FATAL) << "Could not load client certificate from "
+                 << get_config()->client_cert_file << ": "
+                 << ERR_error_string(ERR_get_error(), NULL);
+      DIE();
+    }
+  }
+
   SSL_CTX_set_next_proto_select_cb(ssl_ctx, select_next_proto_cb, 0);
   return ssl_ctx;
 }

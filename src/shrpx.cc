@@ -416,6 +416,8 @@ void fill_default_config()
   mod_config()->write_burst = 0;
   mod_config()->verify_client = false;
   mod_config()->verify_client_cacert = 0;
+  mod_config()->client_private_key_file = 0;
+  mod_config()->client_cert_file = 0;
 }
 } // namespace
 
@@ -592,6 +594,13 @@ void print_help(std::ostream& out)
       << "                       to verify client certificate.\n"
       << "                       The file must be in PEM format. It can\n"
       << "                       contain multiple certificates.\n"
+      << "    --client-private-key-file=<PATH>\n"
+      << "                       Path to file that contains client private\n"
+      << "                       key used in backend client authentication.\n"
+      << "    --client-cert-file=<PATH>\n"
+      << "                       Path to file that contains client\n"
+      << "                       certificate used in backend client\n"
+      << "                       authentication.\n"
       << "    --tls-proto-list=<LIST>\n"
       << "                       Comma delimited list of SSL/TLS protocol to\n"
       << "                       be enabled.\n"
@@ -761,6 +770,8 @@ int main(int argc, char **argv)
       {"frontend-spdy-connection-window-bits", required_argument, &flag, 40},
       {"backend-spdy-connection-window-bits", required_argument, &flag, 41},
       {"tls-proto-list", required_argument, &flag, 42},
+      {"client-private-key-file", required_argument, &flag, 43},
+      {"client-cert-file", required_argument, &flag, 44},
       {0, 0, 0, 0 }
     };
     int option_index = 0;
@@ -994,6 +1005,15 @@ int main(int argc, char **argv)
       case 42:
         // --tls-proto-list
         cmdcfgs.push_back(std::make_pair(SHRPX_OPT_TLS_PROTO_LIST, optarg));
+        break;
+      case 43:
+        // --client-private-key-file
+        cmdcfgs.push_back(std::make_pair(SHRPX_OPT_CLIENT_PRIVATE_KEY_FILE,
+                                         optarg));
+        break;
+      case 44:
+        // --client-cert-file
+        cmdcfgs.push_back(std::make_pair(SHRPX_OPT_CLIENT_CERT_FILE, optarg));
         break;
       default:
         break;
