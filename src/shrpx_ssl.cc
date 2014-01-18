@@ -130,6 +130,25 @@ int servername_callback(SSL *ssl, int *al, void *arg)
 } // namespace
 
 namespace {
+void info_callback(const SSL *ssl, int where, int ret)
+{
+  // To mitigate possible DOS attack using lots of renegotiations, we
+  // disable renegotiation. Since OpenSSL does not provide an easy way
+  // to disable it, we check that renegotiation is started in this
+  // callback.
+  if(where & SSL_CB_HANDSHAKE_START) {
+    ClientHandler *handler = static_cast<ClientHandler*>(SSL_get_app_data(ssl));
+    if(handler && handler->get_tls_handshake()) {
+      handler->set_tls_renegotiation(true);
+      if(LOG_ENABLED(INFO)) {
+        CLOG(INFO, handler) << "TLS renegotiation started";
+      }
+    }
+  }
+}
+} // namespace
+
+namespace {
 const char *names[] = { "TLSv1.2", "TLSv1.1", "TLSv1.0", "SSLv3" };
 const size_t namelen = sizeof(names)/sizeof(names[0]);
 const long int masks[] = { SSL_OP_NO_TLSv1_2, SSL_OP_NO_TLSv1_1,
@@ -266,6 +285,7 @@ SSL_CTX* create_ssl_context(const char *private_key_file,
                        verify_callback);
   }
   SSL_CTX_set_tlsext_servername_callback(ssl_ctx, servername_callback);
+  SSL_CTX_set_info_callback(ssl_ctx, info_callback);
 
   // We speak "http/1.1", "spdy/2", "spdy/3" and "spdy/3.1".
   const char *protos[] = { "spdy/3.1", "spdy/3", "spdy/2", "http/1.1" };

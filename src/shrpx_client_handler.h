@@ -63,6 +63,10 @@ public:
   SSL* get_ssl() const;
   void set_spdy_session(SpdySession *spdy);
   SpdySession* get_spdy_session() const;
+  void set_tls_handshake(bool f);
+  bool get_tls_handshake() const;
+  void set_tls_renegotiation(bool f);
+  bool get_tls_renegotiation() const;
 private:
   std::set<DownstreamConnection*> dconn_pool_;
   std::string ipaddr_;
@@ -74,6 +78,8 @@ private:
   SpdySession *spdy_;
   int fd_;
   bool should_close_after_write_;
+  bool tls_handshake_;
+  bool tls_renegotiation_;
 };
 
 } // namespace shrpx
