@@ -60,12 +60,15 @@ void upstream_writecb(bufferevent *bev, void *arg)
   }
   if(handler->get_should_close_after_write()) {
     delete handler;
-  } else {
-    Upstream *upstream = handler->get_upstream();
-    int rv = upstream->on_write();
-    if(rv != 0) {
-      delete handler;
-    }
+    return;
+  }
+  Upstream *upstream = handler->get_upstream();
+  if(!upstream) {
+    return;
+  }
+  int rv = upstream->on_write();
+  if(rv != 0) {
+    delete handler;
   }
 }
 } // namespace
@@ -132,6 +135,17 @@ void tls_raw_readcb(evbuffer *buffer, const evbuffer_cb_info *info, void *arg)
 }
 } // namespace
 
+namespace {
+void tls_raw_writecb(evbuffer *buffer, const evbuffer_cb_info *info, void *arg)
+{
+  ClientHandler *handler = static_cast<ClientHandler*>(arg);
+  // upstream_writecb() is called when external bufferevent
+  // handler->bev's output buffer gets empty. But the underlying
+  // bufferevent may have pending output buffer.
+  upstream_writecb(handler->get_bev(), handler);
+}
+} // namespace
+
 ClientHandler::ClientHandler(bufferevent *bev, int fd, SSL *ssl,
                              const char *ipaddr)
   : ipaddr_(ipaddr),
@@ -154,6 +168,8 @@ ClientHandler::ClientHandler(bufferevent *bev, int fd, SSL *ssl,
     set_bev_cb(0, upstream_writecb, upstream_eventcb);
     evbuffer *input = bufferevent_get_input(bufferevent_get_underlying(bev_));
     evbuffer_add_cb(input, tls_raw_readcb, this);
+    evbuffer *output = bufferevent_get_output(bufferevent_get_underlying(bev_));
+    evbuffer_add_cb(output, tls_raw_writecb, this);
   } else {
     if(get_config()->client_mode) {
       // Client mode
