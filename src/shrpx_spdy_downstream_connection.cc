@@ -91,7 +91,6 @@ int SpdyDownstreamConnection::init_request_body_buf()
     if(request_body_buf_ == 0) {
       return -1;
     }
-    evbuffer_setcb(request_body_buf_, 0, this);
   }
   return 0;
 }
@@ -188,9 +187,9 @@ ssize_t spdy_data_read_callback(spdylay_session *session,
         // This is important because it will handle flow control
         // stuff.
         if(downstream->get_upstream()->resume_read(SHRPX_NO_BUFFER,
-                                                   downstream) == -1) {
+                                                   downstream) != 0) {
           // In this case, downstream may be deleted.
-          return SPDYLAY_ERR_DEFERRED;
+          return SPDYLAY_ERR_CALLBACK_FAILURE;
         }
         // Check dconn is still alive because Upstream::resume_read()
         // may delete downstream which will delete dconn.
@@ -207,6 +206,14 @@ ssize_t spdy_data_read_callback(spdylay_session *session,
         }
       }
     } else {
+      // Send WINDOW_UPDATE before buffer is empty to avoid delay
+      // because of RTT.
+      if(!downstream->get_output_buffer_full() &&
+         downstream->get_upstream()->resume_read(SHRPX_NO_BUFFER,
+                                                 downstream) != 0) {
+        // In this case, downstream may be deleted.
+        return SPDYLAY_ERR_CALLBACK_FAILURE;
+      }
       break;
     }
   }
@@ -422,7 +429,11 @@ int SpdyDownstreamConnection::resume_read(IOCtrlReason reason)
       }
     }
   }
-  return (rv1 == 0 && rv2 == 0) ? 0 : -1;
+  if(rv1 == 0 && rv2 == 0) {
+    return 0;
+  }
+  DLOG(WARNING, this) << "Sending WINDOW_UPDATE failed";
+  return -1;
 }
 
 int SpdyDownstreamConnection::on_read()

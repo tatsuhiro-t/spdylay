@@ -338,7 +338,8 @@ void HttpDownstreamConnection::pause_read(IOCtrlReason reason)
 
 int HttpDownstreamConnection::resume_read(IOCtrlReason reason)
 {
-  return ioctrl_.resume_read(reason) ? 0 : -1;
+  ioctrl_.resume_read(reason);
+  return 0;
 }
 
 void HttpDownstreamConnection::force_resume_read()
@@ -427,6 +428,10 @@ int htp_msg_completecb(http_parser *htp)
   downstream = reinterpret_cast<Downstream*>(htp->data);
 
   downstream->set_response_state(Downstream::MSG_COMPLETE);
+  // Block reading another response message from (broken?)
+  // server. This callback is not called if the connection is
+  // tunneled.
+  downstream->pause_read(SHRPX_MSG_BLOCK);
   return downstream->get_upstream()->on_downstream_body_complete(downstream);
 }
 } // namespace

@@ -731,6 +731,9 @@ ssize_t spdy_data_read_callback(spdylay_session *session,
                                 void *user_data)
 {
   Downstream *downstream = reinterpret_cast<Downstream*>(source->ptr);
+  SpdyUpstream *upstream =
+    static_cast<SpdyUpstream*>(downstream->get_upstream());
+  ClientHandler *handler = upstream->get_client_handler();
   evbuffer *body = downstream->get_response_body_buf();
   assert(body);
   int nread = evbuffer_remove(body, buf, length);
@@ -740,14 +743,21 @@ ssize_t spdy_data_read_callback(spdylay_session *session,
       *eof = 1;
     } else {
       // For tunneling, issue RST_STREAM to finish the stream.
-      SpdyUpstream *upstream;
-      upstream = reinterpret_cast<SpdyUpstream*>(downstream->get_upstream());
       if(LOG_ENABLED(INFO)) {
         ULOG(INFO, upstream) << "RST_STREAM to tunneled stream stream_id="
                              << stream_id;
       }
       upstream->rst_stream(downstream, infer_upstream_rst_stream_status_code
                            (downstream->get_response_rst_stream_status_code()));
+    }
+  }
+  // Send WINDOW_UPDATE before buffer is empty to avoid delay because
+  // of RTT.
+  if(*eof != 1 &&
+     handler->get_outbuf_length() + evbuffer_get_length(body) <
+     OUTBUF_MAX_THRES) {
+    if(downstream->resume_read(SHRPX_NO_BUFFER) != 0) {
+      return SPDYLAY_ERR_CALLBACK_FAILURE;
     }
   }
   if(nread == 0 && *eof != 1) {
