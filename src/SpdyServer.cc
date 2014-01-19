@@ -943,7 +943,7 @@ int next_proto_cb(SSL *s, const unsigned char **data, unsigned int *len,
                   void *arg)
 {
   std::pair<unsigned char*, size_t> *next_proto =
-    reinterpret_cast<std::pair<unsigned char*, size_t>* >(arg);
+    static_cast<std::pair<unsigned char*, size_t>* >(arg);
   *data = next_proto->first;
   *len = next_proto->second;
   return SSL_TLSEXT_ERR_OK;
@@ -1057,8 +1057,8 @@ int SpdyServer::run()
       perror("EventPoll");
     } else {
       for(int i = 0; i < n; ++i) {
-        EventHandler *hd = reinterpret_cast<EventHandler*>
-          (sessions.get_user_data(i));
+        EventHandler *hd =
+          static_cast<EventHandler*>(sessions.get_user_data(i));
         int events = sessions.get_events(i);
         int r = 0;
         if(hd->mark_del()) {

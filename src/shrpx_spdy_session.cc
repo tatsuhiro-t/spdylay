@@ -144,7 +144,7 @@ namespace {
 void notify_readcb(bufferevent *bev, void *arg)
 {
   int rv;
-  SpdySession *spdy = reinterpret_cast<SpdySession*>(arg);
+  SpdySession *spdy = static_cast<SpdySession*>(arg);
   spdy->clear_notify();
   switch(spdy->get_state()) {
   case SpdySession::DISCONNECTED:
@@ -167,7 +167,7 @@ void notify_readcb(bufferevent *bev, void *arg)
 namespace {
 void notify_eventcb(bufferevent *bev, short events, void *arg)
 {
-  SpdySession *spdy = reinterpret_cast<SpdySession*>(arg);
+  SpdySession *spdy = static_cast<SpdySession*>(arg);
   // TODO should DIE()?
   if(events & BEV_EVENT_EOF) {
     SSLOG(ERROR, spdy) << "Notification connection lost: EOF";
@@ -217,7 +217,7 @@ namespace {
 void readcb(bufferevent *bev, void *ptr)
 {
   int rv;
-  SpdySession *spdy = reinterpret_cast<SpdySession*>(ptr);
+  SpdySession *spdy = static_cast<SpdySession*>(ptr);
   rv = spdy->on_read();
   if(rv != 0) {
     spdy->disconnect();
@@ -232,7 +232,7 @@ void writecb(bufferevent *bev, void *ptr)
     return;
   }
   int rv;
-  SpdySession *spdy = reinterpret_cast<SpdySession*>(ptr);
+  SpdySession *spdy = static_cast<SpdySession*>(ptr);
   rv = spdy->on_write();
   if(rv != 0) {
     spdy->disconnect();
@@ -243,7 +243,7 @@ void writecb(bufferevent *bev, void *ptr)
 namespace {
 void eventcb(bufferevent *bev, short events, void *ptr)
 {
-  SpdySession *spdy = reinterpret_cast<SpdySession*>(ptr);
+  SpdySession *spdy = static_cast<SpdySession*>(ptr);
   if(events & BEV_EVENT_CONNECTED) {
     if(LOG_ENABLED(INFO)) {
       SSLOG(INFO, spdy) << "Connection established";
@@ -283,7 +283,7 @@ void eventcb(bufferevent *bev, short events, void *ptr)
 namespace {
 void proxy_readcb(bufferevent *bev, void *ptr)
 {
-  SpdySession *spdy = reinterpret_cast<SpdySession*>(ptr);
+  SpdySession *spdy = static_cast<SpdySession*>(ptr);
   if(spdy->on_read_proxy() == 0) {
     switch(spdy->get_state()) {
     case SpdySession::PROXY_CONNECTED:
@@ -308,7 +308,7 @@ void proxy_readcb(bufferevent *bev, void *ptr)
 namespace {
 void proxy_eventcb(bufferevent *bev, short events, void *ptr)
 {
-  SpdySession *spdy = reinterpret_cast<SpdySession*>(ptr);
+  SpdySession *spdy = static_cast<SpdySession*>(ptr);
   if(events & BEV_EVENT_CONNECTED) {
     if(LOG_ENABLED(INFO)) {
       SSLOG(INFO, spdy) << "Connected to the proxy";
@@ -476,7 +476,7 @@ namespace {
 int htp_hdrs_completecb(http_parser *htp)
 {
   SpdySession *spdy;
-  spdy = reinterpret_cast<SpdySession*>(htp->data);
+  spdy = static_cast<SpdySession*>(htp->data);
   // We just check status code here
   if(htp->status_code == 200) {
     if(LOG_ENABLED(INFO)) {
@@ -634,7 +634,7 @@ ssize_t send_callback(spdylay_session *session,
                       void *user_data)
 {
   int rv;
-  SpdySession *spdy = reinterpret_cast<SpdySession*>(user_data);
+  SpdySession *spdy = static_cast<SpdySession*>(user_data);
 
   bufferevent *bev = spdy->get_bev();
   evbuffer *output = bufferevent_get_output(bev);
@@ -657,7 +657,7 @@ namespace {
 ssize_t recv_callback(spdylay_session *session,
                       uint8_t *data, size_t len, int flags, void *user_data)
 {
-  SpdySession *spdy = reinterpret_cast<SpdySession*>(user_data);
+  SpdySession *spdy = static_cast<SpdySession*>(user_data);
 
   bufferevent *bev = spdy->get_bev();
   evbuffer *input = bufferevent_get_input(bev);
@@ -678,13 +678,13 @@ void on_stream_close_callback
  void *user_data)
 {
   int rv;
-  SpdySession *spdy = reinterpret_cast<SpdySession*>(user_data);
+  SpdySession *spdy = static_cast<SpdySession*>(user_data);
   if(LOG_ENABLED(INFO)) {
     SSLOG(INFO, spdy) << "Stream stream_id=" << stream_id
                       << " is being closed";
   }
   StreamData *sd;
-  sd = reinterpret_cast<StreamData*>
+  sd = static_cast<StreamData*>
     (spdylay_session_get_stream_user_data(session, stream_id));
   if(sd == 0) {
     // We might get this close callback when pushed streams are
@@ -720,7 +720,7 @@ void on_ctrl_recv_callback
  void *user_data)
 {
   int rv;
-  SpdySession *spdy = reinterpret_cast<SpdySession*>(user_data);
+  SpdySession *spdy = static_cast<SpdySession*>(user_data);
   StreamData *sd;
   Downstream *downstream;
   switch(type) {
@@ -734,7 +734,7 @@ void on_ctrl_recv_callback
                               SPDYLAY_REFUSED_STREAM);
     break;
   case SPDYLAY_RST_STREAM:
-    sd = reinterpret_cast<StreamData*>
+    sd = static_cast<StreamData*>
       (spdylay_session_get_stream_user_data(session,
                                             frame->rst_stream.stream_id));
     if(sd && sd->dconn) {
@@ -766,7 +766,7 @@ void on_ctrl_recv_callback
     }
     break;
   case SPDYLAY_SYN_REPLY: {
-    sd = reinterpret_cast<StreamData*>
+    sd = static_cast<StreamData*>
       (spdylay_session_get_stream_user_data(session,
                                             frame->syn_reply.stream_id));
     if(!sd || !sd->dconn) {
@@ -880,9 +880,9 @@ void on_data_chunk_recv_callback(spdylay_session *session,
                                  void *user_data)
 {
   int rv;
-  SpdySession *spdy = reinterpret_cast<SpdySession*>(user_data);
+  SpdySession *spdy = static_cast<SpdySession*>(user_data);
   StreamData *sd;
-  sd = reinterpret_cast<StreamData*>
+  sd = static_cast<StreamData*>
     (spdylay_session_get_stream_user_data(session, stream_id));
   if(!sd || !sd->dconn) {
     spdylay_submit_rst_stream(session, stream_id, SPDYLAY_INTERNAL_ERROR);
@@ -947,7 +947,7 @@ void before_ctrl_send_callback(spdylay_session *session,
 {
   if(type == SPDYLAY_SYN_STREAM) {
     StreamData *sd;
-    sd = reinterpret_cast<StreamData*>
+    sd = static_cast<StreamData*>
       (spdylay_session_get_stream_user_data(session,
                                             frame->syn_stream.stream_id));
     if(!sd || !sd->dconn) {
@@ -972,7 +972,7 @@ void on_ctrl_not_send_callback(spdylay_session *session,
                                spdylay_frame *frame,
                                int error_code, void *user_data)
 {
-  SpdySession *spdy = reinterpret_cast<SpdySession*>(user_data);
+  SpdySession *spdy = static_cast<SpdySession*>(user_data);
   SSLOG(WARNING, spdy) << "Failed to send control frame type=" << type << ", "
                        << "error_code=" << error_code << ":"
                        << spdylay_strerror(error_code);
@@ -980,7 +980,7 @@ void on_ctrl_not_send_callback(spdylay_session *session,
     // To avoid stream hanging around, flag Downstream::MSG_RESET and
     // terminate the upstream and downstream connections.
     StreamData *sd;
-    sd = reinterpret_cast<StreamData*>
+    sd = static_cast<StreamData*>
       (spdylay_session_get_stream_user_data(session,
                                             frame->syn_stream.stream_id));
     if(!sd) {
@@ -1009,7 +1009,7 @@ void on_ctrl_recv_parse_error_callback(spdylay_session *session,
                                        size_t payloadlen, int error_code,
                                        void *user_data)
 {
-  SpdySession *spdy = reinterpret_cast<SpdySession*>(user_data);
+  SpdySession *spdy = static_cast<SpdySession*>(user_data);
   if(LOG_ENABLED(INFO)) {
     SSLOG(INFO, spdy) << "Failed to parse received control frame. type="
                       << type
@@ -1025,7 +1025,7 @@ void on_unknown_ctrl_recv_callback(spdylay_session *session,
                                    const uint8_t *payload, size_t payloadlen,
                                    void *user_data)
 {
-  SpdySession *spdy = reinterpret_cast<SpdySession*>(user_data);
+  SpdySession *spdy = static_cast<SpdySession*>(user_data);
   if(LOG_ENABLED(INFO)) {
     SSLOG(INFO, spdy) << "Received unknown control frame";
   }

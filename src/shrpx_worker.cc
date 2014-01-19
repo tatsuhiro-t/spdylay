@@ -52,7 +52,7 @@ Worker::~Worker()
 namespace {
 void readcb(bufferevent *bev, void *arg)
 {
-  ThreadEventReceiver *receiver = reinterpret_cast<ThreadEventReceiver*>(arg);
+  ThreadEventReceiver *receiver = static_cast<ThreadEventReceiver*>(arg);
   receiver->on_read(bev);
 }
 } // namespace
@@ -92,7 +92,7 @@ void Worker::run()
 
 void* start_threaded_worker(void *arg)
 {
-  WorkerInfo *info = reinterpret_cast<WorkerInfo*>(arg);
+  WorkerInfo *info = static_cast<WorkerInfo*>(arg);
   Worker worker(info);
   worker.run();
   return 0;

@@ -51,7 +51,7 @@ ssize_t send_callback(spdylay_session *session,
                       void *user_data)
 {
   int rv;
-  SpdyUpstream *upstream = reinterpret_cast<SpdyUpstream*>(user_data);
+  SpdyUpstream *upstream = static_cast<SpdyUpstream*>(user_data);
   ClientHandler *handler = upstream->get_client_handler();
   bufferevent *bev = handler->get_bev();
   evbuffer *output = bufferevent_get_output(bev);
@@ -74,7 +74,7 @@ namespace {
 ssize_t recv_callback(spdylay_session *session,
                       uint8_t *data, size_t len, int flags, void *user_data)
 {
-  SpdyUpstream *upstream = reinterpret_cast<SpdyUpstream*>(user_data);
+  SpdyUpstream *upstream = static_cast<SpdyUpstream*>(user_data);
   ClientHandler *handler = upstream->get_client_handler();
   bufferevent *bev = handler->get_bev();
   evbuffer *input = bufferevent_get_input(bev);
@@ -94,7 +94,7 @@ void on_stream_close_callback
 (spdylay_session *session, int32_t stream_id, spdylay_status_code status_code,
  void *user_data)
 {
-  SpdyUpstream *upstream = reinterpret_cast<SpdyUpstream*>(user_data);
+  SpdyUpstream *upstream = static_cast<SpdyUpstream*>(user_data);
   if(LOG_ENABLED(INFO)) {
     ULOG(INFO, upstream) << "Stream stream_id=" << stream_id
                          << " is being closed";
@@ -140,7 +140,7 @@ void on_ctrl_recv_callback
 (spdylay_session *session, spdylay_frame_type type, spdylay_frame *frame,
  void *user_data)
 {
-  SpdyUpstream *upstream = reinterpret_cast<SpdyUpstream*>(user_data);
+  SpdyUpstream *upstream = static_cast<SpdyUpstream*>(user_data);
   switch(type) {
   case SPDYLAY_SYN_STREAM: {
     if(LOG_ENABLED(INFO)) {
@@ -250,7 +250,7 @@ void on_data_chunk_recv_callback(spdylay_session *session,
                                  const uint8_t *data, size_t len,
                                  void *user_data)
 {
-  SpdyUpstream *upstream = reinterpret_cast<SpdyUpstream*>(user_data);
+  SpdyUpstream *upstream = static_cast<SpdyUpstream*>(user_data);
   Downstream *downstream = upstream->find_downstream(stream_id);
   if(downstream) {
     if(downstream->push_upload_data_chunk(data, len) != 0) {
@@ -297,7 +297,7 @@ namespace {
 void on_data_recv_callback(spdylay_session *session, uint8_t flags,
                            int32_t stream_id, int32_t length, void *user_data)
 {
-  SpdyUpstream *upstream = reinterpret_cast<SpdyUpstream*>(user_data);
+  SpdyUpstream *upstream = static_cast<SpdyUpstream*>(user_data);
   Downstream *downstream = upstream->find_downstream(stream_id);
   if(downstream && (flags & SPDYLAY_DATA_FLAG_FIN)) {
     downstream->end_upload_data();
@@ -312,7 +312,7 @@ void on_ctrl_not_send_callback(spdylay_session *session,
                                spdylay_frame *frame,
                                int error_code, void *user_data)
 {
-  SpdyUpstream *upstream = reinterpret_cast<SpdyUpstream*>(user_data);
+  SpdyUpstream *upstream = static_cast<SpdyUpstream*>(user_data);
   ULOG(WARNING, upstream) << "Failed to send control frame type=" << type
                           << ", error_code=" << error_code << ":"
                           << spdylay_strerror(error_code);
@@ -335,7 +335,7 @@ void on_ctrl_recv_parse_error_callback(spdylay_session *session,
                                        size_t payloadlen, int error_code,
                                        void *user_data)
 {
-  SpdyUpstream *upstream = reinterpret_cast<SpdyUpstream*>(user_data);
+  SpdyUpstream *upstream = static_cast<SpdyUpstream*>(user_data);
   if(LOG_ENABLED(INFO)) {
     ULOG(INFO, upstream) << "Failed to parse received control frame. type="
                          << type
@@ -351,7 +351,7 @@ void on_unknown_ctrl_recv_callback(spdylay_session *session,
                                    const uint8_t *payload, size_t payloadlen,
                                    void *user_data)
 {
-  SpdyUpstream *upstream = reinterpret_cast<SpdyUpstream*>(user_data);
+  SpdyUpstream *upstream = static_cast<SpdyUpstream*>(user_data);
   if(LOG_ENABLED(INFO)) {
     ULOG(INFO, upstream) << "Received unknown control frame.";
   }
@@ -504,7 +504,7 @@ ClientHandler* SpdyUpstream::get_client_handler() const
 namespace {
 void spdy_downstream_readcb(bufferevent *bev, void *ptr)
 {
-  DownstreamConnection *dconn = reinterpret_cast<DownstreamConnection*>(ptr);
+  DownstreamConnection *dconn = static_cast<DownstreamConnection*>(ptr);
   Downstream *downstream = dconn->get_downstream();
   SpdyUpstream *upstream;
   upstream = static_cast<SpdyUpstream*>(downstream->get_upstream());
@@ -564,7 +564,7 @@ void spdy_downstream_writecb(bufferevent *bev, void *ptr)
   if(evbuffer_get_length(bufferevent_get_output(bev)) > 0) {
     return;
   }
-  DownstreamConnection *dconn = reinterpret_cast<DownstreamConnection*>(ptr);
+  DownstreamConnection *dconn = static_cast<DownstreamConnection*>(ptr);
   Downstream *downstream = dconn->get_downstream();
   SpdyUpstream *upstream;
   upstream = static_cast<SpdyUpstream*>(downstream->get_upstream());
@@ -575,7 +575,7 @@ void spdy_downstream_writecb(bufferevent *bev, void *ptr)
 namespace {
 void spdy_downstream_eventcb(bufferevent *bev, short events, void *ptr)
 {
-  DownstreamConnection *dconn = reinterpret_cast<DownstreamConnection*>(ptr);
+  DownstreamConnection *dconn = static_cast<DownstreamConnection*>(ptr);
   Downstream *downstream = dconn->get_downstream();
   SpdyUpstream *upstream;
   upstream = static_cast<SpdyUpstream*>(downstream->get_upstream());
@@ -730,7 +730,7 @@ ssize_t spdy_data_read_callback(spdylay_session *session,
                                 spdylay_data_source *source,
                                 void *user_data)
 {
-  Downstream *downstream = reinterpret_cast<Downstream*>(source->ptr);
+  Downstream *downstream = static_cast<Downstream*>(source->ptr);
   SpdyUpstream *upstream =
     static_cast<SpdyUpstream*>(downstream->get_upstream());
   ClientHandler *handler = upstream->get_client_handler();

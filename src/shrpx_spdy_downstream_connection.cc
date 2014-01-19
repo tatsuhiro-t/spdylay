@@ -158,13 +158,13 @@ ssize_t spdy_data_read_callback(spdylay_session *session,
                                 void *user_data)
 {
   StreamData *sd;
-  sd = reinterpret_cast<StreamData*>
+  sd = static_cast<StreamData*>
     (spdylay_session_get_stream_user_data(session, stream_id));
   if(!sd || !sd->dconn) {
     return SPDYLAY_ERR_DEFERRED;
   }
   SpdyDownstreamConnection *dconn;
-  dconn = reinterpret_cast<SpdyDownstreamConnection*>(source->ptr);
+  dconn = static_cast<SpdyDownstreamConnection*>(source->ptr);
   Downstream *downstream = dconn->get_downstream();
   if(!downstream) {
     // In this case, RST_STREAM should have been issued. But depending

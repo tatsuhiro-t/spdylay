@@ -280,7 +280,7 @@ namespace {
 void idle_eventcb(bufferevent *bev, short events, void *arg)
 {
   HttpDownstreamConnection *dconn;
-  dconn = reinterpret_cast<HttpDownstreamConnection*>(arg);
+  dconn = static_cast<HttpDownstreamConnection*>(arg);
   if(events & BEV_EVENT_CONNECTED) {
     // Downstream was detached before connection established?
     // This may be safe to be left.
@@ -357,7 +357,7 @@ namespace {
 int htp_hdrs_completecb(http_parser *htp)
 {
   Downstream *downstream;
-  downstream = reinterpret_cast<Downstream*>(htp->data);
+  downstream = static_cast<Downstream*>(htp->data);
   downstream->set_response_http_status(htp->status_code);
   downstream->set_response_major(htp->http_major);
   downstream->set_response_minor(htp->http_minor);
@@ -386,7 +386,7 @@ namespace {
 int htp_hdr_keycb(http_parser *htp, const char *data, size_t len)
 {
   Downstream *downstream;
-  downstream = reinterpret_cast<Downstream*>(htp->data);
+  downstream = static_cast<Downstream*>(htp->data);
   if(downstream->get_response_header_key_prev()) {
     downstream->append_last_response_header_key(data, len);
   } else {
@@ -400,7 +400,7 @@ namespace {
 int htp_hdr_valcb(http_parser *htp, const char *data, size_t len)
 {
   Downstream *downstream;
-  downstream = reinterpret_cast<Downstream*>(htp->data);
+  downstream = static_cast<Downstream*>(htp->data);
   if(downstream->get_response_header_key_prev()) {
     downstream->set_last_response_header_value(std::string(data, len));
   } else {
@@ -414,7 +414,7 @@ namespace {
 int htp_bodycb(http_parser *htp, const char *data, size_t len)
 {
   Downstream *downstream;
-  downstream = reinterpret_cast<Downstream*>(htp->data);
+  downstream = static_cast<Downstream*>(htp->data);
 
   return downstream->get_upstream()->on_downstream_body
     (downstream, reinterpret_cast<const uint8_t*>(data), len);
@@ -425,7 +425,7 @@ namespace {
 int htp_msg_completecb(http_parser *htp)
 {
   Downstream *downstream;
-  downstream = reinterpret_cast<Downstream*>(htp->data);
+  downstream = static_cast<Downstream*>(htp->data);
 
   downstream->set_response_state(Downstream::MSG_COMPLETE);
   // Block reading another response message from (broken?)

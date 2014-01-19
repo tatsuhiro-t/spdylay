@@ -63,7 +63,7 @@ int next_proto_cb(SSL *s, const unsigned char **data, unsigned int *len,
                   void *arg)
 {
   std::pair<unsigned char*, size_t> *next_proto =
-    reinterpret_cast<std::pair<unsigned char*, size_t>* >(arg);
+    static_cast<std::pair<unsigned char*, size_t>* >(arg);
   *data = next_proto->first;
   *len = next_proto->second;
   return SSL_TLSEXT_ERR_OK;
@@ -521,7 +521,7 @@ void get_altnames(X509 *cert,
                   std::string& common_name)
 {
   GENERAL_NAMES* altnames;
-  altnames = reinterpret_cast<GENERAL_NAMES*>
+  altnames = static_cast<GENERAL_NAMES*>
     (X509_get_ext_d2i(cert, NID_subject_alt_name, 0, 0));
   if(altnames) {
     util::auto_delete<GENERAL_NAMES*> altnames_deleter(altnames,

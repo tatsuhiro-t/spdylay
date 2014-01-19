@@ -419,8 +419,8 @@ void update_html_parser(SpdySession *spdySession, Request *req,
 
 SpdySession* get_session(void *user_data)
 {
-  return reinterpret_cast<SpdySession*>
-    (reinterpret_cast<Spdylay*>(user_data)->user_data());
+  return static_cast<SpdySession*>
+    (static_cast<Spdylay*>(user_data)->user_data());
 }
 
 void on_data_chunk_recv_callback

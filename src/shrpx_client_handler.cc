@@ -40,7 +40,7 @@ namespace shrpx {
 namespace {
 void upstream_readcb(bufferevent *bev, void *arg)
 {
-  ClientHandler *handler = reinterpret_cast<ClientHandler*>(arg);
+  ClientHandler *handler = static_cast<ClientHandler*>(arg);
   int rv = handler->on_read();
   if(rv != 0) {
     delete handler;
@@ -51,7 +51,7 @@ void upstream_readcb(bufferevent *bev, void *arg)
 namespace {
 void upstream_writecb(bufferevent *bev, void *arg)
 {
-  ClientHandler *handler = reinterpret_cast<ClientHandler*>(arg);
+  ClientHandler *handler = static_cast<ClientHandler*>(arg);
   // We actually depend on write low-warter mark == 0.
   if(handler->get_outbuf_length() > 0) {
     // Possibly because of deferred callback, we may get this callback
@@ -73,7 +73,7 @@ void upstream_writecb(bufferevent *bev, void *arg)
 namespace {
 void upstream_eventcb(bufferevent *bev, short events, void *arg)
 {
-  ClientHandler *handler = reinterpret_cast<ClientHandler*>(arg);
+  ClientHandler *handler = static_cast<ClientHandler*>(arg);
   bool finish = false;
   if(events & BEV_EVENT_EOF) {
     if(LOG_ENABLED(INFO)) {

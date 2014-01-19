@@ -59,7 +59,7 @@ namespace {
 void ssl_acceptcb(evconnlistener *listener, int fd,
                   sockaddr *addr, int addrlen, void *arg)
 {
-  ListenHandler *handler = reinterpret_cast<ListenHandler*>(arg);
+  ListenHandler *handler = static_cast<ListenHandler*>(arg);
   handler->accept_connection(fd, addr, addrlen);
 }
 } // namespace
