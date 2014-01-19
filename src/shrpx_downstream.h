@@ -132,8 +132,6 @@ public:
   // Call this method when there is incoming data in downstream
   // connection.
   int on_read();
-
-  static const size_t OUTPUT_UPPER_THRES = 64*1024;
 private:
   Headers request_headers_;
   Headers response_headers_;

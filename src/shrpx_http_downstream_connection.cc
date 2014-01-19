@@ -36,6 +36,10 @@ using namespace spdylay;
 
 namespace shrpx {
 
+namespace {
+const size_t OUTBUF_MAX_THRES = 64*1024;
+} // namespace
+
 // Workaround for the inability for Bufferevent to remove timeout from
 // bufferevent. Specify this long timeout instead of removing.
 namespace {
@@ -345,7 +349,7 @@ void HttpDownstreamConnection::force_resume_read()
 bool HttpDownstreamConnection::get_output_buffer_full()
 {
   evbuffer *output = bufferevent_get_output(bev_);
-  return evbuffer_get_length(output) >= Downstream::OUTPUT_UPPER_THRES;
+  return evbuffer_get_length(output) >= OUTBUF_MAX_THRES;
 }
 
 namespace {

@@ -467,8 +467,8 @@ StreamData* SpdyDownstreamConnection::detach_stream_data()
 bool SpdyDownstreamConnection::get_output_buffer_full()
 {
   if(request_body_buf_) {
-    return
-      evbuffer_get_length(request_body_buf_) >= Downstream::OUTPUT_UPPER_THRES;
+    return spdy_->get_outbuf_length() +
+      evbuffer_get_length(request_body_buf_) >= SpdySession::OUTBUF_MAX_THRES;
   } else {
     return false;
   }

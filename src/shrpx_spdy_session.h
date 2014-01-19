@@ -95,6 +95,8 @@ public:
 
   spdylay_session* get_session() const;
 
+  size_t get_outbuf_length() const;
+
   enum {
     // Disconnected
     DISCONNECTED,
@@ -109,6 +111,8 @@ public:
     // Connected to downstream
     CONNECTED
   };
+
+  static const size_t OUTBUF_MAX_THRES = 64*1024;
 private:
   std::set<SpdyDownstreamConnection*> dconns_;
   std::set<StreamData*> streams_;

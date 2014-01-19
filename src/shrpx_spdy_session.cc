@@ -639,7 +639,7 @@ ssize_t send_callback(spdylay_session *session,
   bufferevent *bev = spdy->get_bev();
   evbuffer *output = bufferevent_get_output(bev);
   // Check buffer length and return WOULDBLOCK if it is large enough.
-  if(evbuffer_get_length(output) > Downstream::OUTPUT_UPPER_THRES) {
+  if(evbuffer_get_length(output) > SpdySession::OUTBUF_MAX_THRES) {
     return SPDYLAY_ERR_WOULDBLOCK;
   }
 
@@ -1206,6 +1206,15 @@ void SpdySession::set_state(int state)
 spdylay_session* SpdySession::get_session() const
 {
   return session_;
+}
+
+size_t SpdySession::get_outbuf_length() const
+{
+  if(bev_) {
+    return evbuffer_get_length(bufferevent_get_output(bev_));
+  } else {
+    return OUTBUF_MAX_THRES;
+  }
 }
 
 } // namespace shrpx
