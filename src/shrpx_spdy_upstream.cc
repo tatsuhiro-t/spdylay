@@ -56,7 +56,8 @@ ssize_t send_callback(spdylay_session *session,
   bufferevent *bev = handler->get_bev();
   evbuffer *output = bufferevent_get_output(bev);
   // Check buffer length and return WOULDBLOCK if it is large enough.
-  if(evbuffer_get_length(output) > SHRPX_SPDY_UPSTREAM_OUTPUT_UPPER_THRES) {
+  if(handler->get_pending_write_length() >
+     SHRPX_SPDY_UPSTREAM_OUTPUT_UPPER_THRES) {
     return SPDYLAY_ERR_WOULDBLOCK;
   }
 
@@ -455,7 +456,7 @@ int SpdyUpstream::on_read()
   if(rv == 0) {
     if(spdylay_session_want_read(session_) == 0 &&
        spdylay_session_want_write(session_) == 0 &&
-       evbuffer_get_length(bufferevent_get_output(handler_->get_bev())) == 0) {
+       handler_->get_pending_write_length() == 0) {
       if(LOG_ENABLED(INFO)) {
         ULOG(INFO, this) << "No more read/write for this SPDY session";
       }
@@ -481,7 +482,7 @@ int SpdyUpstream::send()
   if(rv == 0) {
     if(spdylay_session_want_read(session_) == 0 &&
        spdylay_session_want_write(session_) == 0 &&
-       evbuffer_get_length(bufferevent_get_output(handler_->get_bev())) == 0) {
+       handler_->get_pending_write_length() == 0) {
       if(LOG_ENABLED(INFO)) {
         ULOG(INFO, this) << "No more read/write for this SPDY session";
       }

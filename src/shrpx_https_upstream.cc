@@ -422,10 +422,8 @@ void https_downstream_readcb(bufferevent *bev, void *ptr)
         }
       }
     } else {
-      ClientHandler *handler = upstream->get_client_handler();
-      bufferevent *bev = handler->get_bev();
-      size_t outputlen = evbuffer_get_length(bufferevent_get_output(bev));
-      if(outputlen > SHRPX_HTTPS_UPSTREAM_OUTPUT_UPPER_THRES) {
+      if(upstream->get_client_handler()->get_pending_write_length() >
+         SHRPX_HTTPS_UPSTREAM_OUTPUT_UPPER_THRES) {
         downstream->pause_read(SHRPX_NO_BUFFER);
       }
     }
