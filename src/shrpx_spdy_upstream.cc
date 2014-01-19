@@ -912,6 +912,7 @@ int SpdyUpstream::on_downstream_header_complete(Downstream *downstream)
 int SpdyUpstream::on_downstream_body(Downstream *downstream,
                                      const uint8_t *data, size_t len)
 {
+  Upstream *upstream = downstream->get_upstream();
   evbuffer *body = downstream->get_response_body_buf();
   int rv = evbuffer_add(body, data, len);
   if(rv != 0) {
@@ -920,8 +921,9 @@ int SpdyUpstream::on_downstream_body(Downstream *downstream,
   }
   spdylay_session_resume_data(session_, downstream->get_stream_id());
 
-  size_t bodylen = evbuffer_get_length(body);
-  if(bodylen > SHRPX_SPDY_UPSTREAM_OUTPUT_UPPER_THRES) {
+  size_t outbuflen = upstream->get_client_handler()->get_pending_write_length()
+    + evbuffer_get_length(body);
+  if(outbuflen > SHRPX_SPDY_UPSTREAM_OUTPUT_UPPER_THRES) {
     downstream->pause_read(SHRPX_NO_BUFFER);
   }
 
