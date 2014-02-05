@@ -8,7 +8,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Spdylay - SPDY C Library &mdash; Spdylay 1.2.3-DEV documentation</title>
+  <title>Spdylay - SPDY C Library &mdash; Spdylay 1.2.4-DEV documentation</title>
   
 
   
@@ -23,7 +23,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'',
-        VERSION:'1.2.3-DEV',
+        VERSION:'1.2.4-DEV',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -44,30 +44,41 @@
   
 
   
-    <link rel="top" title="Spdylay 1.2.3-DEV documentation" href="index.html"/>
+  
+    <script type="text/javascript">
+        jQuery(function () {
+            SphinxRtdTheme.StickyNav.enable();
+        });
+    </script>
+  
+
+  
+    <link rel="top" title="Spdylay 1.2.4-DEV documentation" href="index.html"/>
         <link rel="next" title="API Reference" href="apiref.html"/>
         <link rel="prev" title="Spdylay - SPDY C Library" href="index.html"/> 
 
-  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-nav-search">
-        <a href="index.html" class="icon icon-home"> Spdylay</a>
-        <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
-  <input type="text" name="q" placeholder="Search docs" />
-  <input type="hidden" name="check_keywords" value="yes" />
-  <input type="hidden" name="area" value="default" />
-</form>
+        <a href="index.html" class="fa fa-home"> Spdylay</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
       </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix">
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
         
         
             <ul class="current">
@@ -133,8 +144,8 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top">
-        <i data-toggle="wy-nav-top" class="icon icon-reorder"></i>
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
         <a href="index.html">Spdylay</a>
       </nav>
 
@@ -142,18 +153,21 @@
       
       <div class="wy-nav-content">
         <div class="rst-content">
-          <ul class="wy-breadcrumbs">
-  <li><a href="index.html">Docs</a> &raquo;</li>
-  <li><a href="">Spdylay - SPDY C Library</a></li>
-    <li class="wy-breadcrumbs-aside">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
       
-        <a href="_sources/package_README.txt" rel="nofollow"> View page source</a>
-      
-    </li>
-</ul>
-<hr/>
-
-          
+    <li>Spdylay - SPDY C Library</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/package_README.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
   <div class="section" id="spdylay-spdy-c-library">
 <h1>Spdylay - SPDY C Library<a class="headerlink" href="#spdylay-spdy-c-library" title="Permalink to this headline">¶</a></h1>
 <p>This is an experimental implementation of Google&#8217;s SPDY protocol in C.</p>
@@ -290,7 +304,8 @@ like wget/curl. It connects to SPDY server and gets resources given in
 the command-line:</p>
 <div class="highlight-c"><pre>$ src/spdycat -h
 Usage: spdycat [-Oansv23] [-t &lt;SECONDS&gt;] [-w &lt;WINDOW_BITS&gt;] [--cert=&lt;CERT&gt;]
-               [--key=&lt;KEY&gt;] [--no-tls] [-d &lt;FILE&gt;] [-m &lt;N&gt;] &lt;URI&gt;...
+               [--key=&lt;KEY&gt;] [--no-tls] [-d &lt;FILE&gt;] [-m &lt;N&gt;] [-p &lt;PROXY_HOST&gt;]
+               [-P &lt;PROXY_PORT&gt;] &lt;URI&gt;...
 
 OPTIONS:
     -v, --verbose      Print debug information such as reception/
@@ -324,6 +339,10 @@ OPTIONS:
     -m, --multiply=&lt;N&gt; Request each URI &lt;N&gt; times. By default, same
                        URI is not requested twice. This option
                        disables it too.
+    -p, --proxy=&lt;HOST&gt; Use this host as a SPDY proxy
+    -P, --proxy-port=&lt;PORT&gt;
+                       Use this as the port of the SPDY proxy if
+                       one is set
     --color            Force colored log output.
 
 $ src/spdycat -nv https://www.google.com/
@@ -607,6 +626,24 @@ OPTIONS:
                        to verify client certificate.
                        The file must be in PEM format. It can
                        contain multiple certificates.
+    --client-private-key-file=&lt;PATH&gt;
+                       Path to file that contains client private
+                       key used in backend client authentication.
+    --client-cert-file=&lt;PATH&gt;
+                       Path to file that contains client
+                       certificate used in backend client
+                       authentication.
+    --tls-proto-list=&lt;LIST&gt;
+                       Comma delimited list of SSL/TLS protocol to
+                       be enabled.
+                       The following protocols are available:
+                       TLSv1.2, TLSv1.1, TLSv1.0, SSLv3
+                       The name matching is done in case-insensitive
+                       manner.
+                       The parameter must be delimited by a single
+                       comma only and any white spaces are treated
+                       as a part of protocol string.
+                       Default: TLSv1.2,TLSv1.1,TLSv1.0
 
   SPDY:
     -c, --spdy-max-concurrent-streams=&lt;NUM&gt;
@@ -803,25 +840,28 @@ in C.</p>
 </div>
 
 
+          </div>
           <footer>
   
-    <div class="rst-footer-buttons">
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="apiref.html" class="btn btn-neutral float-right" title="API Reference"/>Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="apiref.html" class="btn btn-neutral float-right" title="API Reference"/>Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral" title="Spdylay - SPDY C Library"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral" title="Spdylay - SPDY C Library"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
 
   <hr/>
 
-  <p>
-      &copy; Copyright 2012, 2013, Tatsuhiro Tsujikawa.
-  </p>
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2012, 2014, Tatsuhiro Tsujikawa.
+    </p>
+  </div>
 
-  <a href="https://www.github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="http://readthedocs.org">Read the Docs</a>
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
 </footer>
         </div>
       </div>

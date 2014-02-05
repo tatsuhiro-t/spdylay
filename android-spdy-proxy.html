@@ -8,7 +8,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>SPDY Proxy with Firefox for Android &mdash; Spdylay 1.2.3-DEV documentation</title>
+  <title>SPDY Proxy with Firefox for Android &mdash; Spdylay 1.2.4-DEV documentation</title>
   
 
   
@@ -23,7 +23,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:'',
-        VERSION:'1.2.3-DEV',
+        VERSION:'1.2.4-DEV',
         COLLAPSE_INDEX:false,
         FILE_SUFFIX:'.html',
         HAS_SOURCE:  true
@@ -44,29 +44,40 @@
   
 
   
-    <link rel="top" title="Spdylay 1.2.3-DEV documentation" href="index.html"/>
+  
+    <script type="text/javascript">
+        jQuery(function () {
+            SphinxRtdTheme.StickyNav.enable();
+        });
+    </script>
+  
+
+  
+    <link rel="top" title="Spdylay 1.2.4-DEV documentation" href="index.html"/>
         <link rel="prev" title="Python-spdylay - Spdylay Python Extension Module" href="python.html"/> 
 
-  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav" role="document">
 
   <div class="wy-grid-for-nav">
 
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-nav-search">
-        <a href="index.html" class="icon icon-home"> Spdylay</a>
-        <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
-  <input type="text" name="q" placeholder="Search docs" />
-  <input type="hidden" name="check_keywords" value="yes" />
-  <input type="hidden" name="area" value="default" />
-</form>
+        <a href="index.html" class="fa fa-home"> Spdylay</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
       </div>
 
-      <div class="wy-menu wy-menu-vertical" data-spy="affix">
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
         
         
             <ul class="current">
@@ -132,8 +143,8 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top">
-        <i data-toggle="wy-nav-top" class="icon icon-reorder"></i>
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
         <a href="index.html">Spdylay</a>
       </nav>
 
@@ -141,18 +152,21 @@
       
       <div class="wy-nav-content">
         <div class="rst-content">
-          <ul class="wy-breadcrumbs">
-  <li><a href="index.html">Docs</a> &raquo;</li>
-  <li><a href="">SPDY Proxy with Firefox for Android</a></li>
-    <li class="wy-breadcrumbs-aside">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
       
-        <a href="_sources/android-spdy-proxy.txt" rel="nofollow"> View page source</a>
-      
-    </li>
-</ul>
-<hr/>
-
-          
+    <li>SPDY Proxy with Firefox for Android</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="_sources/android-spdy-proxy.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main">
+            
   <div class="section" id="spdy-proxy-with-firefox-for-android">
 <h1>SPDY Proxy with Firefox for Android<a class="headerlink" href="#spdy-proxy-with-firefox-for-android" title="Permalink to this headline">¶</a></h1>
 <p>This document describes how to use SPDY proxy from Android device
@@ -292,23 +306,26 @@ get resources on behalf of the client and sent back the response.</p>
 </div>
 
 
+          </div>
           <footer>
   
-    <div class="rst-footer-buttons">
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="python.html" class="btn btn-neutral" title="Python-spdylay - Spdylay Python Extension Module"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="python.html" class="btn btn-neutral" title="Python-spdylay - Spdylay Python Extension Module"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
 
   <hr/>
 
-  <p>
-      &copy; Copyright 2012, 2013, Tatsuhiro Tsujikawa.
-  </p>
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2012, 2014, Tatsuhiro Tsujikawa.
+    </p>
+  </div>
 
-  <a href="https://www.github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="http://readthedocs.org">Read the Docs</a>
+  <a href="https://github.com/snide/sphinx_rtd_theme">Sphinx theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>
 </footer>
         </div>
       </div>
