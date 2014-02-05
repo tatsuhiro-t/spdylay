@@ -157,7 +157,8 @@ the command-line::
 
     $ src/spdycat -h
     Usage: spdycat [-Oansv23] [-t <SECONDS>] [-w <WINDOW_BITS>] [--cert=<CERT>]
-                   [--key=<KEY>] [--no-tls] [-d <FILE>] [-m <N>] <URI>...
+                   [--key=<KEY>] [--no-tls] [-d <FILE>] [-m <N>] [-p <PROXY_HOST>]
+                   [-P <PROXY_PORT>] <URI>...
 
     OPTIONS:
         -v, --verbose      Print debug information such as reception/
@@ -191,6 +192,10 @@ the command-line::
         -m, --multiply=<N> Request each URI <N> times. By default, same
                            URI is not requested twice. This option
                            disables it too.
+        -p, --proxy=<HOST> Use this host as a SPDY proxy
+        -P, --proxy-port=<PORT>
+                           Use this as the port of the SPDY proxy if
+                           one is set
         --color            Force colored log output.
 
     $ src/spdycat -nv https://www.google.com/
@@ -448,6 +453,24 @@ Here is the command-line options::
                            to verify client certificate.
                            The file must be in PEM format. It can
                            contain multiple certificates.
+        --client-private-key-file=<PATH>
+                           Path to file that contains client private
+                           key used in backend client authentication.
+        --client-cert-file=<PATH>
+                           Path to file that contains client
+                           certificate used in backend client
+                           authentication.
+        --tls-proto-list=<LIST>
+                           Comma delimited list of SSL/TLS protocol to
+                           be enabled.
+                           The following protocols are available:
+                           TLSv1.2, TLSv1.1, TLSv1.0, SSLv3
+                           The name matching is done in case-insensitive
+                           manner.
+                           The parameter must be delimited by a single
+                           comma only and any white spaces are treated
+                           as a part of protocol string.
+                           Default: TLSv1.2,TLSv1.1,TLSv1.0
 
       SPDY:
         -c, --spdy-max-concurrent-streams=<NUM>
