@@ -1,3 +1,45 @@
+spdylay 1.2.3
+=============
+
+Release Note
+------------
+
+This release adds new options to shrpx and spdycat. Spdycat now can
+speak the protocol other than TLSv1. For library side, strict header
+name/value validation is done against received headers.
+
+Changes
+-------
+
+* shrpx: Disable TLS renegotiation
+
+* shrpx: Add --client-private-key-file and --client-cert-file options
+
+* shrpx: Call SpdySession::disconnect() if initiate_connection() failed
+
+  This will clean up resources allocated in initiate_connection()
+  properly.
+
+* spdycat: Fix port checking to share connection
+
+* shrpx: Send acceptable list of CAs when client cert auth is enabled
+
+* spdycat: Add support for SPDY proxies
+
+  Patch from Nils "irrenhaus" Hesse
+
+* spdycat: Use SSLv23_client_method instead of TLSv1_client_method
+
+* shrpx: Add --tls-proto-list option to enable SSL/TLS protocol
+  selectively
+
+* Validate header name/value pair strictly to avoid possible attack
+
+* Don't return SPDYLAY_ERR_INVALID_ARGUMENT if priority is larger than
+  lowest
+
+
+
 spdylay 1.2.2
 =============
 
