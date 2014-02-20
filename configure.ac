@@ -45,6 +45,11 @@ AC_ARG_ENABLE([maintainer-mode],
                     [Turn on compile time warnings])],
     [maintainer_mode=$enableval], [maintainer_mode=no])
 
+AC_ARG_ENABLE([strict-http-parser],
+    [AS_HELP_STRING([--enable-strict-http-parser],
+                    [Turn on strict http parser mode])],
+    [strict_http_parser=$enableval], [strict_http_parser=no])
+
 AC_ARG_ENABLE([src],
     [AS_HELP_STRING([--enable-src],
                     [Build installable SPDY client/server programs in src])],
@@ -282,6 +287,10 @@ if test "x$maintainer_mode" != "xno"; then
     CFLAGS="$CFLAGS -Wfloat-equal -Wundef -Wendif-labels -Wempty-body"
     CFLAGS="$CFLAGS -Wcast-align -Wclobbered -Wvla"
     CFLAGS="$CFLAGS -Wno-unused-parameter"
+fi
+
+if test "x$strict_http_parser" = "xno"; then
+    CFLAGS="$CFLAGS -DHTTP_PARSER_STRICT=0"
 fi
 
 AC_SUBST([TESTS_LIBS])
