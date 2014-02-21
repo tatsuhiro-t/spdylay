@@ -152,21 +152,21 @@ static const char tokens[256] = {
 /*  24 can   25 em    26 sub   27 esc   28 fs    29 gs    30 rs    31 us  */
         0,       0,       0,       0,       0,       0,       0,       0,
 /*  32 sp    33  !    34  "    35  #    36  $    37  %    38  &    39  '  */
-        0,      '!',      0,      '#',     '$',     '%',     '&',    '\'',
+       ' ',     '!',     '"',     '#',     '$',     '%',     '&',    '\'',
 /*  40  (    41  )    42  *    43  +    44  ,    45  -    46  .    47  /  */
-        0,       0,      '*',     '+',      0,      '-',     '.',      0,
+       '(',     ')',     '*',     '+',     ',',     '-',     '.',     '/',
 /*  48  0    49  1    50  2    51  3    52  4    53  5    54  6    55  7  */
        '0',     '1',     '2',     '3',     '4',     '5',     '6',     '7',
 /*  56  8    57  9    58  :    59  ;    60  <    61  =    62  >    63  ?  */
-       '8',     '9',      0,       0,       0,       0,       0,       0,
+       '8',     '9',      0,      ';',     '<',     '=',     '>',     '?',
 /*  64  @    65  A    66  B    67  C    68  D    69  E    70  F    71  G  */
-        0,      'a',     'b',     'c',     'd',     'e',     'f',     'g',
+       '@',     'a',     'b',     'c',     'd',     'e',     'f',     'g',
 /*  72  H    73  I    74  J    75  K    76  L    77  M    78  N    79  O  */
        'h',     'i',     'j',     'k',     'l',     'm',     'n',     'o',
 /*  80  P    81  Q    82  R    83  S    84  T    85  U    86  V    87  W  */
        'p',     'q',     'r',     's',     't',     'u',     'v',     'w',
 /*  88  X    89  Y    90  Z    91  [    92  \    93  ]    94  ^    95  _  */
-       'x',     'y',     'z',      0,       0,       0,      '^',     '_',
+       'x',     'y',     'z',     '[',    '\\',     ']',     '^',     '_',
 /*  96  `    97  a    98  b    99  c   100  d   101  e   102  f   103  g  */
        '`',     'a',     'b',     'c',     'd',     'e',     'f',     'g',
 /* 104  h   105  i   106  j   107  k   108  l   109  m   110  n   111  o  */
@@ -174,7 +174,7 @@ static const char tokens[256] = {
 /* 112  p   113  q   114  r   115  s   116  t   117  u   118  v   119  w  */
        'p',     'q',     'r',     's',     't',     'u',     'v',     'w',
 /* 120  x   121  y   122  z   123  {   124  |   125  }   126  ~   127 del */
-       'x',     'y',     'z',      0,      '|',      0,      '~',       0 };
+       'x',     'y',     'z',     '{',     '|',     '}',     '~',       0 };
 
 
 static const int8_t unhex[256] =
@@ -249,6 +249,7 @@ enum state
   , s_res_http_minor
   , s_res_first_status_code
   , s_res_status_code
+  , s_res_status_start
   , s_res_status
   , s_res_line_almost_done
 
@@ -582,6 +583,7 @@ size_t http_parser_execute (http_parser *parser,
   const char *header_value_mark = 0;
   const char *url_mark = 0;
   const char *body_mark = 0;
+  const char *status_mark = 0;
 
   /* We're in an error state. Don't bother doing anything. */
   if (HTTP_PARSER_ERRNO(parser) != HPE_OK) {
@@ -627,6 +629,9 @@ size_t http_parser_execute (http_parser *parser,
   case s_req_fragment_start:
   case s_req_fragment:
     url_mark = data;
+    break;
+  case s_res_status:
+    status_mark = data;
     break;
   }
 
@@ -853,7 +858,7 @@ size_t http_parser_execute (http_parser *parser,
         if (!IS_NUM(ch)) {
           switch (ch) {
             case ' ':
-              parser->state = s_res_status;
+              parser->state = s_res_status_start;
               break;
             case CR:
               parser->state = s_res_line_almost_done;
@@ -879,9 +884,8 @@ size_t http_parser_execute (http_parser *parser,
         break;
       }
 
-      case s_res_status:
-        /* the human readable status. e.g. "NOT FOUND"
-         * we are not humans so just ignore this */
+      case s_res_status_start:
+      {
         if (ch == CR) {
           parser->state = s_res_line_almost_done;
           break;
@@ -891,12 +895,31 @@ size_t http_parser_execute (http_parser *parser,
           parser->state = s_header_field_start;
           break;
         }
+
+        MARK(status);
+        parser->state = s_res_status;
+        parser->index = 0;
+        break;
+      }
+
+      case s_res_status:
+        if (ch == CR) {
+          parser->state = s_res_line_almost_done;
+          CALLBACK_DATA(status);
+          break;
+        }
+
+        if (ch == LF) {
+          parser->state = s_header_field_start;
+          CALLBACK_DATA(status);
+          break;
+        }
+
         break;
 
       case s_res_line_almost_done:
         STRICT_CHECK(ch != LF);
         parser->state = s_header_field_start;
-        CALLBACK_NOTIFY(status_complete);
         break;
 
       case s_start_req:
@@ -1506,8 +1529,8 @@ size_t http_parser_execute (http_parser *parser,
             t *= 10;
             t += ch - '0';
 
-            /* Overflow? */
-            if (t < parser->content_length || t == ULLONG_MAX) {
+            /* Overflow? Test against a conservative limit for simplicity. */
+            if ((ULLONG_MAX - 10) / 10 < parser->content_length) {
               SET_ERRNO(HPE_INVALID_CONTENT_LENGTH);
               goto error;
             }
@@ -1784,8 +1807,8 @@ size_t http_parser_execute (http_parser *parser,
         t *= 16;
         t += unhex_val;
 
-        /* Overflow? */
-        if (t < parser->content_length || t == ULLONG_MAX) {
+        /* Overflow? Test against a conservative limit for simplicity. */
+        if ((ULLONG_MAX - 16) / 16 < parser->content_length) {
           SET_ERRNO(HPE_INVALID_CONTENT_LENGTH);
           goto error;
         }
@@ -1879,12 +1902,14 @@ size_t http_parser_execute (http_parser *parser,
   assert(((header_field_mark ? 1 : 0) +
           (header_value_mark ? 1 : 0) +
           (url_mark ? 1 : 0)  +
-          (body_mark ? 1 : 0)) <= 1);
+          (body_mark ? 1 : 0) +
+          (status_mark ? 1 : 0)) <= 1);
 
   CALLBACK_DATA_NOADVANCE(header_field);
   CALLBACK_DATA_NOADVANCE(header_value);
   CALLBACK_DATA_NOADVANCE(url);
   CALLBACK_DATA_NOADVANCE(body);
+  CALLBACK_DATA_NOADVANCE(status);
 
   return len;
 

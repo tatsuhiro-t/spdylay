@@ -1,8 +1,17 @@
-diff --git a/src/http-parser/http_parser.c b/src/http-parser/http_parser.c
-index 9695525..98b7b20 100644
---- a/src/http-parser/http_parser.c
-+++ b/src/http-parser/http_parser.c
-@@ -1633,9 +1633,14 @@ size_t http_parser_execute (http_parser *parser,
+From a0e9c239397fd562ad241f912cc1384f952a3575 Mon Sep 17 00:00:00 2001
+From: Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
+Date: Mon, 10 Sep 2012 23:01:26 +0900
+Subject: [PATCH 3/3] Use http_parser for tunneling connection transparently
+
+---
+ http_parser.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/http_parser.c b/http_parser.c
+index 4a81f5a..3172473 100644
+--- a/http_parser.c
++++ b/http_parser.c
+@@ -1676,9 +1676,14 @@ size_t http_parser_execute (http_parser *parser,
  
          /* Exit, the rest of the connect is in a different protocol. */
          if (parser->upgrade) {
@@ -20,3 +29,6 @@ index 9695525..98b7b20 100644
          }
  
          if (parser->flags & F_SKIPBODY) {
+-- 
+1.8.4.2
+
