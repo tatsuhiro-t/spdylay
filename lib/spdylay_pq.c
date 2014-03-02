@@ -26,7 +26,7 @@
 
 int spdylay_pq_init(spdylay_pq *pq, spdylay_compar compar)
 {
-  pq->capacity = 4096;
+  pq->capacity = 128;
   pq->q = malloc(pq->capacity * sizeof(void*));
   if(pq->q == NULL) {
     return SPDYLAY_ERR_NOMEM;
