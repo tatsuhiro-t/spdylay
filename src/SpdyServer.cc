@@ -228,6 +228,9 @@ uint16_t SpdyEventHandler::version() const
 int SpdyEventHandler::execute(Sessions *sessions)
 {
   int r;
+
+  io_flags_ = 0;
+
   r = spdylay_session_recv(session_);
   if(r == 0) {
     r = spdylay_session_send(session_);
@@ -259,7 +262,7 @@ bool SpdyEventHandler::finish()
 ssize_t SpdyEventHandler::send_data(const uint8_t *data, size_t len, int flags)
 {
   ssize_t r;
-  io_flags_ = 0;
+
   if(ssl_) {
     ERR_clear_error();
     r = SSL_write(ssl_, data, len);
@@ -278,7 +281,7 @@ ssize_t SpdyEventHandler::send_data(const uint8_t *data, size_t len, int flags)
 ssize_t SpdyEventHandler::recv_data(uint8_t *data, size_t len, int flags)
 {
   ssize_t r;
-  io_flags_ = 0;
+
   if(ssl_) {
     ERR_clear_error();
     r = SSL_read(ssl_, data, len);

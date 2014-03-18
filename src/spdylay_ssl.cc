@@ -65,6 +65,11 @@ Spdylay::~Spdylay()
   spdylay_session_del(session_);
 }
 
+void Spdylay::clear_io_flags()
+{
+  io_flags_ = 0;
+}
+
 int Spdylay::recv()
 {
   return spdylay_session_recv(session_);
@@ -78,7 +83,7 @@ int Spdylay::send()
 ssize_t Spdylay::send_data(const uint8_t *data, size_t len, int flags)
 {
   ssize_t r;
-  io_flags_ = 0;
+
   if(ssl_) {
     ERR_clear_error();
     r = SSL_write(ssl_, data, len);
@@ -97,7 +102,7 @@ ssize_t Spdylay::send_data(const uint8_t *data, size_t len, int flags)
 ssize_t Spdylay::recv_data(uint8_t *data, size_t len, int flags)
 {
   ssize_t r;
-  io_flags_ = 0;
+
   if(ssl_) {
     ERR_clear_error();
     r = SSL_read(ssl_, data, len);

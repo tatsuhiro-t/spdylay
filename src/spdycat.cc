@@ -634,6 +634,9 @@ int spdy_evloop(int fd, SSL *ssl, int spdy_version, SpdySession& spdySession,
     }
     if(pollfds[0].revents & (POLLIN | POLLOUT)) {
       int rv;
+
+      sc.clear_io_flags();
+
       if((rv = sc.recv()) != 0 || (rv = sc.send()) != 0) {
         if(rv != SPDYLAY_ERR_EOF || !spdySession.all_requests_processed()) {
           std::cerr << "Fatal: " << spdylay_strerror(rv) << "\n"

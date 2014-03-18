@@ -47,6 +47,7 @@ public:
           const spdylay_session_callbacks *callbacks,
           void *user_data);
   ~Spdylay();
+  void clear_io_flags();
   int recv();
   int send();
   ssize_t send_data(const uint8_t *data, size_t len, int flags);
