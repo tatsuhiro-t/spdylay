@@ -414,6 +414,10 @@ void fill_default_config()
   mod_config()->read_burst = 4*1024*1024;
   mod_config()->write_rate = 0;
   mod_config()->write_burst = 0;
+  mod_config()->worker_read_rate = 0;
+  mod_config()->worker_read_burst = 0;
+  mod_config()->worker_write_rate = 0;
+  mod_config()->worker_write_burst = 0;
   mod_config()->verify_client = false;
   mod_config()->verify_client_cacert = 0;
   mod_config()->client_private_key_file = 0;
@@ -509,6 +513,30 @@ void print_help(std::ostream& out)
       << "                       write burst size is unlimited.\n"
       << "                       Default: "
       << get_config()->write_burst << "\n"
+      << "  --worker-read-rate=<RATE>\n"
+      << "                     Set maximum average read rate on frontend\n"
+      << "                     connection per worker. Setting 0 to this\n"
+      << "                     option means read rate is unlimited.\n"
+      << "                     Default: "
+      << get_config()->worker_read_rate << "\n"
+      << "  --worker-read-burst=<SIZE>\n"
+      << "                     Set maximum read burst size on frontend\n"
+      << "                     connection per worker. Setting 0 to this\n"
+      << "                     option means read burst size is unlimited.\n"
+      << "                     Default: "
+      << get_config()->worker_read_burst << "\n"
+      << "  --worker-write-rate=<RATE>\n"
+      << "                     Set maximum average write rate on frontend\n"
+      << "                     connection per worker. Setting 0 to this\n"
+      << "                     option means write rate is unlimited.\n"
+      << "                     Default: "
+      << get_config()->worker_write_rate << "\n"
+      << "  --worker-write-burst=<SIZE>\n"
+      << "                     Set maximum write burst size on frontend\n"
+      << "                     connection per worker. Setting 0 to this\n"
+      << "                     option means write burst size is unlimited.\n"
+      << "                     Default: "
+      << get_config()->worker_write_burst << "\n"
       << "\n"
       << "  Timeout:\n"
       << "    --frontend-spdy-read-timeout=<SEC>\n"
@@ -772,6 +800,10 @@ int main(int argc, char **argv)
       {"tls-proto-list", required_argument, &flag, 42},
       {"client-private-key-file", required_argument, &flag, 43},
       {"client-cert-file", required_argument, &flag, 44},
+      {"worker-read-rate", required_argument, &flag, 45},
+      {"worker-read-burst", required_argument, &flag, 46},
+      {"worker-write-rate", required_argument, &flag, 47},
+      {"worker-write-burst", required_argument, &flag, 48},
       {0, 0, 0, 0 }
     };
     int option_index = 0;
@@ -1015,6 +1047,23 @@ int main(int argc, char **argv)
         // --client-cert-file
         cmdcfgs.push_back(std::make_pair(SHRPX_OPT_CLIENT_CERT_FILE, optarg));
         break;
+      case 45:
+        // --worker-read-rate
+        cmdcfgs.push_back(std::make_pair(SHRPX_OPT_WORKER_READ_RATE, optarg));
+        break;
+      case 46:
+        // --worker-read-burst
+        cmdcfgs.push_back(std::make_pair(SHRPX_OPT_WORKER_READ_BURST, optarg));
+        break;
+      case 47:
+        // --worker-write-rate
+        cmdcfgs.push_back(std::make_pair(SHRPX_OPT_WORKER_WRITE_RATE, optarg));
+        break;
+      case 48:
+        // --worker-write-burst
+        cmdcfgs.push_back(std::make_pair(SHRPX_OPT_WORKER_WRITE_BURST,
+                                         optarg));
+        break;
       default:
         break;
       }
@@ -1167,6 +1216,13 @@ int main(int argc, char **argv)
      get_rate_limit(get_config()->read_burst),
      get_rate_limit(get_config()->write_rate),
      get_rate_limit(get_config()->write_burst),
+     0);
+
+  mod_config()->worker_rate_limit_cfg = ev_token_bucket_cfg_new
+    (get_rate_limit(get_config()->worker_read_rate),
+     get_rate_limit(get_config()->worker_read_burst),
+     get_rate_limit(get_config()->worker_write_rate),
+     get_rate_limit(get_config()->worker_write_burst),
      0);
 
   struct sigaction act;

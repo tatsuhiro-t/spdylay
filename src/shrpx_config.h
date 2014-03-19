@@ -94,6 +94,10 @@ extern const char SHRPX_OPT_READ_RATE[];
 extern const char SHRPX_OPT_READ_BURST[];
 extern const char SHRPX_OPT_WRITE_RATE[];
 extern const char SHRPX_OPT_WRITE_BURST[];
+extern const char SHRPX_OPT_WORKER_READ_RATE[];
+extern const char SHRPX_OPT_WORKER_READ_BURST[];
+extern const char SHRPX_OPT_WORKER_WRITE_RATE[];
+extern const char SHRPX_OPT_WORKER_WRITE_BURST[];
 extern const char SHRPX_OPT_TLS_PROTO_LIST[];
 extern const char SHRPX_OPT_VERIFY_CLIENT[];
 extern const char SHRPX_OPT_VERIFY_CLIENT_CACERT[];
@@ -143,8 +147,10 @@ struct Config {
   char *downstream_http_proxy_userinfo;
   // host in http proxy URI
   char *downstream_http_proxy_host;
-  // Rate limit configuration
+  // Rate limit configuration per connection
   ev_token_bucket_cfg *rate_limit_cfg;
+  // Rate limit configuration per worker (thread)
+  ev_token_bucket_cfg *worker_rate_limit_cfg;
   // list of supported SSL/TLS protocol strings. The each element of
   // this list is a NULL-terminated string.
   char **tls_proto_list;
@@ -166,6 +172,10 @@ struct Config {
   size_t read_burst;
   size_t write_rate;
   size_t write_burst;
+  size_t worker_read_rate;
+  size_t worker_read_burst;
+  size_t worker_write_rate;
+  size_t worker_write_burst;
   // The number of elements in tls_proto_list
   size_t tls_proto_list_len;
   // downstream protocol; this will be determined by given options.

@@ -81,7 +81,8 @@ void Worker::run()
       DIE();
     }
   }
-  ThreadEventReceiver *receiver = new ThreadEventReceiver(sv_ssl_ctx_, spdy);
+  ThreadEventReceiver *receiver = new ThreadEventReceiver(evbase, sv_ssl_ctx_,
+                                                          spdy);
   bufferevent_enable(bev, EV_READ);
   bufferevent_setcb(bev, readcb, 0, eventcb, receiver);
 

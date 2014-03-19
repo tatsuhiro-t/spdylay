@@ -33,6 +33,7 @@
 #include <openssl/ssl.h>
 
 #include <event.h>
+#include <event2/bufferevent.h>
 
 namespace shrpx {
 
@@ -65,6 +66,7 @@ private:
   // Shared backend SPDY session. NULL if multi-threaded. In
   // multi-threaded case, see shrpx_worker.cc.
   SpdySession *spdy_;
+  bufferevent_rate_limit_group *rate_limit_group_;
 };
 
 } // namespace shrpx

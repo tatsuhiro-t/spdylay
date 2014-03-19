@@ -48,11 +48,15 @@ ListenHandler::ListenHandler(event_base *evbase, SSL_CTX *sv_ssl_ctx,
     worker_round_robin_cnt_(0),
     workers_(0),
     num_worker_(0),
-    spdy_(0)
+    spdy_(0),
+    rate_limit_group_(bufferevent_rate_limit_group_new
+                      (evbase, get_config()->worker_rate_limit_cfg))
 {}
 
 ListenHandler::~ListenHandler()
-{}
+{
+  bufferevent_rate_limit_group_free(rate_limit_group_);
+}
 
 void ListenHandler::create_worker_thread(size_t num)
 {
@@ -97,7 +101,8 @@ int ListenHandler::accept_connection(evutil_socket_t fd,
     LLOG(INFO, this) << "Accepted connection. fd=" << fd;
   }
   if(num_worker_ == 0) {
-    ClientHandler* client = ssl::accept_connection(evbase_, sv_ssl_ctx_,
+    ClientHandler* client = ssl::accept_connection(evbase_, rate_limit_group_,
+                                                   sv_ssl_ctx_,
                                                    fd, addr, addrlen);
     client->set_spdy_session(spdy_);
   } else {

@@ -45,14 +45,17 @@ struct WorkerEvent {
 
 class ThreadEventReceiver {
 public:
-  ThreadEventReceiver(SSL_CTX *ssl_ctx, SpdySession *spdy);
+  ThreadEventReceiver(event_base *evbase, SSL_CTX *ssl_ctx,
+                      SpdySession *spdy);
   ~ThreadEventReceiver();
   void on_read(bufferevent *bev);
 private:
+  event_base *evbase_;
   SSL_CTX *ssl_ctx_;
   // Shared SPDY session for each thread. NULL if not client mode. Not
   // deleted by this object.
   SpdySession *spdy_;
+  bufferevent_rate_limit_group *rate_limit_group_;
 };
 
 } // namespace shrpx

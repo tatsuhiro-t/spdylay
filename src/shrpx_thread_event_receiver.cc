@@ -33,13 +33,20 @@
 
 namespace shrpx {
 
-ThreadEventReceiver::ThreadEventReceiver(SSL_CTX *ssl_ctx, SpdySession *spdy)
-  : ssl_ctx_(ssl_ctx),
-    spdy_(spdy)
+ThreadEventReceiver::ThreadEventReceiver(event_base *evbase,
+                                         SSL_CTX *ssl_ctx,
+                                         SpdySession *spdy)
+  : evbase_(evbase),
+    ssl_ctx_(ssl_ctx),
+    spdy_(spdy),
+    rate_limit_group_(bufferevent_rate_limit_group_new
+                      (evbase_, get_config()->worker_rate_limit_cfg))
 {}
 
 ThreadEventReceiver::~ThreadEventReceiver()
-{}
+{
+  bufferevent_rate_limit_group_free(rate_limit_group_);
+}
 
 void ThreadEventReceiver::on_read(bufferevent *bev)
 {
@@ -58,7 +65,8 @@ void ThreadEventReceiver::on_read(bufferevent *bev)
     }
     event_base *evbase = bufferevent_get_base(bev);
     ClientHandler *client_handler;
-    client_handler = ssl::accept_connection(evbase, ssl_ctx_,
+    client_handler = ssl::accept_connection(evbase, rate_limit_group_,
+                                            ssl_ctx_,
                                             wev.client_fd,
                                             &wev.client_addr.sa,
                                             wev.client_addrlen);

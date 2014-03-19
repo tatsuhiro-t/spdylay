@@ -377,9 +377,12 @@ SSL_CTX* create_ssl_client_context()
   return ssl_ctx;
 }
 
-ClientHandler* accept_connection(event_base *evbase, SSL_CTX *ssl_ctx,
-                                 evutil_socket_t fd,
-                                 sockaddr *addr, int addrlen)
+ClientHandler* accept_connection
+(event_base *evbase,
+ bufferevent_rate_limit_group *rate_limit_group,
+ SSL_CTX *ssl_ctx,
+ evutil_socket_t fd,
+ sockaddr *addr, int addrlen)
 {
   char host[NI_MAXHOST];
   int rv;
@@ -416,8 +419,7 @@ ClientHandler* accept_connection(event_base *evbase, SSL_CTX *ssl_ctx,
     } else {
       bev = bufferevent_socket_new(evbase, fd, BEV_OPT_DEFER_CALLBACKS);
     }
-    ClientHandler *client_handler = new ClientHandler(bev, fd, ssl, host);
-    return client_handler;
+    return new ClientHandler(bev, rate_limit_group, fd, ssl, host);
   } else {
     LOG(ERROR) << "getnameinfo() failed: " << gai_strerror(rv);
     return 0;

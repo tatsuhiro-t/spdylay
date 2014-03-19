@@ -146,8 +146,9 @@ void tls_raw_writecb(evbuffer *buffer, const evbuffer_cb_info *info, void *arg)
 }
 } // namespace
 
-ClientHandler::ClientHandler(bufferevent *bev, int fd, SSL *ssl,
-                             const char *ipaddr)
+ClientHandler::ClientHandler(bufferevent *bev,
+                             bufferevent_rate_limit_group *rate_limit_group,
+                             int fd, SSL *ssl, const char *ipaddr)
   : ipaddr_(ipaddr),
     bev_(bev),
     ssl_(ssl),
@@ -158,7 +159,23 @@ ClientHandler::ClientHandler(bufferevent *bev, int fd, SSL *ssl,
     tls_handshake_(false),
     tls_renegotiation_(false)
 {
-  bufferevent_set_rate_limit(bev_, get_config()->rate_limit_cfg);
+  int rv;
+  bufferevent *rate_limit_bev = bufferevent_get_underlying(bev_);
+  if(!rate_limit_bev) {
+    rate_limit_bev = bev_;
+  }
+
+  rv = bufferevent_set_rate_limit(rate_limit_bev,
+                                  get_config()->rate_limit_cfg);
+  if(rv == -1) {
+    CLOG(FATAL, this) << "bufferevent_set_rate_limit() failed";
+  }
+
+  rv = bufferevent_add_to_rate_limit_group(rate_limit_bev, rate_limit_group);
+  if(rv == -1) {
+    CLOG(FATAL, this) << "bufferevent_add_to_rate_limit_group() failed";
+  }
+
   bufferevent_enable(bev_, EV_READ | EV_WRITE);
   bufferevent_setwatermark(bev_, EV_READ, 0, SHRPX_READ_WARTER_MARK);
   set_upstream_timeouts(&get_config()->upstream_read_timeout,
@@ -192,7 +209,15 @@ ClientHandler::~ClientHandler()
     SSL_set_shutdown(ssl_, SSL_RECEIVED_SHUTDOWN);
     SSL_shutdown(ssl_);
   }
+
   bufferevent *underlying = bufferevent_get_underlying(bev_);
+
+  if(underlying) {
+    bufferevent_remove_from_rate_limit_group(underlying);
+  } else {
+    bufferevent_remove_from_rate_limit_group(bev_);
+  }
+
   bufferevent_disable(bev_, EV_READ | EV_WRITE);
   bufferevent_free(bev_);
   if(underlying) {
