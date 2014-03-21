@@ -233,10 +233,10 @@ int SpdyDownstreamConnection::push_request_headers()
     return 0;
   }
   size_t nheader = downstream_->get_request_headers().size();
-  // 12 means :method, :scheme, :path, :version and possible via and
-  // x-forwarded-for header fields. We rename host header field as
-  // :host.
-  const char **nv = new const char*[nheader * 2 + 12 + 1];
+  // 14 means :method, :scheme, :path, :version and possible via,
+  // x-forwarded-proto and x-forwarded-for header fields. We rename
+  // host header field as :host.
+  const char **nv = new const char*[nheader * 2 + 14 + 1];
   size_t hdidx = 0;
   std::string via_value;
   std::string xff_value;
@@ -266,9 +266,13 @@ int SpdyDownstreamConnection::push_request_headers()
     }
     nv[hdidx++] = ":scheme";
     if(scheme.empty()) {
-      // The default scheme is http. For SPDY upstream, the path must
-      // be absolute URI, so scheme should be provided.
-      nv[hdidx++] = "http";
+      if(downstream_->get_upstream()->get_client_handler()->get_ssl()) {
+        nv[hdidx++] = "https";
+      } else {
+        // The default scheme is http. For SPDY upstream, the path must
+        // be absolute URI, so scheme should be provided.
+        nv[hdidx++] = "http";
+      }
     } else {
       nv[hdidx++] = scheme.c_str();
     }
@@ -330,6 +334,19 @@ int SpdyDownstreamConnection::push_request_headers()
   } else if(!xff_value.empty()) {
     nv[hdidx++] = "x-forwarded-for";
     nv[hdidx++] = xff_value.c_str();
+  }
+  if(downstream_->get_request_method() != "CONNECT") {
+    // We use same protocol with :scheme header field
+    nv[hdidx++] = "X-Forwarded-Proto";
+    if(scheme.empty()) {
+      if(downstream_->get_upstream()->get_client_handler()->get_ssl()) {
+        nv[hdidx++] = "https";
+      } else {
+        nv[hdidx++] = "http";
+      }
+    } else {
+      nv[hdidx++] = scheme.c_str();
+    }
   }
   if(!get_config()->no_via) {
     if(!via_value.empty()) {

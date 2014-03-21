@@ -177,10 +177,10 @@ int HttpDownstreamConnection::push_request_headers()
   }
   if(downstream_->get_request_method() != "CONNECT") {
     hdrs += "X-Forwarded-Proto: ";
-    if(util::istartsWith(downstream_->get_request_path(), "http:")) {
-      hdrs += "http\r\n";
-    } else {
+    if(downstream_->get_upstream()->get_client_handler()->get_ssl()) {
       hdrs += "https\r\n";
+    } else {
+      hdrs += "http\r\n";
     }
   }
   if(!get_config()->no_via) {
