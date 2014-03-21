@@ -266,7 +266,7 @@ int SpdyDownstreamConnection::push_request_headers()
     }
     nv[hdidx++] = ":scheme";
     if(scheme.empty()) {
-      if(downstream_->get_upstream()->get_client_handler()->get_ssl()) {
+      if(client_handler_->get_ssl()) {
         nv[hdidx++] = "https";
       } else {
         // The default scheme is http. For SPDY upstream, the path must
@@ -328,18 +328,18 @@ int SpdyDownstreamConnection::push_request_headers()
     if(!xff_value.empty()) {
       xff_value += ", ";
     }
-    xff_value += downstream_->get_upstream()->get_client_handler()->
-      get_ipaddr();
+    xff_value += client_handler_->get_ipaddr();
     nv[hdidx++] = xff_value.c_str();
   } else if(!xff_value.empty()) {
     nv[hdidx++] = "x-forwarded-for";
     nv[hdidx++] = xff_value.c_str();
   }
+
   if(downstream_->get_request_method() != "CONNECT") {
     // We use same protocol with :scheme header field
-    nv[hdidx++] = "X-Forwarded-Proto";
+    nv[hdidx++] = "x-forwarded-proto";
     if(scheme.empty()) {
-      if(downstream_->get_upstream()->get_client_handler()->get_ssl()) {
+      if(client_handler_->get_ssl()) {
         nv[hdidx++] = "https";
       } else {
         nv[hdidx++] = "http";
@@ -348,6 +348,7 @@ int SpdyDownstreamConnection::push_request_headers()
       nv[hdidx++] = scheme.c_str();
     }
   }
+
   if(!get_config()->no_via) {
     if(!via_value.empty()) {
       via_value += ", ";
