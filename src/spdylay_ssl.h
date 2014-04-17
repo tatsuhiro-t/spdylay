@@ -31,7 +31,7 @@
 #include <cstdlib>
 #include <sys/time.h>
 #include <poll.h>
-#include <map>
+#include <vector>
 
 #include <openssl/ssl.h>
 #include <openssl/err.h>
@@ -56,16 +56,17 @@ public:
   bool want_write();
   bool finish();
   int fd() const;
-  int submit_request(const std::string& scheme,
-                     const std::string& hostport, const std::string& path,
-                     const std::map<std::string,std::string>& headers,
-                     uint8_t pri,
-                     const spdylay_data_provider *data_prd,
-                     int64_t data_length,
-                     void *stream_user_data,
-                     bool useProxy,
-                     const std::string& proxyHost,
-                     uint16_t proxyPort);
+  int submit_request
+  (const std::string& scheme,
+   const std::string& hostport, const std::string& path,
+   const std::vector<std::pair<std::string, std::string> >& headers,
+   uint8_t pri,
+   const spdylay_data_provider *data_prd,
+   int64_t data_length,
+   void *stream_user_data,
+   bool useProxy,
+   const std::string& proxyHost,
+   uint16_t proxyPort);
   int submit_settings(int flags, spdylay_settings_entry *iv, size_t niv);
   bool would_block();
   void* user_data();

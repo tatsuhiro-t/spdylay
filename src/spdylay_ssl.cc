@@ -144,32 +144,21 @@ void* Spdylay::user_data()
   return user_data_;
 }
 
-int Spdylay::submit_request(const std::string& scheme,
-                            const std::string& hostport,
-                            const std::string& path,
-                            const std::map<std::string,std::string>& headers,
-                            uint8_t pri,
-                            const spdylay_data_provider *data_prd,
-                            int64_t data_length,
-                            void *stream_user_data,
-                            bool useProxy,
-                            const std::string& proxyHost,
-                            uint16_t proxyPort)
+int Spdylay::submit_request
+(const std::string& scheme,
+ const std::string& hostport,
+ const std::string& path,
+ const std::vector<std::pair<std::string, std::string> >& headers,
+ uint8_t pri,
+ const spdylay_data_provider *data_prd,
+ int64_t data_length,
+ void *stream_user_data,
+ bool useProxy,
+ const std::string& proxyHost,
+ uint16_t proxyPort)
 {
-  enum eStaticHeaderPosition
-  {
-    POS_METHOD = 0,
-    POS_PATH,
-    POS_VERSION,
-    POS_SCHEME,
-    POS_HOST,
-    POS_ACCEPT,
-    POS_ACCEPTENCODING,
-    POS_USERAGENT
-  };
+  std::string proxyHostPort = proxyHost;
 
-  std::string proxyHostPort;
-  proxyHostPort.assign(proxyHost);
   proxyHostPort += ":";
   if(proxyPort == 0) {
     proxyHostPort += ":443";
@@ -189,54 +178,53 @@ int Spdylay::submit_request(const std::string& scheme,
     "user-agent", "spdylay/" SPDYLAY_VERSION
   };
 
-  int hardcoded_entry_count = sizeof(static_nv) / sizeof(*static_nv);
-  int header_count          = headers.size();
-  int total_entry_count     = hardcoded_entry_count + header_count * 2;
+  size_t hardcoded_entry_count = sizeof(static_nv) / sizeof(*static_nv);
+
   if(data_prd) {
-    total_entry_count+=2;
+    hardcoded_entry_count += 2;
   }
 
-  const char **nv = new const char*[total_entry_count + 1];
+  size_t total_entry_count = hardcoded_entry_count + headers.size() * 2;
 
-  memcpy(nv, static_nv, hardcoded_entry_count * sizeof(*static_nv));
-
-  std::map<std::string,std::string>::const_iterator i = headers.begin();
-  std::map<std::string,std::string>::const_iterator end = headers.end();
-
-  int pos = hardcoded_entry_count;
+  std::vector<const char*> nv;
+  // +1 for last NULL
+  nv.reserve(total_entry_count + 1);
+  nv.assign(static_nv, static_nv + sizeof(static_nv) / sizeof(*static_nv));
 
   std::string content_length_str;
   if(data_prd) {
     std::stringstream ss;
     ss << data_length;
     content_length_str = ss.str();
-    nv[pos++] = "content-length";
-    nv[pos++] = content_length_str.c_str();
-  }
-  while( i != end ) {
-    const char *key = (*i).first.c_str();
-    const char *value = (*i).second.c_str();
-    if ( util::strieq( key, "accept" ) ) {
-      nv[POS_ACCEPT*2+1] = value;
-    }
-    else if ( util::strieq( key, "user-agent" ) ) {
-      nv[POS_USERAGENT*2+1] = value;
-    }
-    else if ( util::strieq( key, "host" ) ) {
-      nv[POS_HOST*2+1] = value;
-    }
-    else {
-      nv[pos++] = key;
-      nv[pos++] = value;
-    }
-    ++i;
-  }
-  nv[pos] = NULL;
 
-  int r = spdylay_submit_request(session_, pri, nv, data_prd,
+    nv.push_back("content-length");
+    nv.push_back(content_length_str.c_str());
+  }
+
+  for(size_t i = 0; i < headers.size(); ++i) {
+    const char *name = headers[i].first.c_str();
+    const char *value = headers[i].second.c_str();
+
+    size_t j;
+    for(j = 0; j < hardcoded_entry_count; j += 2) {
+      if(util::strieq(nv[j], name)) {
+        nv[j + 1] = value;
+        break;
+      }
+    }
+
+    if(j < hardcoded_entry_count) {
+      continue;
+    }
+
+    nv.push_back(name);
+    nv.push_back(value);
+  }
+
+  nv.push_back(0);
+
+  int r = spdylay_submit_request(session_, pri, &nv[0], data_prd,
                                  stream_user_data);
-
-  delete [] nv;
 
   return r;
 }

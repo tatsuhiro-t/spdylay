@@ -68,7 +68,7 @@
 namespace spdylay {
 
 struct Config {
-  std::map<std::string,std::string> headers;
+  std::vector<std::pair<std::string, std::string> > headers;
   std::string certfile;
   std::string keyfile;
   std::string datafile;
@@ -379,10 +379,11 @@ struct SpdySession {
 
 extern bool ssl_debug;
 
-void submit_request(Spdylay& sc, const std::string& hostport,
-                    const std::map<std::string,std::string> &headers,
-                    Request* req,
-                    const std::string& proxy_host, int proxy_port)
+void submit_request
+(Spdylay& sc, const std::string& hostport,
+ const std::vector<std::pair<std::string, std::string> >& headers,
+ Request* req,
+ const std::string& proxy_host, int proxy_port)
 {
   std::string path = req->make_reqpath();
   int r = sc.submit_request(get_uri_field(req->uri.c_str(), req->u, UF_SCHEMA),
@@ -750,12 +751,13 @@ int communicate(const std::string& host, uint16_t port,
     // If the user overrode the host header, use that value for the
     // SNI extension
     const char *host_string = 0;
-    std::map<std::string,std::string>::const_iterator i =
-      config.headers.find( "Host" );
-    if ( i != config.headers.end() ) {
-      host_string = (*i).second.c_str();
+    for(size_t i = 0; i < config.headers.size(); ++i) {
+      if(util::strieq("host", config.headers[i].first.c_str())) {
+        host_string = config.headers[i].second.c_str();
+      }
     }
-    else {
+
+    if(!host_string) {
       host_string = host.c_str();
     }
 
@@ -959,7 +961,13 @@ void print_help(std::ostream& out)
       << "                       same with the linking resource will be\n"
       << "                       downloaded.\n"
       << "    -s, --stat         Print statistics.\n"
-      << "    -H, --header       Add a header to the requests.\n"
+      << "    -H, --header=<HEADER>\n"
+      << "                       Add a header to the requests. Use This\n"
+      << "                       option repeatedly to add multiple headers.\n"
+      << "                       The hard coded headers (e.g., :method) can\n"
+      << "                       be overridden by specifying same header\n"
+      << "                       field name and its replacement value.\n"
+      << "                       Example: -H':method: HEAD'\n"
       << "    --cert=<CERT>      Use the specified client certificate file.\n"
       << "                       The file must be in PEM format.\n"
       << "    --key=<KEY>        Use the client private key file. The file\n"
@@ -1049,8 +1057,9 @@ int main(int argc, char **argv)
     }
     case 'H': {
       char *header = optarg;
-      char *value = strchr( optarg, ':' );
-      if ( ! value || header == value) {
+      // Skip first possible ':' in the header name
+      char *value = strchr( optarg + 1, ':' );
+      if ( ! value || header + 1 == value) {
         std::cerr << "-H: invalid header: " << optarg
                   << std::endl;
         exit(EXIT_FAILURE);
@@ -1065,9 +1074,8 @@ int main(int argc, char **argv)
                   << std::endl;
         exit(EXIT_FAILURE);
       }
-      // Note that there is no processing currently to handle multiple
-      // message-header fields with the same field name
-      config.headers.insert(std::pair<std::string,std::string>(header, value));
+      config.headers.push_back(std::make_pair(header, value));
+
       break;
     }
     case 'a':
