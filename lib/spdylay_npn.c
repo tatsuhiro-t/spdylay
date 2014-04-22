@@ -47,13 +47,15 @@ int spdylay_select_next_protocol(unsigned char **out, unsigned char *outlen,
     unsigned int j;
     for(j = 0; j < sizeof(proto_list)/sizeof(spdylay_npn_proto); ++j) {
       if(in[i] == proto_list[j].len &&
+         i + 1 + in[i] <= inlen &&
          memcmp(&in[i+1], proto_list[j].proto, in[i]) == 0) {
         *out = (unsigned char*)&in[i+1];
         *outlen = in[i];
         return proto_list[j].version;
       }
     }
-    if(in[i] == 8 && memcmp(&in[i+1], "http/1.1", in[i]) == 0) {
+    if(in[i] == 8 && i + 1 + in[i] <= inlen &&
+       memcmp(&in[i+1], "http/1.1", in[i]) == 0) {
       http_selected = 1;
       *out = (unsigned char*)&in[i+1];
       *outlen = in[i];
