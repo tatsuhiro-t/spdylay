@@ -37,10 +37,10 @@ static void spdy2(void)
   };
   unsigned char outlen;
   unsigned char* out;
-  CU_ASSERT(SPDYLAY_PROTO_SPDY2 ==
+  CU_ASSERT(SPDYLAY_PROTO_SPDY3 ==
             spdylay_select_next_protocol(&out, &outlen, spdy, sizeof(spdy)));
   CU_ASSERT(6 == outlen);
-  CU_ASSERT(memcmp("spdy/2", out, outlen) == 0);
+  CU_ASSERT(memcmp("spdy/3", out, outlen) == 0);
 }
 
 static void http11(void)

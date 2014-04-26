@@ -41,7 +41,9 @@ const spdylay_npn_proto* spdylay_npn_get_proto_list(size_t *len_ptr)
 int spdylay_select_next_protocol(unsigned char **out, unsigned char *outlen,
                                  const unsigned char *in, unsigned int inlen)
 {
+  const unsigned int SPDYLAY_SPDY_NOT_SELECTED = 99;
   int http_selected = 0;
+  unsigned int selected_spdy_proto_pri = SPDYLAY_SPDY_NOT_SELECTED;
   unsigned int i = 0;
   for(; i < inlen; i += in[i]+1) {
     unsigned int j;
@@ -49,12 +51,16 @@ int spdylay_select_next_protocol(unsigned char **out, unsigned char *outlen,
       if(in[i] == proto_list[j].len &&
          i + 1 + in[i] <= inlen &&
          memcmp(&in[i+1], proto_list[j].proto, in[i]) == 0) {
-        *out = (unsigned char*)&in[i+1];
-        *outlen = in[i];
-        return proto_list[j].version;
+
+        if(selected_spdy_proto_pri > j) {
+          *out = (unsigned char*)&in[i+1];
+          *outlen = in[i];
+          selected_spdy_proto_pri = j;
+        }
       }
     }
-    if(in[i] == 8 && i + 1 + in[i] <= inlen &&
+    if(selected_spdy_proto_pri == SPDYLAY_SPDY_NOT_SELECTED &&
+       in[i] == 8 && i + 1 + in[i] <= inlen &&
        memcmp(&in[i+1], "http/1.1", in[i]) == 0) {
       http_selected = 1;
       *out = (unsigned char*)&in[i+1];
@@ -63,11 +69,16 @@ int spdylay_select_next_protocol(unsigned char **out, unsigned char *outlen,
          there */
     }
   }
-  if(http_selected) {
-    return 0;
-  } else {
+
+  if(selected_spdy_proto_pri == SPDYLAY_SPDY_NOT_SELECTED) {
+    if(http_selected) {
+      return 0;
+    }
+
     return -1;
   }
+
+  return proto_list[selected_spdy_proto_pri].version;
 }
 
 uint16_t spdylay_npn_get_version(const unsigned char *proto, size_t protolen)
