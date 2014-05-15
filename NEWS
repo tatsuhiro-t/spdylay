@@ -1,3 +1,46 @@
+spdylay 1.2.4
+=============
+
+Release Note
+------------
+
+This release adds several new options to shrpx SPDY proxy.  NPN
+selection made by spdylay_select_next_protocol() now prefers higher
+SPDY version, regardless the order of received protocol identifiers.
+Other several minor fixes were also made.
+
+Changes
+-------
+
+* shrpx: Remove Connection: close header field from CONNECT response
+
+* spdycat: Fix bug that -H does not allow single letter header name
+
+* NPN: Prefer higher SPDY version
+
+* NPN: Check protocol id length so that scanner don't overrun buffer
+
+* spdycat: Allow -H to override built-in header fields
+
+  This change also allow users to send specify multiple same header
+  fields using -H if it is not built-in header fields.
+
+* shrpx: Add X-Forwarded-For header field to SPDY backend request
+
+  This change also fixes its header field in http/1 backend where
+  x-forwarded-proto has http if frontend is SPDY http.
+
+* shrpx: Add rate limit per worker thread
+
+* Update http-parser and allow extra characters in TOKEN
+
+  Now http-parser is updated to
+  cba704cb2d9f1df80994dd4a791a0fa6cce65720 We allow additional
+  characters in TOKEN to access somewhat *broken* servers. The all
+  patches we made for spdylay are attached in this directory.
+
+
+
 spdylay 1.2.3
 =============
 
