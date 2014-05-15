@@ -659,7 +659,7 @@ int HttpsUpstream::on_downstream_header_complete(Downstream *downstream)
     } else if(connection_upgrade) {
       hdrs += "Connection: upgrade\r\n";
     }
-  } else {
+  } else if(!downstream->tunnel_established()) {
     hdrs += "Connection: close\r\n";
   }
   if(!get_config()->no_via) {
