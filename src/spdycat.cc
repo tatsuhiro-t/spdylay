@@ -993,7 +993,7 @@ int main(int argc, char **argv)
 {
   bool color = false;
   while(1) {
-    int flag;
+    static int flag = 0;
     static option long_options[] = {
       {"verbose", no_argument, 0, 'v' },
       {"null-out", no_argument, 0, 'n' },

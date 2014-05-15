@@ -743,7 +743,7 @@ int main(int argc, char **argv)
 
   std::vector<std::pair<const char*, const char*> > cmdcfgs;
   while(1) {
-    int flag;
+    static int flag = 0;
     static option long_options[] = {
       {"daemon", no_argument, 0, 'D' },
       {"log-level", required_argument, 0, 'L' },

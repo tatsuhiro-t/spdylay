@@ -90,7 +90,7 @@ int main(int argc, char **argv)
   Config config;
   bool color = false;
   while(1) {
-    int flag = 0;
+    static int flag = 0;
     static option long_options[] = {
       {"daemon", no_argument, 0, 'D' },
       {"htdocs", required_argument, 0, 'd' },
