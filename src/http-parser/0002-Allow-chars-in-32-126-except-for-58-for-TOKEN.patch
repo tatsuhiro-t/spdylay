@@ -1,4 +1,4 @@
-From 531e48dd8223a8ab1ce85ccbd7c212782403a9c2 Mon Sep 17 00:00:00 2001
+From 5cd90bb67dde77bd3ade654f633d611eb110c2b7 Mon Sep 17 00:00:00 2001
 From: Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
 Date: Fri, 21 Feb 2014 22:05:34 +0900
 Subject: [PATCH 2/3] Allow chars in [32, 126], except for 58 (':'), for TOKEN
@@ -8,7 +8,7 @@ Subject: [PATCH 2/3] Allow chars in [32, 126], except for 58 (':'), for TOKEN
  1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/http_parser.c b/http_parser.c
-index 94d83b9..4a81f5a 100644
+index ccef696..2ca8aa1 100644
 --- a/http_parser.c
 +++ b/http_parser.c
 @@ -152,21 +152,21 @@ static const char tokens[256] = {
@@ -48,5 +48,5 @@ index 94d83b9..4a81f5a 100644
  
  static const int8_t unhex[256] =
 -- 
-1.8.4.2
+1.9.2
 
