@@ -468,6 +468,7 @@ void check_stream_id(spdylay_session *session,
   int32_t stream_id = frame->syn_stream.stream_id;
   Request *req = (Request*)spdylay_session_get_stream_user_data(session,
                                                                 stream_id);
+  assert(req);
   spdySession->streams[stream_id] = req;
   req->record_syn_stream_time();
 }
@@ -816,6 +817,7 @@ ssize_t file_read_callback
 {
   Request *req = (Request*)spdylay_session_get_stream_user_data
     (session, stream_id);
+  assert(req);
   int fd = source->fd;
   ssize_t r;
   while((r = pread(fd, buf, length, req->data_offset)) == -1 &&

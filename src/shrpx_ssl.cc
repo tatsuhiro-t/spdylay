@@ -408,7 +408,12 @@ ClientHandler* accept_connection
                    << ERR_error_string(ERR_get_error(), NULL);
         return 0;
       }
-      SSL_set_fd(ssl, fd);
+      if(SSL_set_fd(ssl, fd) == 0) {
+        LOG(ERROR) << "SSL_set_fd() failed: "
+                   << ERR_error_string(ERR_get_error(), NULL);
+        SSL_free(ssl);
+        return 0;
+      }
       // To detect TLS renegotiation and deal with it, we have to use
       // filter-based OpenSSL bufferevent and set evbuffer callback by
       // our own.
