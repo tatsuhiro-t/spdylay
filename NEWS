@@ -35,7 +35,7 @@ Changes
 * Update http-parser and allow extra characters in TOKEN
 
   Now http-parser is updated to
-  cba704cb2d9f1df80994dd4a791a0fa6cce65720 We allow additional
+  8d9e5db981b623fffc93657abacdc80270cbee58.  We allow additional
   characters in TOKEN to access somewhat *broken* servers. The all
   patches we made for spdylay are attached in this directory.
 
