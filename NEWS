@@ -6,8 +6,8 @@ Release Note
 
 This release adds several new options to shrpx SPDY proxy.  NPN
 selection made by spdylay_select_next_protocol() now prefers higher
-SPDY version, regardless the order of received protocol identifiers.
-Other several minor fixes were also made.
+SPDY version, regardless of the order of received protocol
+identifiers.  Other several minor fixes were also made.
 
 Changes
 -------
