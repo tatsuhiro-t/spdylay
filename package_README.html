@@ -1,6 +1,5 @@
 
 
-
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Spdylay - SPDY C Library &mdash; Spdylay 1.2.4-DEV documentation</title>
+  <title>Spdylay - SPDY C Library &mdash; Spdylay 1.2.4 documentation</title>
   
 
   
@@ -19,20 +18,6 @@
 
   
   
-
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:'',
-        VERSION:'1.2.4-DEV',
-        COLLAPSE_INDEX:false,
-        FILE_SUFFIX:'.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
     
 
   
@@ -40,23 +25,14 @@
   
   
     <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <script type="text/javascript" src="_static/js/theme.js"></script>
   
 
   
-  
-    <script type="text/javascript">
-        jQuery(function () {
-            SphinxRtdTheme.StickyNav.enable();
-        });
-    </script>
-  
-
-  
-    <link rel="top" title="Spdylay 1.2.4-DEV documentation" href="index.html"/>
+    <link rel="top" title="Spdylay 1.2.4 documentation" href="index.html"/>
         <link rel="next" title="API Reference" href="apiref.html"/>
         <link rel="prev" title="Spdylay - SPDY C Library" href="index.html"/> 
 
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
 
 </head>
@@ -236,17 +212,19 @@ installed:</p>
 <h2>Build from git<a class="headerlink" href="#build-from-git" title="Permalink to this headline">¶</a></h2>
 <p>Building from git is easy, but please be sure that at least autoconf 2.68 is
 used:</p>
-<div class="highlight-c"><pre>$ autoreconf -i
+<div class="highlight-c"><div class="highlight"><pre>$ autoreconf -i
 $ automake
 $ autoconf
 $ ./configure
-$ make</pre>
+$ make
+</pre></div>
 </div>
 </div>
 <div class="section" id="building-documentation">
 <h2>Building documentation<a class="headerlink" href="#building-documentation" title="Permalink to this headline">¶</a></h2>
 <p>To build documentation, run:</p>
-<div class="highlight-c"><pre>$ make html</pre>
+<div class="highlight-c"><div class="highlight"><pre>$ make html
+</pre></div>
 </div>
 <p>The documents will be generated under <tt class="docutils literal"><span class="pre">doc/manual/html/</span></tt>.</p>
 <p>The generated documents will not be installed with <tt class="docutils literal"><span class="pre">make</span> <span class="pre">install</span></tt>.</p>
@@ -264,7 +242,8 @@ environment variable. We need to install toolchain under
 <tt class="docutils literal"><span class="pre">ANDROID_HOME</span></tt>.  For example, to install toolchain under
 <tt class="docutils literal"><span class="pre">$ANDROID_HOME/toolchain</span></tt>, do this in the the directory where NDK is
 unpacked:</p>
-<div class="highlight-c"><pre>$ build/tools/make-standalone-toolchain.sh --platform=android-9 --install-dir=$ANDROID_HOME/toolchain</pre>
+<div class="highlight-c"><div class="highlight"><pre>$ build/tools/make-standalone-toolchain.sh --platform=android-9 --install-dir=$ANDROID_HOME/toolchain
+</pre></div>
 </div>
 <p>The platform level is not important here because we don&#8217;t use Android
 specific C/C++ API.</p>
@@ -302,7 +281,7 @@ this writing, the OpenSSL 1.0.1 supports NPN.</p>
 <p>The SPDY client is called <tt class="docutils literal"><span class="pre">spdycat</span></tt>. It is a dead simple downloader
 like wget/curl. It connects to SPDY server and gets resources given in
 the command-line:</p>
-<div class="highlight-c"><pre>$ src/spdycat -h
+<div class="highlight-c"><div class="highlight"><pre>$ src/spdycat -h
 Usage: spdycat [-Oansv23] [-t &lt;SECONDS&gt;] [-w &lt;WINDOW_BITS&gt;] [--cert=&lt;CERT&gt;]
                [--key=&lt;KEY&gt;] [--no-tls] [-d &lt;FILE&gt;] [-m &lt;N&gt;] [-p &lt;PROXY_HOST&gt;]
                [-P &lt;PROXY_PORT&gt;] &lt;URI&gt;...
@@ -313,7 +292,7 @@ OPTIONS:
     -n, --null-out     Discard downloaded data.
     -O, --remote-name  Save download data in the current directory.
                        The filename is dereived from URI. If URI
-                       ends with '/', 'index.html' is used as a
+                       ends with &#39;/&#39;, &#39;index.html&#39; is used as a
                        filename. Not implemented yet.
     -2, --spdy2        Only use SPDY/2.
     -3, --spdy3        Only use SPDY/3.
@@ -384,7 +363,8 @@ $ src/spdycat -nv https://www.google.com/
           x-xss-protection: 1; mode=block
 [  0.080] recv DATA frame (stream_id=1, flags=1, length=262)
 [  0.080] send GOAWAY frame &lt;version=3, flags=0, length=8&gt;
-          (last_good_stream_id=0)</pre>
+          (last_good_stream_id=0)
+</pre></div>
 </div>
 </div>
 <div class="section" id="spdyd-spdy-server">
@@ -393,7 +373,7 @@ $ src/spdycat -nv https://www.google.com/
 threaded and multiplexes connections using non-blocking socket. The
 static files are read using blocking I/O system call, <tt class="docutils literal"><span class="pre">read(2)</span></tt>. It
 speaks SPDY/2 and SPDY/3:</p>
-<div class="highlight-c"><pre>$ src/spdyd --htdocs=/your/htdocs/ -v 3000 server.key server.crt
+<div class="highlight-c"><div class="highlight"><pre>$ src/spdyd --htdocs=/your/htdocs/ -v 3000 server.key server.crt
 IPv4: listen on port 3000
 IPv6: listen on port 3000
 The negotiated next protocol: spdy/3.1
@@ -424,7 +404,8 @@ The negotiated next protocol: spdy/3.1
 [id=1] [  1.297] stream_id=1 closed
 [id=1] [  1.297] recv GOAWAY frame &lt;version=3, flags=0, length=8&gt;
           (last_good_stream_id=0)
-[id=1] [  1.297] closed</pre>
+[id=1] [  1.297] closed
+</pre></div>
 </div>
 <p>Currently, <tt class="docutils literal"><span class="pre">spdyd</span></tt> needs <tt class="docutils literal"><span class="pre">epoll</span></tt> or <tt class="docutils literal"><span class="pre">kqueue</span></tt>.</p>
 </div>
@@ -495,7 +476,7 @@ The number of worker thread can be specified using the command-line
 option. The <a class="reference external" href="http://libevent.org/">libevent</a> is used to handle
 low-level network I/O.</p>
 <p>Here is the command-line options:</p>
-<div class="highlight-c"><pre>$ src/shrpx -h
+<div class="highlight-c"><div class="highlight"><pre>$ src/shrpx -h
 Usage: shrpx [-Dh] [-s|--client|-p] [-b &lt;HOST,PORT&gt;]
              [-f &lt;HOST,PORT&gt;] [-n &lt;CORES&gt;] [-c &lt;NUM&gt;] [-L &lt;LEVEL&gt;]
              [OPTIONS...] [&lt;PRIVATE_KEY&gt; &lt;CERT&gt;]
@@ -503,9 +484,9 @@ Usage: shrpx [-Dh] [-s|--client|-p] [-b &lt;HOST,PORT&gt;]
 A reverse proxy for SPDY/HTTPS.
 
 Positional arguments:
-    &lt;PRIVATE_KEY&gt;      Set path to server's private key. Required
+    &lt;PRIVATE_KEY&gt;      Set path to server&#39;s private key. Required
                        unless either -p or --client is specified.
-    &lt;CERT&gt;             Set path to server's certificate. Required
+    &lt;CERT&gt;             Set path to server&#39;s certificate. Required
                        unless either -p or --client is specified.
 
 OPTIONS:
@@ -513,10 +494,10 @@ OPTIONS:
   Connections:
     -b, --backend=&lt;HOST,PORT&gt;
                        Set backend host and port.
-                       Default: '127.0.0.1,80'
+                       Default: &#39;127.0.0.1,80&#39;
     -f, --frontend=&lt;HOST,PORT&gt;
                        Set frontend host and port.
-                       Default: '0.0.0.0,3000'
+                       Default: &#39;0.0.0.0,3000&#39;
     --backlog=&lt;NUM&gt;    Set listen backlog size.
                        Default: 256
     --backend-ipv4     Resolve backend hostname to IPv4 address
@@ -592,8 +573,8 @@ OPTIONS:
     --honor-cipher-order
                        Honor server cipher order, giving the
                        ability to mitigate BEAST attacks.
-    -k, --insecure     When used with -p or --client, don't verify
-                       backend server's certificate.
+    -k, --insecure     When used with -p or --client, don&#39;t verify
+                       backend server&#39;s certificate.
     --cacert=&lt;PATH&gt;    When used with -p or --client, set path to
                        trusted CA certificate file.
                        The file must be in PEM format. It can
@@ -603,8 +584,8 @@ OPTIONS:
                        at startup regardless of this option.
     --private-key-passwd-file=&lt;FILEPATH&gt;
                        Path to file that contains password for the
-                       server's private key. If none is given and
-                       the private key is password protected it'll
+                       server&#39;s private key. If none is given and
+                       the private key is password protected it&#39;ll
                        be requested interactively.
     --subcert=&lt;KEYPATH&gt;:&lt;CERTPATH&gt;
                        Specify additional certificate and private
@@ -716,18 +697,19 @@ OPTIONS:
     --add-x-forwarded-for
                        Append X-Forwarded-For header field to the
                        downstream request.
-    --no-via           Don't append to Via header field. If Via
+    --no-via           Don&#39;t append to Via header field. If Via
                        header field is received, it is left
                        unaltered.
     -D, --daemon       Run in a background. If -D is used, the
-                       current working directory is changed to '/'.
+                       current working directory is changed to &#39;/&#39;.
     --pid-file=&lt;PATH&gt;  Set path to save PID of this program.
     --user=&lt;USER&gt;      Run this program as USER. This option is
                        intended to be used to drop root privileges.
     --conf=&lt;PATH&gt;      Load configuration from PATH.
                        Default: /etc/shrpx/shrpx.conf
     -v, --version      Print version and exit.
-    -h, --help         Print this help and exit.</pre>
+    -h, --help         Print this help and exit.
+</pre></div>
 </div>
 <p>For those of you who are curious, <tt class="docutils literal"><span class="pre">shrpx</span></tt> is an abbreviation of
 &#8220;Spdy/https to Http Reverse ProXy&#8221;.</p>
@@ -756,7 +738,8 @@ proxy is create proxy.pac script like this:</p>
 machine shrpx is running.  Please note that Chrome requires valid
 certificate for secure SPDY proxy.</p>
 <p>Then run chrome with the following arguments:</p>
-<div class="highlight-c"><pre>$ google-chrome --proxy-pac-url=file:///path/to/proxy.pac --use-npn</pre>
+<div class="highlight-c"><div class="highlight"><pre>$ google-chrome --proxy-pac-url=file:///path/to/proxy.pac --use-npn
+</pre></div>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -845,7 +828,7 @@ in C.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="apiref.html" class="btn btn-neutral float-right" title="API Reference"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="apiref.html" class="btn btn-neutral float-right" title="API Reference">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral" title="Spdylay - SPDY C Library"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -870,6 +853,38 @@ in C.</p>
 
   </div>
   
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.2.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
 
 </body>
 </html>

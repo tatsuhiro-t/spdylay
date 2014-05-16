@@ -1,6 +1,5 @@
 
 
-
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Python-spdylay - Spdylay Python Extension Module &mdash; Spdylay 1.2.4-DEV documentation</title>
+  <title>Python-spdylay - Spdylay Python Extension Module &mdash; Spdylay 1.2.4 documentation</title>
   
 
   
@@ -19,20 +18,6 @@
 
   
   
-
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:'',
-        VERSION:'1.2.4-DEV',
-        COLLAPSE_INDEX:false,
-        FILE_SUFFIX:'.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
     
 
   
@@ -40,23 +25,14 @@
   
   
     <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <script type="text/javascript" src="_static/js/theme.js"></script>
   
 
   
-  
-    <script type="text/javascript">
-        jQuery(function () {
-            SphinxRtdTheme.StickyNav.enable();
-        });
-    </script>
-  
-
-  
-    <link rel="top" title="Spdylay 1.2.4-DEV documentation" href="index.html"/>
+    <link rel="top" title="Spdylay 1.2.4 documentation" href="index.html"/>
         <link rel="next" title="SPDY Proxy with Firefox for Android" href="android-spdy-proxy.html"/>
         <link rel="prev" title="API Reference" href="apiref.html"/> 
 
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
 
 </head>
@@ -175,10 +151,12 @@ library.</p>
 <div class="section" id="build">
 <h2>Build<a class="headerlink" href="#build" title="Permalink to this headline">¶</a></h2>
 <p>To generate C source code from <tt class="docutils literal"><span class="pre">spdylay.pyx</span></tt>, run <tt class="docutils literal"><span class="pre">cython</span></tt>:</p>
-<div class="highlight-c"><pre>$ cython spdylay.pyx</pre>
+<div class="highlight-c"><div class="highlight"><pre>$ cython spdylay.pyx
+</pre></div>
 </div>
 <p>To build extension, run <tt class="docutils literal"><span class="pre">setup.py</span></tt>:</p>
-<div class="highlight-c"><pre>$ python setup.py build_ext</pre>
+<div class="highlight-c"><div class="highlight"><pre>$ python setup.py build_ext
+</pre></div>
 </div>
 </div>
 <div class="section" id="session-objects">
@@ -417,7 +395,7 @@ to the remote peer. It does this as many as possible until the
 user callback <a class="reference internal" href="#spdylay.Session.send_cb" title="spdylay.Session.send_cb"><tt class="xref py py-func docutils literal"><span class="pre">send_cb()</span></tt></a> returns 0 or <tt class="docutils literal"><span class="pre">None</span></tt> or the
 outbound queue becomes empty. This method calls several callback
 functions which are passed when initializing the session.  See
-<a class="reference internal" href="apiref.html#spdylay_session_send" title="spdylay_session_send"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_send()</span></tt></a> about the callback functions invoked
+<a class="reference internal" href="apiref.html#c.spdylay_session_send" title="spdylay_session_send"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_send()</span></tt></a> about the callback functions invoked
 from this method.</p>
 <p>The <a class="reference internal" href="#spdylay.CallbackFailureError" title="spdylay.CallbackFailureError"><tt class="xref py py-class docutils literal"><span class="pre">CallbackFailureError</span></tt></a> will be raised if the
 callback function failed.</p>
@@ -430,7 +408,7 @@ callback function failed.</p>
 many frames as possible until the user callback <a class="reference internal" href="#spdylay.Session.recv_cb" title="spdylay.Session.recv_cb"><tt class="xref py py-func docutils literal"><span class="pre">recv_cb()</span></tt></a>
 returns empty bytestring or <tt class="docutils literal"><span class="pre">None</span></tt>. This function calls several
 callback functions which are passed when initializing the session.
-See <a class="reference internal" href="apiref.html#spdylay_session_recv" title="spdylay_session_recv"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_recv()</span></tt></a> about the callback functions
+See <a class="reference internal" href="apiref.html#c.spdylay_session_recv" title="spdylay_session_recv"><tt class="xref c c-func docutils literal"><span class="pre">spdylay_session_recv()</span></tt></a> about the callback functions
 invoked from this method. If data is <tt class="docutils literal"><span class="pre">None</span></tt>, this method will
 invoke <a class="reference internal" href="#spdylay.Session.recv_cb" title="spdylay.Session.recv_cb"><tt class="xref py py-func docutils literal"><span class="pre">recv_cb()</span></tt></a> callback function to receive incoming
 data.  If data is not <tt class="docutils literal"><span class="pre">None</span></tt>, it must be a bytestring and this
@@ -1688,7 +1666,7 @@ follows:</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="android-spdy-proxy.html" class="btn btn-neutral float-right" title="SPDY Proxy with Firefox for Android"/>Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="android-spdy-proxy.html" class="btn btn-neutral float-right" title="SPDY Proxy with Firefox for Android">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="apiref.html" class="btn btn-neutral" title="API Reference"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -1713,6 +1691,38 @@ follows:</p>
 
   </div>
   
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.2.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
 
 </body>
 </html>

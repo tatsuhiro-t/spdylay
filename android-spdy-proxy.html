@@ -1,6 +1,5 @@
 
 
-
 <!DOCTYPE html>
 <!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
@@ -8,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>SPDY Proxy with Firefox for Android &mdash; Spdylay 1.2.4-DEV documentation</title>
+  <title>SPDY Proxy with Firefox for Android &mdash; Spdylay 1.2.4 documentation</title>
   
 
   
@@ -19,20 +18,6 @@
 
   
   
-
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:'',
-        VERSION:'1.2.4-DEV',
-        COLLAPSE_INDEX:false,
-        FILE_SUFFIX:'.html',
-        HAS_SOURCE:  true
-      };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-
     
 
   
@@ -40,22 +25,13 @@
   
   
     <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <script type="text/javascript" src="_static/js/theme.js"></script>
   
 
   
-  
-    <script type="text/javascript">
-        jQuery(function () {
-            SphinxRtdTheme.StickyNav.enable();
-        });
-    </script>
-  
-
-  
-    <link rel="top" title="Spdylay 1.2.4-DEV documentation" href="index.html"/>
+    <link rel="top" title="Spdylay 1.2.4 documentation" href="index.html"/>
         <link rel="prev" title="Python-spdylay - Spdylay Python Extension Module" href="python.html"/> 
 
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
 
 </head>
@@ -196,14 +172,15 @@ use <tt class="docutils literal"><span class="pre">ANDROID_HOME</span></tt> envi
 <p>To make it easier to run Android cross-compiler tools (and for the
 sake of this document), include the path to those commands to
 <tt class="docutils literal"><span class="pre">PATH</span></tt>:</p>
-<div class="highlight-c"><pre>$ export PATH=$ANDROID_HOME/toolchain/bin:$PATH</pre>
+<div class="highlight-c"><div class="highlight"><pre>$ export PATH=$ANDROID_HOME/toolchain/bin:$PATH
+</pre></div>
 </div>
 <p>We need to build dependent libraries: OpenSSL and libevent.</p>
 <p>To configure OpenSSL, use the following script:</p>
-<div class="highlight-c"><pre>#!/bin/sh
+<div class="highlight-c"><div class="highlight"><pre>#!/bin/sh
 
-if [ -z "$ANDROID_HOME" ]; then
-    echo 'No $ANDROID_HOME specified.'
+if [ -z &quot;$ANDROID_HOME&quot; ]; then
+    echo &#39;No $ANDROID_HOME specified.&#39;
     exit 1
 fi
 PREFIX=$ANDROID_HOME/usr/local
@@ -211,14 +188,15 @@ TOOLCHAIN=$ANDROID_HOME/toolchain
 PATH=$TOOLCHAIN/bin:$PATH
 
 export CROSS_COMPILE=$TOOLCHAIN/bin/arm-linux-androideabi-
-./Configure --prefix=$PREFIX android</pre>
+./Configure --prefix=$PREFIX android
+</pre></div>
 </div>
 <p>Then run <tt class="docutils literal"><span class="pre">make</span> <span class="pre">install</span></tt> to build and install library.</p>
 <p>For libevent, use the following script to configure:</p>
-<div class="highlight-c"><pre>#!/bin/sh
+<div class="highlight-c"><div class="highlight"><pre>#!/bin/sh
 
-if [ -z "$ANDROID_HOME" ]; then
-    echo 'No $ANDROID_HOME specified.'
+if [ -z &quot;$ANDROID_HOME&quot; ]; then
+    echo &#39;No $ANDROID_HOME specified.&#39;
     exit 1
 fi
 PREFIX=$ANDROID_HOME/usr/local
@@ -232,7 +210,8 @@ PATH=$TOOLCHAIN/bin:$PATH
     --disable-shared \
     --enable-static \
     CPPFLAGS=-I$PREFIX/include \
-    LDFLAGS=-L$PREFIX/lib</pre>
+    LDFLAGS=-L$PREFIX/lib
+</pre></div>
 </div>
 <p>Then run <tt class="docutils literal"><span class="pre">make</span> <span class="pre">install</span></tt> to
 build and install library.</p>
@@ -240,7 +219,8 @@ build and install library.</p>
 <tt class="docutils literal"><span class="pre">android-make</span></tt> to build as described in <a class="reference internal" href="package_README.html"><em>Spdylay - SPDY C Library</em></a>.</p>
 <p>If all went well, <tt class="docutils literal"><span class="pre">shrpx</span></tt> binary is created in src directory.  Strip
 debugging information from the binary using the following command:</p>
-<div class="highlight-c"><pre>$ arm-linux-androideabi-strip src/shrpx</pre>
+<div class="highlight-c"><div class="highlight"><pre>$ arm-linux-androideabi-strip src/shrpx
+</pre></div>
 </div>
 </div>
 <div class="section" id="setup-shrpx-on-android-device">
@@ -251,10 +231,12 @@ installed from Google Play. Copy <tt class="docutils literal"><span class="pre">
 where the Android-Terminal-Emulator is installed (In case of my phone,
 it is <tt class="docutils literal"><span class="pre">/data/data/jackpal.androidterm</span></tt>) and give the executable
 permission to <tt class="docutils literal"><span class="pre">shrpx</span></tt> using <tt class="docutils literal"><span class="pre">chmod</span></tt>:</p>
-<div class="highlight-c"><pre>$ chmod 755 shrpx</pre>
+<div class="highlight-c"><div class="highlight"><pre>$ chmod 755 shrpx
+</pre></div>
 </div>
 <p>Then run <tt class="docutils literal"><span class="pre">shrpx</span></tt> in client-mode like this:</p>
-<div class="highlight-c"><pre>$ ./shrpx -k -p -f localhost,8000 -b SPDY-PROXY-ADDR,SPDY-PROXY-PORT</pre>
+<div class="highlight-c"><div class="highlight"><pre>$ ./shrpx -k -p -f localhost,8000 -b SPDY-PROXY-ADDR,SPDY-PROXY-PORT
+</pre></div>
 </div>
 <p>Substitute <tt class="docutils literal"><span class="pre">SPDY-PROXY-ADDR</span></tt> and <tt class="docutils literal"><span class="pre">SPDY-PROXY-PORT</span></tt> with the SPDY
 proxy address and port you have setup respectively. The <tt class="docutils literal"><span class="pre">-k</span></tt> option
@@ -334,6 +316,38 @@ get resources on behalf of the client and sent back the response.</p>
 
   </div>
   
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'1.2.4',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
 
 </body>
 </html>
