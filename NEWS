@@ -1,3 +1,22 @@
+spdylay 1.2.5
+=============
+
+Release Note
+------------
+
+This release fixes the bug that write timeout in shrpx frontend
+connection is triggered when there is no data to write.
+
+Changes
+-------
+
+* shrpx: Set timeout to underlying bufferevent
+
+  Setting write timeout to filter bufferevent does not work as
+  intended.  It timeouts even when there is no data to write.
+
+
+
 spdylay 1.2.4
 =============
 
