@@ -76,6 +76,7 @@ private:
   std::string ipaddr_;
   bufferevent *bev_;
   SSL *ssl_;
+  event *reneg_shutdown_timerev_;
   Upstream *upstream_;
   // Shared SPDY session for each thread. NULL if backend is not
   // SPDY. Not deleted by this object.
