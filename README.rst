@@ -285,6 +285,10 @@ Currently, ``spdyd`` needs ``epoll`` or ``kqueue``.
 Shrpx - A reverse proxy for SPDY/HTTPS
 ++++++++++++++++++++++++++++++++++++++
 
+For shrpx users who uses shrpx as SPDY proxy: Please consider
+migrating to nghttpx developed at `nghttp2 project
+<https://nghttp2.org>`_.  nghttpx supports SPDY proxy too.
+
 The ``shrpx`` is a multi-threaded reverse proxy for SPDY/HTTPS.  It
 converts SPDY/HTTPS traffic to plain HTTP.  It is initially developed
 as a reverse proxy, but now it has other operation modes such as a
