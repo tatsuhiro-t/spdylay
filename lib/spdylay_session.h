@@ -54,7 +54,8 @@
  * Option flags.
  */
 typedef enum {
-  SPDYLAY_OPTMASK_NO_AUTO_WINDOW_UPDATE = 1 << 0
+  SPDYLAY_OPTMASK_NO_AUTO_WINDOW_UPDATE = 1 << 0,
+  SPDYLAY_OPTMASK_NO_AUTO_WINDOW_UPDATE2 = 1 << 1
 } spdylay_optmask;
 
 typedef struct {
@@ -207,6 +208,10 @@ struct spdylay_session {
   /* Keep track of the number of bytes received without
      WINDOW_UPDATE. */
   int32_t recv_window_size;
+  /* The number of bytes consumed by the application and now is
+     subject to WINDOW_UPDATE.  This is only used when
+     SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE2 is used. */
+  int32_t consumed_size;
 
   /* Settings value received from the remote endpoint. We just use ID
      as index. The index = 0 is unused. */

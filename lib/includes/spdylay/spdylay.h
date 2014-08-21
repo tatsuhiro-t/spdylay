@@ -1275,14 +1275,23 @@ typedef enum {
    * This option prevents the library from sending WINDOW_UPDATE
    * automatically. If this option is set, the application is
    * responsible for sending WINDOW_UPDATE using
-   * `spdylay_submit_window_update`.
+   * `spdylay_submit_window_update`.  This option was deprecated and
+   * the newly written application should use
+   * :enum:`SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE2`.
    */
   SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE = 1,
   /**
    * This option sets maximum receive buffer size for incoming control
    * frame.
    */
-  SPDYLAY_OPT_MAX_RECV_CTRL_FRAME_BUFFER = 2
+  SPDYLAY_OPT_MAX_RECV_CTRL_FRAME_BUFFER = 2,
+  /**
+   * This option prevents the library from sending WINDOW_UPDATE
+   * automatically.  If this option is set, the application is
+   * responsible to inform the library of the consumed bytes using
+   * `spdylay_session_consume()`.
+   */
+  SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE2 = 3
 } spdylay_opt;
 
 /**
@@ -1301,12 +1310,21 @@ typedef enum {
  *     nonzero, the library will not send WINDOW_UPDATE automatically.
  *     Therefore, the application is responsible for sending
  *     WINDOW_UPDATE using `spdylay_submit_window_update`. This option
- *     defaults to 0.
+ *     defaults to 0.  This option was deprecated and the newly
+ *     written application should use
+ *     :enum:`SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE2`.
  *
  * :enum:`SPDYLAY_OPT_MAX_RECV_CTRL_FRAME_BUFFER`
  *     The |optval| must be a pointer to ``uint32_t``. The |*optval|
  *     must be in the range [(1 << 13), (1 << 24)-1], inclusive. This
  *     option defaults to (1 << 24)-1.
+ *
+ * :enum:`SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE2`
+ *     The |optval| must be a pointer to ``int``. If the |*optval| is
+ *     nonzero, the library will not send WINDOW_UPDATE automatically.
+ *     Therefore, the application is responsible to inform the library
+ *     of consumed bytes using `spdylay_session_consume()`.  This
+ *     option defaults to 0.
  *
  * This function returns 0 if it succeeds, or one of the following
  * negative error codes:
@@ -1619,6 +1637,28 @@ int32_t spdylay_session_get_recv_data_length(spdylay_session *session);
  */
 int spdylay_session_fail_session(spdylay_session *session,
                                  uint32_t status_code);
+
+/**
+ * @function
+ *
+ * Tells the |session| that |size| bytes for a stream denoted by
+ * |stream_id| were consumed by application and are ready to
+ * WINDOW_UPDATE.  This function is intended to be used without
+ * automatic window update (see
+ * :enum:`SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE2`).
+ *
+ * This function returns 0 if it succeeds, or one of the following
+ * negative error codes:
+ *
+ * :enum:`SPDYLAY_ERR_NOMEM`
+ *     Out of memory.
+ * :enum:`SPDYLAY_ERR_INVALID_ARGUMENT`
+ *     The |stream_id| is 0.
+ * :enum:`SPDYLAY_ERR_INVALID_STATE`
+ *     :enum:`SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE2` is not set.
+ */
+int spdylay_session_consume(spdylay_session *session, int32_t stream_id,
+                            size_t size);
 
 /**
  * @function

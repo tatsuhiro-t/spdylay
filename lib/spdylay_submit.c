@@ -244,6 +244,8 @@ int spdylay_submit_window_update(spdylay_session *session, int32_t stream_id,
   if(stream_id == 0) {
     session->recv_window_size -= spdylay_min(delta_window_size,
                                              session->recv_window_size);
+    session->consumed_size -= spdylay_min(delta_window_size,
+                                          session->consumed_size);
   } else {
     stream = spdylay_session_get_stream(session, stream_id);
     if(stream == NULL) {
@@ -251,6 +253,8 @@ int spdylay_submit_window_update(spdylay_session *session, int32_t stream_id,
     }
     stream->recv_window_size -= spdylay_min(delta_window_size,
                                             stream->recv_window_size);
+    stream->consumed_size -= spdylay_min(delta_window_size,
+                                         stream->consumed_size);
   }
   return spdylay_session_add_window_update(session, stream_id,
                                            delta_window_size);

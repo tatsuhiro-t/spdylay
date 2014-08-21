@@ -2518,16 +2518,18 @@ static int update_recv_window_size(spdylay_session *session,
                                    int32_t delta_size,
                                    int32_t initial_window_size)
 {
-  /* If SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE is set and the application
-     does not send WINDOW_UPDATE and the remote endpoint keeps sending
-     data, *recv_window_size_ptr will eventually overflow. */
+  /* If SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE(2) is set and the
+     application does not send WINDOW_UPDATE and the remote endpoint
+     keeps sending data, *recv_window_size_ptr will eventually
+     overflow. */
   if(*recv_window_size_ptr > INT32_MAX - delta_size) {
     return spdylay_session_fail_session(session,
                                         SPDYLAY_GOAWAY_PROTOCOL_ERROR);
   } else {
     *recv_window_size_ptr += delta_size;
   }
-  if(!(session->opt_flags & SPDYLAY_OPTMASK_NO_AUTO_WINDOW_UPDATE)) {
+  if(!(session->opt_flags & SPDYLAY_OPTMASK_NO_AUTO_WINDOW_UPDATE) &&
+     !(session->opt_flags & SPDYLAY_OPTMASK_NO_AUTO_WINDOW_UPDATE2)) {
     /* This is just a heuristics. */
     /* We have to use local_settings here because it is the constraint
        the remote endpoint should honor. */
@@ -2547,8 +2549,8 @@ static int update_recv_window_size(spdylay_session *session,
 /*
  * Accumulates received bytes |delta_size| to connection-level window
  * size and decides whether to send WINDOW_UPDATE. If
- * SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE is set, WINDOW_UPDATE will not be
- * sent.
+ * SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE(2) is set, WINDOW_UPDATE will not
+ * be sent.
  *
  * This function returns 0 if it succeeds, or one of the following
  * negative error codes:
@@ -2570,8 +2572,8 @@ static int spdylay_session_update_recv_connection_window_size
 /*
  * Accumulates received bytes |delta_size| to stream-level window size
  * and decides whether to send WINDOW_UPDATE. If
- * SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE is set, WINDOW_UPDATE will not be
- * sent.
+ * SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE(2) is set, WINDOW_UPDATE will not
+ * be sent.
  *
  * This function returns 0 if it succeeds, or one of the following
  * negative error codes:
@@ -2594,6 +2596,55 @@ static int spdylay_session_update_recv_window_size(spdylay_session *session,
                                    [SPDYLAY_SETTINGS_INITIAL_WINDOW_SIZE]);
   }
   return 0;
+}
+
+static int update_consumed_size
+(spdylay_session *session,
+ int32_t *consumed_size_ptr, int32_t *recv_window_size_ptr,
+ int32_t stream_id,  int32_t delta_size,
+ int32_t initial_window_size)
+{
+  int rv;
+
+  if(*consumed_size_ptr > INT32_MAX - delta_size) {
+    return spdylay_session_fail_session(session,
+                                        SPDYLAY_GOAWAY_PROTOCOL_ERROR);
+  }
+
+  *consumed_size_ptr += delta_size;
+
+  if(*consumed_size_ptr >= initial_window_size / 2) {
+
+    rv = spdylay_session_add_window_update(session, stream_id,
+                                           *consumed_size_ptr);
+
+    if(rv != 0) {
+      return rv;
+    }
+
+    *recv_window_size_ptr -= *consumed_size_ptr;
+    *consumed_size_ptr = 0;
+  }
+
+  return 0;
+}
+
+static int spdylay_session_update_connection_consumed_size
+(spdylay_session *session, int32_t delta_size)
+{
+  return update_consumed_size
+    (session, &session->consumed_size, &session->recv_window_size,
+     0, delta_size, SPDYLAY_INITIAL_WINDOW_SIZE);
+}
+
+static int spdylay_session_update_stream_consumed_size
+(spdylay_session *session, spdylay_stream *stream, int32_t delta_size)
+{
+  return update_consumed_size
+    (session, &stream->consumed_size, &stream->recv_window_size,
+     stream->stream_id, delta_size,
+     session->local_settings
+     [SPDYLAY_SETTINGS_INITIAL_WINDOW_SIZE]);
 }
 
 /*
@@ -2774,6 +2825,17 @@ ssize_t spdylay_session_mem_recv(spdylay_session *session,
             /* FATAL */
             assert(r < SPDYLAY_ERR_FATAL);
             return r;
+          }
+
+          if(session->opt_flags & SPDYLAY_OPTMASK_NO_AUTO_WINDOW_UPDATE2) {
+            r = spdylay_session_update_connection_consumed_size
+              (session, readlen);
+
+            if(r < 0) {
+              /* FATAL */
+              assert(r < SPDYLAY_ERR_FATAL);
+              return r;
+            }
           }
         }
         if(session->flow_control &&
@@ -3091,6 +3153,18 @@ int spdylay_session_set_option(spdylay_session *session,
       return SPDYLAY_ERR_INVALID_ARGUMENT;
     }
     break;
+  case SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE2:
+    if(optlen == sizeof(int)) {
+      int intval = *(int*)optval;
+      if(intval) {
+        session->opt_flags |= SPDYLAY_OPTMASK_NO_AUTO_WINDOW_UPDATE2;
+      } else {
+        session->opt_flags &= ~SPDYLAY_OPTMASK_NO_AUTO_WINDOW_UPDATE2;
+      }
+    } else {
+      return SPDYLAY_ERR_INVALID_ARGUMENT;
+    }
+    break;
   default:
     return SPDYLAY_ERR_INVALID_ARGUMENT;
   }
@@ -3117,4 +3191,43 @@ int32_t spdylay_session_get_recv_data_length(spdylay_session *session)
     return 0;
   }
   return session->recv_window_size;
+}
+
+int spdylay_session_consume(spdylay_session *session, int32_t stream_id,
+                            size_t size)
+{
+  int rv;
+  spdylay_stream *stream;
+
+  if(stream_id == 0) {
+    return SPDYLAY_ERR_INVALID_ARGUMENT;
+  }
+
+  if(!(session->opt_flags & SPDYLAY_OPTMASK_NO_AUTO_WINDOW_UPDATE2)) {
+    return SPDYLAY_ERR_INVALID_STATE;
+  }
+
+  if(session->flow_control & SPDYLAY_FLOW_CONTROL_CONNECTION) {
+
+    rv = spdylay_session_update_connection_consumed_size(session, size);
+
+    if(spdylay_is_fatal(rv)) {
+      return rv;
+    }
+  }
+
+  if(session->flow_control & SPDYLAY_FLOW_CONTROL_STREAM) {
+
+    stream = spdylay_session_get_stream(session, stream_id);
+
+    if(stream) {
+      rv = spdylay_session_update_stream_consumed_size(session, stream, size);
+
+      if(spdylay_is_fatal(rv)) {
+        return rv;
+      }
+    }
+  }
+
+  return 0;
 }

@@ -46,6 +46,7 @@ void spdylay_stream_init(spdylay_stream *stream, int32_t stream_id,
   stream->deferred_flags = SPDYLAY_DEFERRED_NONE;
   stream->window_size = initial_window_size;
   stream->recv_window_size = 0;
+  stream->consumed_size = 0;
 }
 
 void spdylay_stream_free(spdylay_stream *stream)

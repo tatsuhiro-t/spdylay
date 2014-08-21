@@ -100,6 +100,10 @@ typedef struct {
   /* Keep track of the number of bytes received without
      WINDOW_UPDATE. */
   int32_t recv_window_size;
+  /* The number of bytes consumed by the application and now is
+     subject to WINDOW_UPDATE.  This is only used when
+     SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE2 is used. */
+  int32_t consumed_size;
   /* Use same value in SYN_STREAM frame */
   uint8_t flags;
   /* Use same scheme in SYN_STREAM frame */
