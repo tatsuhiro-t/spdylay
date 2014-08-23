@@ -1,214 +1,23 @@
-spdylay 1.2.5
+spdylay 1.3.0
 =============
 
 Release Note
 ------------
 
-This release fixes the bug that write timeout in shrpx frontend
-connection is triggered when there is no data to write.
+This release adds new API function spdylay_session_consume() and the
+new option SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE2 to enable that
+functionality.  This is a preferred way to manually control local flow
+window.  This effectively deprecates SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE
+option.
 
 Changes
 -------
 
-* shrpx: Set timeout to underlying bufferevent
-
-  Setting write timeout to filter bufferevent does not work as
-  intended.  It timeouts even when there is no data to write.
-
-
-
-spdylay 1.2.4
-=============
-
-Release Note
-------------
-
-This release adds several new options to shrpx SPDY proxy.  NPN
-selection made by spdylay_select_next_protocol() now prefers higher
-SPDY version, regardless of the order of received protocol
-identifiers.  Other several minor fixes were also made.
-
-Changes
--------
-
-* shrpx: Remove Connection: close header field from CONNECT response
-
-* spdycat: Fix bug that -H does not allow single letter header name
-
-* NPN: Prefer higher SPDY version
-
-* NPN: Check protocol id length so that scanner don't overrun buffer
-
-* spdycat: Allow -H to override built-in header fields
-
-  This change also allow users to send specify multiple same header
-  fields using -H if it is not built-in header fields.
-
-* shrpx: Add X-Forwarded-For header field to SPDY backend request
-
-  This change also fixes its header field in http/1 backend where
-  x-forwarded-proto has http if frontend is SPDY http.
-
-* shrpx: Add rate limit per worker thread
-
-* Update http-parser and allow extra characters in TOKEN
-
-  Now http-parser is updated to
-  8d9e5db981b623fffc93657abacdc80270cbee58.  We allow additional
-  characters in TOKEN to access somewhat *broken* servers. The all
-  patches we made for spdylay are attached in this directory.
-
-
-
-spdylay 1.2.3
-=============
-
-Release Note
-------------
-
-This release adds new options to shrpx and spdycat. Spdycat now can
-speak the protocol other than TLSv1. For library side, strict header
-name/value validation is done against received headers.
-
-Changes
--------
-
-* shrpx: Disable TLS renegotiation
-
-* shrpx: Add --client-private-key-file and --client-cert-file options
-
-* shrpx: Call SpdySession::disconnect() if initiate_connection() failed
-
-  This will clean up resources allocated in initiate_connection()
-  properly.
-
-* spdycat: Fix port checking to share connection
-
-* shrpx: Send acceptable list of CAs when client cert auth is enabled
-
-* spdycat: Add support for SPDY proxies
-
-  Patch from Nils "irrenhaus" Hesse
-
-* spdycat: Use SSLv23_client_method instead of TLSv1_client_method
-
-* shrpx: Add --tls-proto-list option to enable SSL/TLS protocol
-  selectively
-
-* Validate header name/value pair strictly to avoid possible attack
-
-* Don't return SPDYLAY_ERR_INVALID_ARGUMENT if priority is larger than
-  lowest
-
-
-
-spdylay 1.2.2
-=============
-
-Release Note
-------------
-
-This release fixes the bug that shrpx exits when SPDY backend
-connection cannot be established.
-
-Changes
--------
-
-* shrpx: Don't DIE when establishing backend SPDY connection failed
-
-* spdylay_map: Implement hash table
-
-* Tear down connection on invalid DATA frame reception
-
-
-
-spdylay 1.2.1
-=============
-
-Release Note
-------------
-
-This release fixes the bug which makes shrpx crash on downstream
-connection failure.
-
-Changes
--------
-
-* shrpx: Fix crash on downstream connection failure
-
-
-
-spdylay 1.2.0
-=============
-
-Release Note
-------------
-
-This release adds SPDY/3.1 support and fixes flow control bug.  The
-shrpx, SPDY proxy, got client certificate authentication.  It now also
-supports custom HTTP-version string (e.g., ICY).  The spdycat and
-spdyd got --color option to force ANSI color escape in output.
-
-Changes
--------
-
-* shrpx: Add options to specify per-connection window size
-
-* Interleave streams with same priority
-
-* Add SPDY/3.1 support
-
-  The added feature is connection-level flow control.
-
-* src/http-parser: Allow custom HTTP-version string (e.g., ICY)
-
-  We need HTTP major and minor version later, so we assume it is
-  HTTP/1.0 equivalent if custom HTTP-version string is used.
-
-* src/http-parser: Update to HEAD
-
-* shrpx: Add --verify-client-cacert option
-
-  Using --cacert to load certificate for client certificate
-  authentication is problematic since, --cacert is also used for
-  client mode.  This commit adds --verify-client-cacert option which
-  specify the CA certficate file used only for client certificate
-  validation.  This change also removes the default certficate load
-  function for client certificate validation.
-
-* shrpx: Add --verify-client option
-
-  This option requires client certificate and successful verification.
-  Use --cacert option to add CA certificates as necessary.
-
-* spdycat, spdyd: Add --color option to force colored log output
-
-* shrpx: Check DATA_FLAG_FIN on on_data_recv_callback
-
-* tests: Fix main test fail with address-sanitizer
-
-* Fix outbound flow control count
-
-  We wrongly added the whole payload length even if we sent part of it.
-
-* shrpx: Fix missing extension HTTP status code in response
-
-* shrpx: Add rate limit options
-
-* shrpx: Replace \r\n with space when constructing HTTP/1 headers
-
-* shrpx: Guard ecdh use with !OPENSSL_NO_EC
-
-* spdylay_ssl: fix the user-agent position
-
-  Patch from soyer
-
-* spdycat: Add missing verbose output for upload DATA
-
-* Call on_stream_close_callback for stream in SPDYLAY_STREAM_INITIAL state
-
-  We call on_stream_close_callback even if stream->state is
-  SPDYLAY_STREAM_INITIAL. This will happen while sending request
-  HEADERS, a local endpoint receives RST_STREAM for that stream. It
-  may be PROTOCOL_ERROR, but without notifying stream closure will
-  hang the stream in a local endpoint.
+* Add spdylay_session_consume() API
+
+  This function is back ported from nghttp2 project.  This is a
+  preferred way to manually control flow window.
+  SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE is not deprecated.  New
+  application should use SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE2 and use
+  spdylay_session_consume() to tell the library how many bytes
+  application consumed.
