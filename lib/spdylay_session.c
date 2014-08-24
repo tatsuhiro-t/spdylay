@@ -2827,7 +2827,8 @@ ssize_t spdylay_session_mem_recv(spdylay_session *session,
             return r;
           }
 
-          if(session->opt_flags & SPDYLAY_OPTMASK_NO_AUTO_WINDOW_UPDATE2) {
+          if(session->iframe.state == SPDYLAY_RECV_PAYLOAD_IGN &&
+             (session->opt_flags & SPDYLAY_OPTMASK_NO_AUTO_WINDOW_UPDATE2)) {
             r = spdylay_session_update_connection_consumed_size
               (session, readlen);
 
