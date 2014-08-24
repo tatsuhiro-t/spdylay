@@ -1,3 +1,24 @@
+spdylay 1.3.1
+=============
+
+Release Note
+------------
+
+This release fix the bug in spdylay_session_consume function.
+
+Changes
+-------
+
+* Fix bug that connection window is consumed excessively
+
+  Previously we consider bytes as consumed in
+  spdylay_session_mem_recv() even if it is not ignored and is passing
+  to application.  As a result, excessive number of bytes are
+  considered as consumed and library sends excessive amount of
+  WINDOW_UPDATE to peer.  This commit fixes this bug.
+
+
+
 spdylay 1.3.0
 =============
 
