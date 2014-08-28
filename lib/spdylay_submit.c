@@ -326,7 +326,7 @@ int spdylay_submit_data(spdylay_session *session, int32_t stream_id,
   int r;
   spdylay_data *data_frame;
   uint8_t nflags = 0;
-  data_frame = malloc(sizeof(spdylay_frame));
+  data_frame = malloc(sizeof(spdylay_data));
   if(data_frame == NULL) {
     return SPDYLAY_ERR_NOMEM;
   }
