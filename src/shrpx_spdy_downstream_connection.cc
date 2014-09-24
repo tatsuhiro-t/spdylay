@@ -335,7 +335,8 @@ int SpdyDownstreamConnection::push_request_headers()
     nv[hdidx++] = xff_value.c_str();
   }
 
-  if(downstream_->get_request_method() != "CONNECT") {
+  if(!get_config()->spdy_proxy && !get_config()->client_proxy &&
+     downstream_->get_request_method() != "CONNECT") {
     // We use same protocol with :scheme header field
     nv[hdidx++] = "x-forwarded-proto";
     if(scheme.empty()) {

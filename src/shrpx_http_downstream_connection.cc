@@ -175,7 +175,8 @@ int HttpDownstreamConnection::push_request_headers()
     http::sanitize_header_value(hdrs, hdrs.size()-xff_value.size());
     hdrs += "\r\n";
   }
-  if(downstream_->get_request_method() != "CONNECT") {
+  if(!get_config()->spdy_proxy && !get_config()->client_proxy &&
+     downstream_->get_request_method() != "CONNECT") {
     hdrs += "X-Forwarded-Proto: ";
     if(downstream_->get_upstream()->get_client_handler()->get_ssl()) {
       hdrs += "https\r\n";
