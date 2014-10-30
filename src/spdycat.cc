@@ -893,7 +893,7 @@ int run(char **uris, int n)
             if(config.proxy_port != 0) {
               port = config.proxy_port;
             }
-            if (communicate(config.proxy_host.c_str(), port, spdySession, &callbacks) != 0) {
+            if (communicate(config.proxy_host, port, spdySession, &callbacks) != 0) {
               ++failures;
             }
           } else {
@@ -919,7 +919,7 @@ int run(char **uris, int n)
       if(config.proxy_port != 0) {
         port = config.proxy_port;
       }
-      if (communicate(config.proxy_host.c_str(), port, spdySession, &callbacks) != 0) {
+      if (communicate(config.proxy_host, port, spdySession, &callbacks) != 0) {
         ++failures;
       }
     } else {

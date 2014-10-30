@@ -88,7 +88,7 @@ void upstream_response(const std::string& client_ip, int status_code,
   char datestr[64];
   get_datestr(datestr);
   if(downstream) {
-    fprintf(stderr, "%s%s [%s] %d%s %d \"%s %s HTTP/%u.%u\"\n",
+    fprintf(stderr, "%s%s [%s] %d%s %d \"%s %s HTTP/%d.%d\"\n",
             get_config()->tty ? status_code_color(status_code) : "",
             client_ip.c_str(), datestr,
             status_code,

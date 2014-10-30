@@ -236,7 +236,10 @@ static const uint8_t* spdylay_select_hd_dict(size_t *len_ptr, uint16_t version)
   } else if(version == SPDYLAY_PROTO_SPDY3) {
     hd_dict = spdy3_hd_dict;
     *len_ptr = sizeof(spdy3_hd_dict);
+  } else {
+    return NULL;
   }
+
   return hd_dict;
 }
 
