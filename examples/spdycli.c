@@ -172,9 +172,9 @@ static ssize_t send_callback(spdylay_session *session,
   connection = (struct Connection*)user_data;
   connection->want_io = IO_NONE;
   ERR_clear_error();
-  rv = SSL_write(connection->ssl, data, length);
+  rv = SSL_write(connection->ssl, data, (int)length);
   if(rv < 0) {
-    int err = SSL_get_error(connection->ssl, rv);
+    int err = SSL_get_error(connection->ssl, (int)rv);
     if(err == SSL_ERROR_WANT_WRITE || err == SSL_ERROR_WANT_READ) {
       connection->want_io = (err == SSL_ERROR_WANT_READ ?
                              WANT_READ : WANT_WRITE);
@@ -201,9 +201,9 @@ static ssize_t recv_callback(spdylay_session *session,
   connection = (struct Connection*)user_data;
   connection->want_io = IO_NONE;
   ERR_clear_error();
-  rv = SSL_read(connection->ssl, buf, length);
+  rv = SSL_read(connection->ssl, buf, (int)length);
   if(rv < 0) {
-    int err = SSL_get_error(connection->ssl, rv);
+    int err = SSL_get_error(connection->ssl, (int)rv);
     if(err == SSL_ERROR_WANT_WRITE || err == SSL_ERROR_WANT_READ) {
       connection->want_io = (err == SSL_ERROR_WANT_READ ?
                              WANT_READ : WANT_WRITE);

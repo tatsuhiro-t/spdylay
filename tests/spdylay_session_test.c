@@ -434,7 +434,7 @@ void test_spdylay_session_recv(void)
   spdylay_reserve_buffer(&framedata, &framedatalen, 77);
   framelen = spdylay_frame_pack_ping(&framedata, &framedatalen, &frame.ping);
   spdylay_frame_ping_free(&frame.ping);
-  spdylay_put_uint32be(&framedata[4], framedatalen - SPDYLAY_HEAD_LEN);
+  spdylay_put_uint32be(&framedata[4], (uint32_t)(framedatalen - SPDYLAY_HEAD_LEN));
   scripted_data_feed_init(&df, framedata, framedatalen);
   user_data.ctrl_recv_cb_called = 0;
   CU_ASSERT(0 == spdylay_session_recv(session));
@@ -1690,7 +1690,7 @@ static ssize_t block_count_send_callback(spdylay_session* session,
     r = SPDYLAY_ERR_WOULDBLOCK;
   } else {
     --ud->block_count;
-    r = len;
+    r = (int)len;
   }
   return r;
 }
@@ -2709,7 +2709,7 @@ void test_spdylay_session_recv_data(void)
   /* stream 1 is not opened, and it is ignored. */
   ud.data_chunk_recv_cb_called = 0;
   ud.data_recv_cb_called = 0;
-  rv = spdylay_session_mem_recv(session, data, 8+4096);
+  rv = (int)spdylay_session_mem_recv(session, data, 8+4096);
   CU_ASSERT(8+4096 == rv);
 
   CU_ASSERT(0 == ud.data_chunk_recv_cb_called);
@@ -2726,7 +2726,7 @@ void test_spdylay_session_recv_data(void)
 
   ud.data_chunk_recv_cb_called = 0;
   ud.data_recv_cb_called = 0;
-  rv = spdylay_session_mem_recv(session, data, 8+4096);
+  rv = (int)spdylay_session_mem_recv(session, data, 8+4096);
   CU_ASSERT(8+4096 == rv);
 
   CU_ASSERT(0 == ud.data_chunk_recv_cb_called);
@@ -2739,7 +2739,7 @@ void test_spdylay_session_recv_data(void)
 
   ud.data_chunk_recv_cb_called = 0;
   ud.data_recv_cb_called = 0;
-  rv = spdylay_session_mem_recv(session, data, 8+4096);
+  rv = (int)spdylay_session_mem_recv(session, data, 8+4096);
   CU_ASSERT(8+4096 == rv);
 
   CU_ASSERT(1 == ud.data_chunk_recv_cb_called);

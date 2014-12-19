@@ -159,7 +159,7 @@ static ssize_t get_credential_proof(spdylay_session *session,
   spdylay_failmalloc = 1;                               \
   for(i = 0; i < nmalloc; ++i) {                        \
     spdylay_nmalloc = 0;                                \
-    spdylay_failstart = i;                              \
+    spdylay_failstart = (int)i;                         \
     /* printf("i=%zu\n", i); */                         \
     FUN();                                              \
     /* printf("nmalloc=%d\n", spdylay_nmalloc); */      \
@@ -432,7 +432,7 @@ static void run_spdylay_frame_pack_syn_stream(void)
   if(framelen < 0) {
     goto fail;
   }
-  rv = unpack_frame_with_nv_block(SPDYLAY_SYN_STREAM, SPDYLAY_PROTO_SPDY3,
+  rv = (int)unpack_frame_with_nv_block(SPDYLAY_SYN_STREAM, SPDYLAY_PROTO_SPDY3,
                                   &oframe, &inflater, buf, framelen);
   if(rv != 0) {
     goto fail;

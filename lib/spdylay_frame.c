@@ -47,7 +47,7 @@ size_t spdylay_frame_get_len_size(uint16_t version)
 static uint8_t* spdylay_pack_str(uint8_t *buf, const char *str, size_t len,
                                  size_t len_size)
 {
-  spdylay_frame_put_nv_len(buf, len, len_size);
+  spdylay_frame_put_nv_len(buf, (uint32_t)len, len_size);
   buf += len_size;
   memcpy(buf, str, len);
   return buf+len;
@@ -387,7 +387,7 @@ ssize_t spdylay_frame_pack_nv(uint8_t *buf, char **nv, size_t len_size)
       bufp = spdylay_pack_str(bufp, key, keylen, len_size);
       prev = key;
       cur_vallen_buf = bufp;
-      cur_vallen = vallen;
+      cur_vallen = (uint32_t)vallen;
       prevkeylen = keylen;
       prevvallen = vallen;
       bufp = spdylay_pack_str(bufp, val, vallen, len_size);
@@ -682,7 +682,7 @@ void spdylay_frame_settings_init(spdylay_settings *frame,
   frame->hd.version = version;
   frame->hd.type = SPDYLAY_SETTINGS;
   frame->hd.flags = flags;
-  frame->hd.length = 4+niv*8;
+  frame->hd.length = 4+(int32_t)niv*8;
   frame->niv = niv;
   frame->iv = iv;
 }
@@ -706,7 +706,7 @@ void spdylay_frame_credential_init(spdylay_credential *frame,
   frame->proof = *proof;
   frame->certs = certs;
   frame->ncerts = ncerts;
-  frame->hd.length = 2+4+frame->proof.length;
+  frame->hd.length = (int32_t)(2+4+frame->proof.length);
   for(i = 0; i < ncerts; ++i) {
     frame->hd.length += 4+frame->certs[i].length;
   }
@@ -756,7 +756,7 @@ ssize_t spdylay_frame_pack_syn_stream(uint8_t **buf_ptr,
   if(framelen < 0) {
     return framelen;
   }
-  frame->hd.length = framelen-SPDYLAY_FRAME_HEAD_LENGTH;
+  frame->hd.length = (int32_t)framelen-SPDYLAY_FRAME_HEAD_LENGTH;
   memset(*buf_ptr, 0, SPDYLAY_SYN_STREAM_NV_OFFSET);
   /* pack ctrl header after length is determined */
   spdylay_frame_pack_ctrl_hd(*buf_ptr, &frame->hd);
@@ -837,7 +837,7 @@ ssize_t spdylay_frame_pack_syn_reply(uint8_t **buf_ptr,
   if(framelen < 0) {
     return framelen;
   }
-  frame->hd.length = framelen-SPDYLAY_FRAME_HEAD_LENGTH;
+  frame->hd.length = (int32_t)(framelen-SPDYLAY_FRAME_HEAD_LENGTH);
   memset(*buf_ptr, 0, nv_offset);
   spdylay_frame_pack_ctrl_hd(*buf_ptr, &frame->hd);
   spdylay_put_uint32be(&(*buf_ptr)[8], frame->stream_id);
@@ -980,7 +980,7 @@ ssize_t spdylay_frame_pack_headers(uint8_t **buf_ptr, size_t *buflen_ptr,
   if(framelen < 0) {
     return framelen;
   }
-  frame->hd.length = framelen-SPDYLAY_FRAME_HEAD_LENGTH;
+  frame->hd.length = (int32_t)(framelen-SPDYLAY_FRAME_HEAD_LENGTH);
   memset(*buf_ptr, 0, nv_offset);
   spdylay_frame_pack_ctrl_hd(*buf_ptr, &frame->hd);
   spdylay_put_uint32be(&(*buf_ptr)[8], frame->stream_id);
@@ -1100,10 +1100,10 @@ ssize_t spdylay_frame_pack_settings(uint8_t **buf_ptr, size_t *buflen_ptr,
   }
   memset(*buf_ptr, 0, framelen);
   spdylay_frame_pack_ctrl_hd(*buf_ptr, &frame->hd);
-  spdylay_put_uint32be(&(*buf_ptr)[8], frame->niv);
+  spdylay_put_uint32be(&(*buf_ptr)[8],(uint32_t)frame->niv);
   if(frame->hd.version == SPDYLAY_PROTO_SPDY2) {
     for(i = 0; i < frame->niv; ++i) {
-      int off = i*8;
+      int off = (int)(i*8);
       /* spdy/2 spec says ID is network byte order, but publicly
          deployed server sends little endian host byte order. */
       (*buf_ptr)[12+off+0] = (frame->iv[i].settings_id) & 0xff;
@@ -1114,7 +1114,7 @@ ssize_t spdylay_frame_pack_settings(uint8_t **buf_ptr, size_t *buflen_ptr,
     }
   } else {
     for(i = 0; i < frame->niv; ++i) {
-      int off = i*8;
+      int off = (int)(i*8);
       spdylay_put_uint32be(&(*buf_ptr)[12+off], frame->iv[i].settings_id);
       (*buf_ptr)[12+off] = frame->iv[i].flags;
       spdylay_put_uint32be(&(*buf_ptr)[16+off], frame->iv[i].value);
@@ -1185,12 +1185,12 @@ ssize_t spdylay_frame_pack_credential(uint8_t **buf_ptr, size_t *buflen_ptr,
   offset = SPDYLAY_FRAME_HEAD_LENGTH;
   spdylay_put_uint16be(&(*buf_ptr)[offset], frame->slot);
   offset += 2;
-  spdylay_put_uint32be(&(*buf_ptr)[offset], frame->proof.length);
+  spdylay_put_uint32be(&(*buf_ptr)[offset], (uint32_t)frame->proof.length);
   offset += 4;
   memcpy(&(*buf_ptr)[offset], frame->proof.data, frame->proof.length);
   offset += frame->proof.length;
   for(i = 0; i < frame->ncerts; ++i) {
-    spdylay_put_uint32be(&(*buf_ptr)[offset], frame->certs[i].length);
+    spdylay_put_uint32be(&(*buf_ptr)[offset], (uint32_t)(frame->certs[i].length));
     offset += 4;
     memcpy(&(*buf_ptr)[offset], frame->certs[i].data, frame->certs[i].length);
     offset += frame->certs[i].length;
@@ -1230,7 +1230,7 @@ static int spdylay_frame_count_unpack_cert(const uint8_t *payload,
       }
     }
   }
-  return n;
+  return (int)n;
 }
 
 /*
