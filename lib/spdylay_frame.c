@@ -245,7 +245,7 @@ int spdylay_frame_unpack_nv(char ***nv_ptr, spdylay_buffer *in,
     return SPDYLAY_ERR_NOMEM;
   }
   spdylay_buffer_reader_init(&reader, in);
-  idx = (char**)buf;
+  idx = (char**)(void *)buf;
   data = buf+(nvlen*2+1)*sizeof(char*);
   n = spdylay_frame_get_nv_len(&reader, len_size);
   for(i = 0; i < n; ++i) {
@@ -299,7 +299,7 @@ int spdylay_frame_unpack_nv(char ***nv_ptr, spdylay_buffer *in,
   }
   *idx = NULL;
   assert((size_t)((char*)idx - buf) == (nvlen*2)*sizeof(char*));
-  *nv_ptr = (char**)buf;
+  *nv_ptr = (char**)(void *)buf;
   if(!invalid_header_block) {
     spdylay_frame_nv_sort(*nv_ptr);
     for(i = 2; i < nvlen*2; i += 2) {
@@ -421,7 +421,7 @@ char** spdylay_frame_nv_copy(const char **nv)
   if(buf == NULL) {
     return NULL;
   }
-  idx = (char**)buf;
+  idx = (char**)(void *)buf;
   data = buf+(i+1)*sizeof(char*);
 
   for(i = 0; nv[i]; ++i) {
@@ -431,7 +431,7 @@ char** spdylay_frame_nv_copy(const char **nv)
     data += len;
   }
   *idx = NULL;
-  return (char**)buf;
+  return (char**)(void *)buf;
 }
 
 static int spdylay_string_compar(const void *lhs, const void *rhs)
