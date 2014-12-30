@@ -1149,8 +1149,6 @@ static ssize_t spdylay_session_prep_frame(spdylay_session *session,
       }
       break;
     }
-    default:
-      framebuflen = SPDYLAY_ERR_INVALID_ARGUMENT;
     }
   } else if(item->frame_cat == SPDYLAY_DATA) {
     size_t next_readmax;
