@@ -69,6 +69,20 @@ AC_PROG_MAKE_SET
 AM_PROG_CC_C_O
 PKG_PROG_PKG_CONFIG([0.20])
 
+#
+# If we're running GCC or clang define _U_ to be "__attribute__((unused))"
+# so we can use _U_ to flag unused function parameters and not get warnings
+# about them. Otherwise, define _U_ to be an empty string so that _U_ used
+# to flag an unused function parameters will compile with other compilers.
+#
+# XXX - similar hints for other compilers?
+#
+if test "x$GCC" = "xyes" -o "x$CC" = "xclang" ; then
+  AC_DEFINE([_U_], [__attribute__((unused))], [Hint to the compiler that a function parameters is not used])
+else
+  AC_DEFINE([_U_], , [Hint to the compiler that a function parameters is not used])
+fi
+
 AC_COMPILE_STDCXX_11
 AM_CONDITIONAL([HAVE_STDCXX_11],
                [ test "x$ac_cv_cxx_compile_cxx11_cxx" = "xyes" ])
@@ -298,7 +312,6 @@ if test "x$maintainer_mode" != "xno"; then
     AX_CHECK_COMPILE_FLAG([-Waddress], [CFLAGS="$CFLAGS -Waddress"])
     AX_CHECK_COMPILE_FLAG([-Wattributes], [CFLAGS="$CFLAGS -Wattributes"])
     AX_CHECK_COMPILE_FLAG([-Wdiv-by-zero], [CFLAGS="$CFLAGS -Wdiv-by-zero"])
-    AX_CHECK_COMPILE_FLAG([-Wno-unused-parameter], [CFLAGS="$CFLAGS -Wno-unused-parameter"])
     AX_CHECK_COMPILE_FLAG([-Wshorten-64-to-32], [CFLAGS="$CFLAGS -Wshorten-64-to-32"])
 
     # Only work with Clang for the moment
