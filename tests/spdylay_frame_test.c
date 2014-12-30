@@ -814,7 +814,7 @@ void test_spdylay_frame_nv_3to2(void)
 
 /* This function intentionally does not merge same header field into
    one */
-static size_t spdylay_pack_nv(uint8_t *buf, size_t buflen, const char **nv,
+static size_t spdylay_pack_nv(uint8_t *buf, size_t buflen _U_, const char **nv,
                               size_t len_size)
 {
   size_t i, n;

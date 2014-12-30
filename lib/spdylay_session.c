@@ -318,7 +318,7 @@ int spdylay_session_server_new(spdylay_session **session_ptr,
   return r;
 }
 
-static int spdylay_free_streams(spdylay_map_entry *entry, void *ptr)
+static int spdylay_free_streams(spdylay_map_entry *entry, void *ptr _U_)
 {
   spdylay_stream_free((spdylay_stream*)entry);
   free(entry);

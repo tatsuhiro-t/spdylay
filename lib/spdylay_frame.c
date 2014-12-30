@@ -600,7 +600,7 @@ void spdylay_frame_ping_init(spdylay_ping *frame,
   frame->unique_id = unique_id;
 }
 
-void spdylay_frame_ping_free(spdylay_ping *frame)
+void spdylay_frame_ping_free(spdylay_ping *frame _U_)
 {}
 
 void spdylay_frame_goaway_init(spdylay_goaway *frame,
@@ -621,7 +621,7 @@ void spdylay_frame_goaway_init(spdylay_goaway *frame,
   frame->last_good_stream_id = last_good_stream_id;
 }
 
-void spdylay_frame_goaway_free(spdylay_goaway *frame)
+void spdylay_frame_goaway_free(spdylay_goaway *frame _U_)
 {}
 
 void spdylay_frame_headers_init(spdylay_headers *frame,
@@ -654,7 +654,7 @@ void spdylay_frame_rst_stream_init(spdylay_rst_stream *frame,
   frame->status_code = status_code;
 }
 
-void spdylay_frame_rst_stream_free(spdylay_rst_stream *frame)
+void spdylay_frame_rst_stream_free(spdylay_rst_stream *frame _U_)
 {}
 
 void spdylay_frame_window_update_init(spdylay_window_update *frame,
@@ -671,7 +671,7 @@ void spdylay_frame_window_update_init(spdylay_window_update *frame,
   frame->delta_window_size = delta_window_size;
 }
 
-void spdylay_frame_window_update_free(spdylay_window_update *frame)
+void spdylay_frame_window_update_free(spdylay_window_update *frame _U_)
 {}
 
 void spdylay_frame_settings_init(spdylay_settings *frame,
@@ -732,7 +732,7 @@ void spdylay_frame_data_init(spdylay_data *frame, int32_t stream_id,
   frame->data_prd = *data_prd;
 }
 
-void spdylay_frame_data_free(spdylay_data *frame)
+void spdylay_frame_data_free(spdylay_data *frame _U_)
 {}
 
 ssize_t spdylay_frame_pack_syn_stream(uint8_t **buf_ptr,
@@ -897,7 +897,7 @@ ssize_t spdylay_frame_pack_ping(uint8_t **buf_ptr, size_t *buflen_ptr,
 }
 
 int spdylay_frame_unpack_ping(spdylay_ping *frame,
-                              const uint8_t *head, size_t headlen,
+                              const uint8_t *head, size_t headlen _U_,
                               const uint8_t *payload, size_t payloadlen)
 {
   if(payloadlen != 4) {
@@ -934,7 +934,7 @@ ssize_t spdylay_frame_pack_goaway(uint8_t **buf_ptr, size_t *buflen_ptr,
 }
 
 int spdylay_frame_unpack_goaway(spdylay_goaway *frame,
-                                const uint8_t *head, size_t headlen,
+                                const uint8_t *head, size_t headlen _U_,
                                 const uint8_t *payload, size_t payloadlen)
 {
   spdylay_frame_unpack_ctrl_hd(&frame->hd, head);
@@ -1041,7 +1041,7 @@ ssize_t spdylay_frame_pack_rst_stream(uint8_t **buf_ptr, size_t *buflen_ptr,
 }
 
 int spdylay_frame_unpack_rst_stream(spdylay_rst_stream *frame,
-                                    const uint8_t *head, size_t headlen,
+                                    const uint8_t *head, size_t headlen _U_,
                                     const uint8_t *payload, size_t payloadlen)
 {
   if(payloadlen != 8) {
@@ -1070,7 +1070,7 @@ ssize_t spdylay_frame_pack_window_update(uint8_t **buf_ptr, size_t *buflen_ptr,
 }
 
 int spdylay_frame_unpack_window_update(spdylay_window_update *frame,
-                                       const uint8_t *head, size_t headlen,
+                                       const uint8_t *head, size_t headlen _U_,
                                        const uint8_t *payload,
                                        size_t payloadlen)
 {
@@ -1124,7 +1124,7 @@ ssize_t spdylay_frame_pack_settings(uint8_t **buf_ptr, size_t *buflen_ptr,
 }
 
 int spdylay_frame_unpack_settings(spdylay_settings *frame,
-                                  const uint8_t *head, size_t headlen,
+                                  const uint8_t *head, size_t headlen _U_,
                                   const uint8_t *payload, size_t payloadlen)
 {
   size_t i;
@@ -1247,7 +1247,7 @@ static int spdylay_frame_count_unpack_cert(const uint8_t *payload,
  */
 static int spdylay_frame_unpack_cert(spdylay_mem_chunk **certs_ptr,
                                      size_t ncerts,
-                                     const uint8_t *payload, size_t payloadlen)
+                                     const uint8_t *payload, size_t payloadlen _U_)
 {
   size_t offset, i, j;
   spdylay_mem_chunk *certs;
@@ -1277,7 +1277,7 @@ static int spdylay_frame_unpack_cert(spdylay_mem_chunk **certs_ptr,
 }
 
 int spdylay_frame_unpack_credential(spdylay_credential *frame,
-                                    const uint8_t *head, size_t headlen,
+                                    const uint8_t *head, size_t headlen _U_,
                                     const uint8_t *payload,
                                     size_t payloadlen)
 {

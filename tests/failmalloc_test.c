@@ -66,15 +66,15 @@ static void data_feed_init(data_feed *df, uint8_t *data, size_t data_length)
   df->datalimit = df->data+data_length;
 }
 
-static ssize_t null_send_callback(spdylay_session *session,
-                                  const uint8_t* data, size_t len, int flags,
-                                  void *user_data)
+static ssize_t null_send_callback(spdylay_session *session _U_,
+                                  const uint8_t* data _U_, size_t len, int flags _U_,
+                                  void *user_data  _U_)
 {
   return len;
 }
 
-static ssize_t data_feed_recv_callback(spdylay_session *session,
-                                       uint8_t* data, size_t len, int flags,
+static ssize_t data_feed_recv_callback(spdylay_session *session _U_,
+                                       uint8_t* data, size_t len, int flags _U_,
                                        void *user_data)
 {
   data_feed *df = ((my_user_data*)user_data)->df;
@@ -86,9 +86,9 @@ static ssize_t data_feed_recv_callback(spdylay_session *session,
 }
 
 static ssize_t fixed_length_data_source_read_callback
-(spdylay_session *session, int32_t stream_id,
- uint8_t *buf, size_t len, int *eof,
- spdylay_data_source *source, void *user_data)
+(spdylay_session *session _U_, int32_t stream_id _U_,
+ uint8_t *buf _U_, size_t len, int *eof,
+ spdylay_data_source *source _U_, void *user_data)
 {
   my_user_data *ud = (my_user_data*)user_data;
   size_t wlen;
@@ -104,9 +104,9 @@ static ssize_t fixed_length_data_source_read_callback
   return wlen;
 }
 
-static ssize_t get_credential_ncerts(spdylay_session *session,
+static ssize_t get_credential_ncerts(spdylay_session *session _U_,
                                      const spdylay_origin *origin,
-                                     void *user_data)
+                                     void *user_data _U_)
 {
   if(strcmp("example.org", origin->host) == 0 &&
      strcmp("https", origin->scheme) == 0 &&
@@ -117,11 +117,11 @@ static ssize_t get_credential_ncerts(spdylay_session *session,
   }
 }
 
-static ssize_t get_credential_cert(spdylay_session *session,
+static ssize_t get_credential_cert(spdylay_session *session _U_,
                                    const spdylay_origin *origin,
-                                   size_t idx,
+                                   size_t idx _U_,
                                    uint8_t *cert, size_t certlen,
-                                   void *user_data)
+                                   void *user_data _U_)
 {
   size_t len = strlen(origin->host);
   if(certlen == 0) {
@@ -133,10 +133,10 @@ static ssize_t get_credential_cert(spdylay_session *session,
   }
 }
 
-static ssize_t get_credential_proof(spdylay_session *session,
+static ssize_t get_credential_proof(spdylay_session *session _U_,
                                     const spdylay_origin *origin,
                                     uint8_t *proof, size_t prooflen,
-                                    void *uer_data)
+                                    void *user_data  _U_)
 {
   size_t len = strlen(origin->scheme);
   if(prooflen == 0) {

@@ -42,6 +42,8 @@
 
 #include <spdylay/spdylay.h>
 
+#include <config.h>
+
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 
@@ -163,8 +165,8 @@ static void check_gzip(struct Request *req, char **nv)
  * bytes actually written. See the documentation of
  * spdylay_send_callback for the details.
  */
-static ssize_t send_callback(spdylay_session *session,
-                             const uint8_t *data, size_t length, int flags,
+static ssize_t send_callback(spdylay_session *session _U_,
+                             const uint8_t *data, size_t length, int flags _U_,
                              void *user_data)
 {
   struct Connection *connection;
@@ -192,8 +194,8 @@ static ssize_t send_callback(spdylay_session *session,
  * |length| bytes. Returns the number of bytes stored in |buf|. See
  * the documentation of spdylay_recv_callback for the details.
  */
-static ssize_t recv_callback(spdylay_session *session,
-                             uint8_t *buf, size_t length, int flags,
+static ssize_t recv_callback(spdylay_session *session _U_,
+                             uint8_t *buf, size_t length, int flags _U_,
                              void *user_data)
 {
   struct Connection *connection;
@@ -226,7 +228,7 @@ static ssize_t recv_callback(spdylay_session *session,
 static void before_ctrl_send_callback(spdylay_session *session,
                                       spdylay_frame_type type,
                                       spdylay_frame *frame,
-                                      void *user_data)
+                                      void *user_data _U_)
 {
   if(type == SPDYLAY_SYN_STREAM) {
     struct Request *req;
@@ -241,7 +243,7 @@ static void before_ctrl_send_callback(spdylay_session *session,
 
 static void on_ctrl_send_callback(spdylay_session *session,
                                   spdylay_frame_type type,
-                                  spdylay_frame *frame, void *user_data)
+                                  spdylay_frame *frame, void *user_data _U_)
 {
   char **nv;
   const char *name = NULL;
@@ -266,7 +268,7 @@ static void on_ctrl_send_callback(spdylay_session *session,
 
 static void on_ctrl_recv_callback(spdylay_session *session,
                                   spdylay_frame_type type,
-                                  spdylay_frame *frame, void *user_data)
+                                  spdylay_frame *frame, void *user_data _U_)
 {
   struct Request *req;
   char **nv;
@@ -308,8 +310,8 @@ static void on_ctrl_recv_callback(spdylay_session *session,
  */
 static void on_stream_close_callback(spdylay_session *session,
                                      int32_t stream_id,
-                                     spdylay_status_code status_code,
-                                     void *user_data)
+                                     spdylay_status_code status_code _U_,
+                                     void *user_data _U_)
 {
   struct Request *req;
   req = spdylay_session_get_stream_user_data(session, stream_id);
@@ -328,10 +330,10 @@ static void on_stream_close_callback(spdylay_session *session,
  * The implementation of spdylay_on_data_chunk_recv_callback type. We
  * use this function to print the received response body.
  */
-static void on_data_chunk_recv_callback(spdylay_session *session, uint8_t flags,
+static void on_data_chunk_recv_callback(spdylay_session *session, uint8_t flags _U_,
                                         int32_t stream_id,
                                         const uint8_t *data, size_t len,
-                                        void *user_data)
+                                        void *user_data _U_)
 {
   struct Request *req;
   req = spdylay_session_get_stream_user_data(session, stream_id);
@@ -384,7 +386,7 @@ static void setup_spdylay_callbacks(spdylay_session_callbacks *callbacks)
  * SPDY protocol, if server does not offer SPDY protocol the Spdylay
  * library supports, we terminate program.
  */
-static int select_next_proto_cb(SSL* ssl,
+static int select_next_proto_cb(SSL* ssl _U_,
                                 unsigned char **out, unsigned char *outlen,
                                 const unsigned char *in, unsigned int inlen,
                                 void *arg)

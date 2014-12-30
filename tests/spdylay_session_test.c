@@ -80,30 +80,30 @@ static void scripted_data_feed_init(scripted_data_feed *df,
   df->feedseq[0] = data_length;
 }
 
-static ssize_t null_send_callback(spdylay_session *session,
-                                  const uint8_t* data, size_t len, int flags,
-                                  void *user_data)
+static ssize_t null_send_callback(spdylay_session *session _U_,
+                                  const uint8_t* data _U_, size_t len, int flags _U_,
+                                  void *user_data _U_)
 {
   return len;
 }
 
-static ssize_t fail_send_callback(spdylay_session *session,
-                                  const uint8_t *data, size_t len, int flags,
-                                  void *user_data)
+static ssize_t fail_send_callback(spdylay_session *session _U_,
+                                  const uint8_t *data _U_, size_t len _U_, int flags _U_,
+                                  void *user_data _U_)
 {
   return SPDYLAY_ERR_CALLBACK_FAILURE;
 }
 
-static ssize_t fixed_bytes_send_callback(spdylay_session *session,
-                                         const uint8_t *data, size_t len,
-                                         int flags, void *user_data)
+static ssize_t fixed_bytes_send_callback(spdylay_session *session _U_,
+                                         const uint8_t *data _U_, size_t len,
+                                         int flags _U_, void *user_data)
 {
   size_t fixed_sendlen = ((my_user_data*)user_data)->fixed_sendlen;
   return fixed_sendlen < len ? fixed_sendlen : len;
 }
 
-static ssize_t scripted_recv_callback(spdylay_session *session,
-                                      uint8_t* data, size_t len, int flags,
+static ssize_t scripted_recv_callback(spdylay_session *session _U_,
+                                      uint8_t* data, size_t len, int flags _U_,
                                       void *user_data)
 {
   scripted_data_feed *df = ((my_user_data*)user_data)->df;
@@ -117,16 +117,16 @@ static ssize_t scripted_recv_callback(spdylay_session *session,
   return wlen;
 }
 
-static ssize_t eof_recv_callback(spdylay_session *session,
-                                      uint8_t* data, size_t len, int flags,
-                                      void *user_data)
+static ssize_t eof_recv_callback(spdylay_session *session _U_,
+                                      uint8_t* data _U_, size_t len _U_, int flags _U_,
+                                      void *user_data _U_)
 {
   return SPDYLAY_ERR_EOF;
 }
 
-static ssize_t accumulator_send_callback(spdylay_session *session,
+static ssize_t accumulator_send_callback(spdylay_session *session _U_,
                                          const uint8_t *buf, size_t len,
-                                         int flags, void* user_data)
+                                         int flags _U_, void* user_data)
 {
   accumulator *acc = ((my_user_data*)user_data)->acc;
   assert(acc->length+len < sizeof(acc->buf));
@@ -135,28 +135,28 @@ static ssize_t accumulator_send_callback(spdylay_session *session,
   return len;
 }
 
-static void on_ctrl_recv_callback(spdylay_session *session,
-                                  spdylay_frame_type type,
-                                  spdylay_frame *frame,
+static void on_ctrl_recv_callback(spdylay_session *session _U_,
+                                  spdylay_frame_type type _U_,
+                                  spdylay_frame *frame _U_,
                                   void *user_data)
 {
   my_user_data *ud = (my_user_data*)user_data;
   ++ud->ctrl_recv_cb_called;
 }
 
-static void on_invalid_ctrl_recv_callback(spdylay_session *session,
-                                          spdylay_frame_type type,
-                                          spdylay_frame *frame,
-                                          uint32_t status_code,
+static void on_invalid_ctrl_recv_callback(spdylay_session *session _U_,
+                                          spdylay_frame_type type _U_,
+                                          spdylay_frame *frame _U_,
+                                          uint32_t status_code _U_,
                                           void *user_data)
 {
   my_user_data *ud = (my_user_data*)user_data;
   ++ud->invalid_ctrl_recv_cb_called;
 }
 
-static void on_ctrl_send_callback(spdylay_session *session,
+static void on_ctrl_send_callback(spdylay_session *session _U_,
                                   spdylay_frame_type type,
-                                  spdylay_frame *frame,
+                                  spdylay_frame *frame _U_,
                                   void *user_data)
 {
   my_user_data *ud = (my_user_data*)user_data;
@@ -164,9 +164,9 @@ static void on_ctrl_send_callback(spdylay_session *session,
   ud->sent_frame_type = type;
 }
 
-static void on_ctrl_not_send_callback(spdylay_session *session,
+static void on_ctrl_not_send_callback(spdylay_session *session _U_,
                                       spdylay_frame_type type,
-                                      spdylay_frame *frame,
+                                      spdylay_frame *frame _U_,
                                       int error,
                                       void *user_data)
 {
@@ -176,27 +176,27 @@ static void on_ctrl_not_send_callback(spdylay_session *session,
   ud->not_sent_error = error;
 }
 
-static void on_data_chunk_recv_callback(spdylay_session *session,
-                                        uint8_t flags, int32_t stream_id,
-                                        const uint8_t *data, size_t len,
+static void on_data_chunk_recv_callback(spdylay_session *session _U_,
+                                        uint8_t flags _U_, int32_t stream_id _U_,
+                                        const uint8_t *data _U_, size_t len _U_,
                                         void *user_data)
 {
   my_user_data *ud = (my_user_data*)user_data;
   ++ud->data_chunk_recv_cb_called;
 }
 
-static void on_data_recv_callback(spdylay_session *session,
-                                  uint8_t flags, int32_t stream_id,
-                                  int32_t length, void *user_data)
+static void on_data_recv_callback(spdylay_session *session _U_,
+                                  uint8_t flags _U_, int32_t stream_id _U_,
+                                  int32_t length _U_, void *user_data)
 {
   my_user_data *ud = (my_user_data*)user_data;
   ++ud->data_recv_cb_called;
 }
 
 static ssize_t fixed_length_data_source_read_callback
-(spdylay_session *session, int32_t stream_id,
- uint8_t *buf, size_t len, int *eof,
- spdylay_data_source *source, void *user_data)
+(spdylay_session *session _U_, int32_t stream_id _U_,
+ uint8_t *buf _U_, size_t len, int *eof,
+ spdylay_data_source *source _U_, void *user_data)
 {
   my_user_data *ud = (my_user_data*)user_data;
   size_t wlen;
@@ -213,22 +213,22 @@ static ssize_t fixed_length_data_source_read_callback
 }
 
 static ssize_t temporal_failure_data_source_read_callback
-(spdylay_session *session, int32_t stream_id,
- uint8_t *buf, size_t len, int *eof,
- spdylay_data_source *source, void *user_data)
+(spdylay_session *session _U_, int32_t stream_id _U_,
+ uint8_t *buf _U_, size_t len _U_, int *eof _U_,
+ spdylay_data_source *source _U_, void *user_data _U_)
 {
   return SPDYLAY_ERR_TEMPORAL_CALLBACK_FAILURE;
 }
 
 static ssize_t fail_data_source_read_callback
-(spdylay_session *session, int32_t stream_id,
- uint8_t *buf, size_t len, int *eof,
- spdylay_data_source *source, void *user_data)
+(spdylay_session *session _U_, int32_t stream_id _U_,
+ uint8_t *buf _U_, size_t len _U_, int *eof _U_,
+ spdylay_data_source *source _U_, void *user_data _U_)
 {
   return SPDYLAY_ERR_CALLBACK_FAILURE;
 }
 
-static void on_request_recv_callback(spdylay_session *session,
+static void on_request_recv_callback(spdylay_session *session _U_,
                                      int32_t stream_id,
                                      void *user_data)
 {
@@ -237,9 +237,9 @@ static void on_request_recv_callback(spdylay_session *session,
 }
 
 static void no_stream_user_data_stream_close_callback
-(spdylay_session *session,
- int32_t stream_id,
- spdylay_status_code status_code,
+(spdylay_session *session _U_,
+ int32_t stream_id _U_,
+ spdylay_status_code status_code _U_,
  void *user_data)
 {
   my_user_data* my_data = (my_user_data*)user_data;
@@ -1619,7 +1619,7 @@ void test_spdylay_session_on_request_recv_callback(void)
 }
 
 static void stream_close_callback(spdylay_session *session, int32_t stream_id,
-                                  spdylay_status_code status_code,
+                                  spdylay_status_code status_code _U_,
                                   void *user_data)
 {
   my_user_data* my_data = (my_user_data*)user_data;
@@ -1679,9 +1679,9 @@ void test_spdylay_session_max_concurrent_streams(void)
   spdylay_session_del(session);
 }
 
-static ssize_t block_count_send_callback(spdylay_session* session,
-                                         const uint8_t *data, size_t len,
-                                         int flags,
+static ssize_t block_count_send_callback(spdylay_session* session _U_,
+                                         const uint8_t *data _U_, size_t len,
+                                         int flags _U_,
                                          void *user_data)
 {
   my_user_data *ud = (my_user_data*)user_data;
@@ -1869,9 +1869,9 @@ void test_spdylay_session_recv_invalid_frame(void)
 }
 
 static ssize_t defer_data_source_read_callback
-(spdylay_session *session, int32_t stream_id,
- uint8_t *buf, size_t len, int *eof,
- spdylay_data_source *source, void *user_data)
+(spdylay_session *session _U_, int32_t stream_id _U_,
+ uint8_t *buf _U_, size_t len _U_, int *eof _U_,
+ spdylay_data_source *source _U_, void *user_data _U_)
 {
   return SPDYLAY_ERR_DEFERRED;
 }
@@ -2372,9 +2372,9 @@ void test_spdylay_session_get_outbound_queue_size(void)
   spdylay_session_del(session);
 }
 
-static ssize_t get_credential_ncerts(spdylay_session *session,
+static ssize_t get_credential_ncerts(spdylay_session *session _U_,
                                      const spdylay_origin *origin,
-                                     void *user_data)
+                                     void *user_data _U_)
 {
   if(strcmp("example.org", origin->host) == 0 &&
      strcmp("https", origin->scheme) == 0 &&
@@ -2385,11 +2385,11 @@ static ssize_t get_credential_ncerts(spdylay_session *session,
   }
 }
 
-static ssize_t get_credential_cert(spdylay_session *session,
+static ssize_t get_credential_cert(spdylay_session *session _U_,
                                    const spdylay_origin *origin,
-                                   size_t idx,
+                                   size_t idx _U_,
                                    uint8_t *cert, size_t certlen,
-                                   void *user_data)
+                                   void *user_data _U_)
 {
   size_t len = strlen(origin->host);
   if(certlen == 0) {
@@ -2401,10 +2401,10 @@ static ssize_t get_credential_cert(spdylay_session *session,
   }
 }
 
-static ssize_t get_credential_proof(spdylay_session *session,
+static ssize_t get_credential_proof(spdylay_session *session _U_,
                                     const spdylay_origin *origin,
                                     uint8_t *proof, size_t prooflen,
-                                    void *uer_data)
+                                    void *user_data _U_)
 {
   size_t len = strlen(origin->scheme);
   if(prooflen == 0) {
