@@ -57,9 +57,7 @@ example program), the following packages are needed:
 If you are using Ubuntu 12.04, you need the following packages
 installed:
 
-```bash
-apt-get install autoconf automake autotools-dev libtool pkg-config zlib1g-dev libcunit1-dev libssl-dev libxml2-dev libevent-dev
-```
+    $ apt-get install autoconf automake autotools-dev libtool pkg-config zlib1g-dev libcunit1-dev libssl-dev libxml2-dev libevent-dev
 
 Build from git
 --------------
