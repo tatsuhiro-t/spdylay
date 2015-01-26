@@ -63,9 +63,9 @@ int spdylay_gzip_inflate(spdylay_gzip *inflater,
   if(inflater->finished) {
     return SPDYLAY_ERR_GZIP;
   }
-  inflater->zst.avail_in = *inlen_ptr;
+  inflater->zst.avail_in = (uint)*inlen_ptr;
   inflater->zst.next_in = (unsigned char*)in;
-  inflater->zst.avail_out = *outlen_ptr;
+  inflater->zst.avail_out = (uint)*outlen_ptr;
   inflater->zst.next_out = out;
 
   rv = inflate(&inflater->zst, Z_NO_FLUSH);

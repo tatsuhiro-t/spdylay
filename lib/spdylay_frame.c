@@ -47,7 +47,7 @@ size_t spdylay_frame_get_len_size(uint16_t version)
 static uint8_t* spdylay_pack_str(uint8_t *buf, const char *str, size_t len,
                                  size_t len_size)
 {
-  spdylay_frame_put_nv_len(buf, len, len_size);
+  spdylay_frame_put_nv_len(buf, (uint32_t)len, len_size);
   buf += len_size;
   memcpy(buf, str, len);
   return buf+len;
@@ -245,7 +245,7 @@ int spdylay_frame_unpack_nv(char ***nv_ptr, spdylay_buffer *in,
     return SPDYLAY_ERR_NOMEM;
   }
   spdylay_buffer_reader_init(&reader, in);
-  idx = (char**)buf;
+  idx = (char**)(void *)buf;
   data = buf+(nvlen*2+1)*sizeof(char*);
   n = spdylay_frame_get_nv_len(&reader, len_size);
   for(i = 0; i < n; ++i) {
@@ -299,7 +299,7 @@ int spdylay_frame_unpack_nv(char ***nv_ptr, spdylay_buffer *in,
   }
   *idx = NULL;
   assert((size_t)((char*)idx - buf) == (nvlen*2)*sizeof(char*));
-  *nv_ptr = (char**)buf;
+  *nv_ptr = (char**)(void *)buf;
   if(!invalid_header_block) {
     spdylay_frame_nv_sort(*nv_ptr);
     for(i = 2; i < nvlen*2; i += 2) {
@@ -387,7 +387,7 @@ ssize_t spdylay_frame_pack_nv(uint8_t *buf, char **nv, size_t len_size)
       bufp = spdylay_pack_str(bufp, key, keylen, len_size);
       prev = key;
       cur_vallen_buf = bufp;
-      cur_vallen = vallen;
+      cur_vallen = (uint32_t)vallen;
       prevkeylen = keylen;
       prevvallen = vallen;
       bufp = spdylay_pack_str(bufp, val, vallen, len_size);
@@ -421,7 +421,7 @@ char** spdylay_frame_nv_copy(const char **nv)
   if(buf == NULL) {
     return NULL;
   }
-  idx = (char**)buf;
+  idx = (char**)(void *)buf;
   data = buf+(i+1)*sizeof(char*);
 
   for(i = 0; nv[i]; ++i) {
@@ -431,7 +431,7 @@ char** spdylay_frame_nv_copy(const char **nv)
     data += len;
   }
   *idx = NULL;
-  return (char**)buf;
+  return (char**)(void *)buf;
 }
 
 static int spdylay_string_compar(const void *lhs, const void *rhs)
@@ -600,7 +600,7 @@ void spdylay_frame_ping_init(spdylay_ping *frame,
   frame->unique_id = unique_id;
 }
 
-void spdylay_frame_ping_free(spdylay_ping *frame)
+void spdylay_frame_ping_free(spdylay_ping *frame _U_)
 {}
 
 void spdylay_frame_goaway_init(spdylay_goaway *frame,
@@ -621,7 +621,7 @@ void spdylay_frame_goaway_init(spdylay_goaway *frame,
   frame->last_good_stream_id = last_good_stream_id;
 }
 
-void spdylay_frame_goaway_free(spdylay_goaway *frame)
+void spdylay_frame_goaway_free(spdylay_goaway *frame _U_)
 {}
 
 void spdylay_frame_headers_init(spdylay_headers *frame,
@@ -654,7 +654,7 @@ void spdylay_frame_rst_stream_init(spdylay_rst_stream *frame,
   frame->status_code = status_code;
 }
 
-void spdylay_frame_rst_stream_free(spdylay_rst_stream *frame)
+void spdylay_frame_rst_stream_free(spdylay_rst_stream *frame _U_)
 {}
 
 void spdylay_frame_window_update_init(spdylay_window_update *frame,
@@ -671,7 +671,7 @@ void spdylay_frame_window_update_init(spdylay_window_update *frame,
   frame->delta_window_size = delta_window_size;
 }
 
-void spdylay_frame_window_update_free(spdylay_window_update *frame)
+void spdylay_frame_window_update_free(spdylay_window_update *frame _U_)
 {}
 
 void spdylay_frame_settings_init(spdylay_settings *frame,
@@ -682,7 +682,7 @@ void spdylay_frame_settings_init(spdylay_settings *frame,
   frame->hd.version = version;
   frame->hd.type = SPDYLAY_SETTINGS;
   frame->hd.flags = flags;
-  frame->hd.length = 4+niv*8;
+  frame->hd.length = 4+(int32_t)niv*8;
   frame->niv = niv;
   frame->iv = iv;
 }
@@ -706,7 +706,7 @@ void spdylay_frame_credential_init(spdylay_credential *frame,
   frame->proof = *proof;
   frame->certs = certs;
   frame->ncerts = ncerts;
-  frame->hd.length = 2+4+frame->proof.length;
+  frame->hd.length = (int32_t)(2+4+frame->proof.length);
   for(i = 0; i < ncerts; ++i) {
     frame->hd.length += 4+frame->certs[i].length;
   }
@@ -732,7 +732,7 @@ void spdylay_frame_data_init(spdylay_data *frame, int32_t stream_id,
   frame->data_prd = *data_prd;
 }
 
-void spdylay_frame_data_free(spdylay_data *frame)
+void spdylay_frame_data_free(spdylay_data *frame _U_)
 {}
 
 ssize_t spdylay_frame_pack_syn_stream(uint8_t **buf_ptr,
@@ -756,7 +756,7 @@ ssize_t spdylay_frame_pack_syn_stream(uint8_t **buf_ptr,
   if(framelen < 0) {
     return framelen;
   }
-  frame->hd.length = framelen-SPDYLAY_FRAME_HEAD_LENGTH;
+  frame->hd.length = (int32_t)framelen-SPDYLAY_FRAME_HEAD_LENGTH;
   memset(*buf_ptr, 0, SPDYLAY_SYN_STREAM_NV_OFFSET);
   /* pack ctrl header after length is determined */
   spdylay_frame_pack_ctrl_hd(*buf_ptr, &frame->hd);
@@ -837,7 +837,7 @@ ssize_t spdylay_frame_pack_syn_reply(uint8_t **buf_ptr,
   if(framelen < 0) {
     return framelen;
   }
-  frame->hd.length = framelen-SPDYLAY_FRAME_HEAD_LENGTH;
+  frame->hd.length = (int32_t)(framelen-SPDYLAY_FRAME_HEAD_LENGTH);
   memset(*buf_ptr, 0, nv_offset);
   spdylay_frame_pack_ctrl_hd(*buf_ptr, &frame->hd);
   spdylay_put_uint32be(&(*buf_ptr)[8], frame->stream_id);
@@ -897,7 +897,7 @@ ssize_t spdylay_frame_pack_ping(uint8_t **buf_ptr, size_t *buflen_ptr,
 }
 
 int spdylay_frame_unpack_ping(spdylay_ping *frame,
-                              const uint8_t *head, size_t headlen,
+                              const uint8_t *head, size_t headlen _U_,
                               const uint8_t *payload, size_t payloadlen)
 {
   if(payloadlen != 4) {
@@ -934,7 +934,7 @@ ssize_t spdylay_frame_pack_goaway(uint8_t **buf_ptr, size_t *buflen_ptr,
 }
 
 int spdylay_frame_unpack_goaway(spdylay_goaway *frame,
-                                const uint8_t *head, size_t headlen,
+                                const uint8_t *head, size_t headlen _U_,
                                 const uint8_t *payload, size_t payloadlen)
 {
   spdylay_frame_unpack_ctrl_hd(&frame->hd, head);
@@ -980,7 +980,7 @@ ssize_t spdylay_frame_pack_headers(uint8_t **buf_ptr, size_t *buflen_ptr,
   if(framelen < 0) {
     return framelen;
   }
-  frame->hd.length = framelen-SPDYLAY_FRAME_HEAD_LENGTH;
+  frame->hd.length = (int32_t)(framelen-SPDYLAY_FRAME_HEAD_LENGTH);
   memset(*buf_ptr, 0, nv_offset);
   spdylay_frame_pack_ctrl_hd(*buf_ptr, &frame->hd);
   spdylay_put_uint32be(&(*buf_ptr)[8], frame->stream_id);
@@ -1041,7 +1041,7 @@ ssize_t spdylay_frame_pack_rst_stream(uint8_t **buf_ptr, size_t *buflen_ptr,
 }
 
 int spdylay_frame_unpack_rst_stream(spdylay_rst_stream *frame,
-                                    const uint8_t *head, size_t headlen,
+                                    const uint8_t *head, size_t headlen _U_,
                                     const uint8_t *payload, size_t payloadlen)
 {
   if(payloadlen != 8) {
@@ -1070,7 +1070,7 @@ ssize_t spdylay_frame_pack_window_update(uint8_t **buf_ptr, size_t *buflen_ptr,
 }
 
 int spdylay_frame_unpack_window_update(spdylay_window_update *frame,
-                                       const uint8_t *head, size_t headlen,
+                                       const uint8_t *head, size_t headlen _U_,
                                        const uint8_t *payload,
                                        size_t payloadlen)
 {
@@ -1100,10 +1100,10 @@ ssize_t spdylay_frame_pack_settings(uint8_t **buf_ptr, size_t *buflen_ptr,
   }
   memset(*buf_ptr, 0, framelen);
   spdylay_frame_pack_ctrl_hd(*buf_ptr, &frame->hd);
-  spdylay_put_uint32be(&(*buf_ptr)[8], frame->niv);
+  spdylay_put_uint32be(&(*buf_ptr)[8],(uint32_t)frame->niv);
   if(frame->hd.version == SPDYLAY_PROTO_SPDY2) {
     for(i = 0; i < frame->niv; ++i) {
-      int off = i*8;
+      int off = (int)(i*8);
       /* spdy/2 spec says ID is network byte order, but publicly
          deployed server sends little endian host byte order. */
       (*buf_ptr)[12+off+0] = (frame->iv[i].settings_id) & 0xff;
@@ -1114,7 +1114,7 @@ ssize_t spdylay_frame_pack_settings(uint8_t **buf_ptr, size_t *buflen_ptr,
     }
   } else {
     for(i = 0; i < frame->niv; ++i) {
-      int off = i*8;
+      int off = (int)(i*8);
       spdylay_put_uint32be(&(*buf_ptr)[12+off], frame->iv[i].settings_id);
       (*buf_ptr)[12+off] = frame->iv[i].flags;
       spdylay_put_uint32be(&(*buf_ptr)[16+off], frame->iv[i].value);
@@ -1124,7 +1124,7 @@ ssize_t spdylay_frame_pack_settings(uint8_t **buf_ptr, size_t *buflen_ptr,
 }
 
 int spdylay_frame_unpack_settings(spdylay_settings *frame,
-                                  const uint8_t *head, size_t headlen,
+                                  const uint8_t *head, size_t headlen _U_,
                                   const uint8_t *payload, size_t payloadlen)
 {
   size_t i;
@@ -1185,12 +1185,12 @@ ssize_t spdylay_frame_pack_credential(uint8_t **buf_ptr, size_t *buflen_ptr,
   offset = SPDYLAY_FRAME_HEAD_LENGTH;
   spdylay_put_uint16be(&(*buf_ptr)[offset], frame->slot);
   offset += 2;
-  spdylay_put_uint32be(&(*buf_ptr)[offset], frame->proof.length);
+  spdylay_put_uint32be(&(*buf_ptr)[offset], (uint32_t)frame->proof.length);
   offset += 4;
   memcpy(&(*buf_ptr)[offset], frame->proof.data, frame->proof.length);
   offset += frame->proof.length;
   for(i = 0; i < frame->ncerts; ++i) {
-    spdylay_put_uint32be(&(*buf_ptr)[offset], frame->certs[i].length);
+    spdylay_put_uint32be(&(*buf_ptr)[offset], (uint32_t)(frame->certs[i].length));
     offset += 4;
     memcpy(&(*buf_ptr)[offset], frame->certs[i].data, frame->certs[i].length);
     offset += frame->certs[i].length;
@@ -1230,7 +1230,7 @@ static int spdylay_frame_count_unpack_cert(const uint8_t *payload,
       }
     }
   }
-  return n;
+  return (int)n;
 }
 
 /*
@@ -1247,7 +1247,7 @@ static int spdylay_frame_count_unpack_cert(const uint8_t *payload,
  */
 static int spdylay_frame_unpack_cert(spdylay_mem_chunk **certs_ptr,
                                      size_t ncerts,
-                                     const uint8_t *payload, size_t payloadlen)
+                                     const uint8_t *payload, size_t payloadlen _U_)
 {
   size_t offset, i, j;
   spdylay_mem_chunk *certs;
@@ -1277,7 +1277,7 @@ static int spdylay_frame_unpack_cert(spdylay_mem_chunk **certs_ptr,
 }
 
 int spdylay_frame_unpack_credential(spdylay_credential *frame,
-                                    const uint8_t *head, size_t headlen,
+                                    const uint8_t *head, size_t headlen _U_,
                                     const uint8_t *payload,
                                     size_t payloadlen)
 {
