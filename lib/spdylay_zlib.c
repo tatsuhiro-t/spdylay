@@ -264,7 +264,7 @@ int spdylay_zlib_deflate_hd_init(spdylay_zlib *deflater, int comp,
     return SPDYLAY_ERR_ZLIB;
   }
   if(Z_OK != deflateSetDictionary(&deflater->zst, (uint8_t*)hd_dict,
-                                  hd_dict_length)) {
+                                  (uInt)hd_dict_length)) {
     spdylay_zlib_deflate_free(deflater);
     return SPDYLAY_ERR_ZLIB;
   }
@@ -306,9 +306,9 @@ ssize_t spdylay_zlib_deflate_hd(spdylay_zlib *deflater,
                                 const uint8_t *in, size_t inlen)
 {
   int r;
-  deflater->zst.avail_in = inlen;
+  deflater->zst.avail_in = (uint)inlen;
   deflater->zst.next_in = (uint8_t*)in;
-  deflater->zst.avail_out = outlen;
+  deflater->zst.avail_out = (uint)outlen;
   deflater->zst.next_out = out;
   r = deflate(&deflater->zst, Z_SYNC_FLUSH);
   if(r == Z_OK) {
@@ -328,7 +328,7 @@ ssize_t spdylay_zlib_inflate_hd(spdylay_zlib *inflater,
                                 const uint8_t *in, size_t inlen)
 {
   int r;
-  inflater->zst.avail_in = inlen;
+  inflater->zst.avail_in = (uint)inlen;
   inflater->zst.next_in = (uint8_t*)in;
   while(1) {
     if(spdylay_buffer_avail(buf) == 0) {
@@ -336,7 +336,7 @@ ssize_t spdylay_zlib_inflate_hd(spdylay_zlib *inflater,
         return r;
       }
     }
-    inflater->zst.avail_out = spdylay_buffer_avail(buf);
+    inflater->zst.avail_out = (uint)spdylay_buffer_avail(buf);
     inflater->zst.next_out = spdylay_buffer_get(buf);
     r = inflate(&inflater->zst, Z_NO_FLUSH);
     if(r == Z_STREAM_ERROR || r == Z_STREAM_END || r == Z_DATA_ERROR) {
@@ -347,7 +347,7 @@ ssize_t spdylay_zlib_inflate_hd(spdylay_zlib *inflater,
       hd_dict = spdylay_select_hd_dict(&hd_dict_length, inflater->version);
       assert(hd_dict);
       if(Z_OK != inflateSetDictionary(&inflater->zst, (uint8_t*)hd_dict,
-                                      hd_dict_length)) {
+                                      (uint)hd_dict_length)) {
         return SPDYLAY_ERR_ZLIB;
       }
     } else {

@@ -814,18 +814,18 @@ void test_spdylay_frame_nv_3to2(void)
 
 /* This function intentionally does not merge same header field into
    one */
-static size_t spdylay_pack_nv(uint8_t *buf, size_t buflen, const char **nv,
+static size_t spdylay_pack_nv(uint8_t *buf, size_t buflen _U_, const char **nv,
                               size_t len_size)
 {
   size_t i, n;
   uint8_t *buf_ptr;
   buf_ptr = buf;
   for(n = 0; nv[n]; ++n);
-  spdylay_frame_put_nv_len(buf_ptr, n/2, len_size);
+  spdylay_frame_put_nv_len(buf_ptr, (uint32_t)(n/2), len_size);
   buf_ptr += len_size;
   for(i = 0; i < n; ++i) {
     size_t len = strlen(nv[i]);
-    spdylay_frame_put_nv_len(buf_ptr, len, len_size);
+    spdylay_frame_put_nv_len(buf_ptr, (uint32_t)len, len_size);
     buf_ptr += len_size;
     memcpy(buf_ptr, nv[i], len);
     buf_ptr += len;

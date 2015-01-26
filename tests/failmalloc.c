@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <CUnit/Basic.h>
+#include "config.h"
 /* include test cases' include files here */
 #include "failmalloc_test.h"
 
@@ -38,7 +39,7 @@ static int clean_suite1(void)
   return 0;
 }
 
-int main(int argc, char* argv[])
+int main(int argc _U_, char* argv[] _U_)
 {
    CU_pSuite pSuite = NULL;
    unsigned int num_tests_failed;
