@@ -3056,6 +3056,19 @@ void* spdylay_session_get_stream_user_data(spdylay_session *session,
   }
 }
 
+
+int spdylay_session_set_stream_user_data(spdylay_session *session,
+                                         int32_t stream_id,
+                                         void *stream_user_data) {
+  spdylay_stream *stream;
+  stream = spdylay_session_get_stream(session, stream_id);
+  if (!stream) {
+    return SPDYLAY_ERR_INVALID_ARGUMENT;
+  }
+  stream->stream_user_data = stream_user_data;
+  return 0;
+}
+
 int spdylay_session_resume_data(spdylay_session *session, int32_t stream_id)
 {
   int r;

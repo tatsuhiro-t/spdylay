@@ -1580,6 +1580,25 @@ void* spdylay_session_get_stream_user_data(spdylay_session *session,
 /**
  * @function
  *
+ * Sets the |stream_user_data| to the stream denoted by the
+ * |stream_id|.  If a stream user data is already set to the stream,
+ * it is replaced with the |stream_user_data|.  It is valid to specify
+ * ``NULL`` in the |stream_user_data|, which nullifies the associated
+ * data pointer.
+ *
+ * This function returns 0 if it succeeds, or one of following
+ * negative error codes:
+ *
+ * :enum:`SPDYLAY_ERR_INVALID_ARGUMENT`
+ *     The stream does not exist
+ */
+int spdylay_session_set_stream_user_data(spdylay_session *session,
+                                         int32_t stream_id,
+                                         void *stream_user_data);
+
+/**
+ * @function
+ *
  * Returns the number of frames in the outbound queue. This does not
  * include the deferred DATA frames.
  */
