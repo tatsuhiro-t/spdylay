@@ -1367,6 +1367,21 @@ Functions
     this function returns ``NULL``. If the stream does not exist, this
     function returns ``NULL``.
 
+.. function:: int spdylay_session_set_stream_user_data(spdylay_session *session, int32_t stream_id, void *stream_user_data)
+
+    
+    Sets the *stream_user_data* to the stream denoted by the
+    *stream_id*.  If a stream user data is already set to the stream,
+    it is replaced with the *stream_user_data*.  It is valid to specify
+    ``NULL`` in the *stream_user_data*, which nullifies the associated
+    data pointer.
+    
+    This function returns 0 if it succeeds, or one of following
+    negative error codes:
+    
+    :macro:`SPDYLAY_ERR_INVALID_ARGUMENT`
+        The stream does not exist
+
 .. function:: size_t spdylay_session_get_outbound_queue_size(spdylay_session *session)
 
     
