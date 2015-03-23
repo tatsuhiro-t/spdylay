@@ -310,14 +310,17 @@ int nonblock_connect_to(const std::string& host, uint16_t port, int timeout)
       }
       r = poll(&pfd, 1, timeout);
       if(r == 0) {
+        freeaddrinfo(res);
         return -2;
       } else if(r == -1) {
+        freeaddrinfo(res);
         return -1;
       } else {
         if(timeout != -1) {
           get_time(&tv2);
           timeout -= time_delta(tv2, tv1);
           if(timeout <= 0) {
+            freeaddrinfo(res);
             return -2;
           }
         }
