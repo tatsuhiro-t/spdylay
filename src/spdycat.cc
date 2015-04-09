@@ -749,11 +749,11 @@ int communicate(const std::string& host, uint16_t port,
       goto fin;
     }
 
-    // If the user overrode the host header, use that value for the
+    // If the user overrode the :host header, use that value for the
     // SNI extension
     const char *host_string = 0;
     for(size_t i = 0; i < config.headers.size(); ++i) {
-      if(util::strieq("host", config.headers[i].first.c_str())) {
+      if(util::strieq(":host", config.headers[i].first.c_str())) {
         host_string = config.headers[i].second.c_str();
       }
     }
