@@ -1060,7 +1060,7 @@ int main(int argc, char **argv)
       {"data", required_argument, 0, 'd' },
       {"multiply", required_argument, 0, 'm' },
       {"proxy", required_argument, 0, 'p' },
-      {"proxyport", required_argument, 0, 'P' },
+      {"proxy-port", required_argument, 0, 'P' },
       {"cert", required_argument, &flag, 1 },
       {"key", required_argument, &flag, 2 },
       {"no-tls", no_argument, &flag, 3 },
