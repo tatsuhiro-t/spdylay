@@ -1823,6 +1823,9 @@ Functions
         {
             int version;
             version = spdylay_select_next_protocol(out, outlen, in, inlen);
+            if(version == -1) {
+                return SSL_TLSEXT_ERR_NOACK;
+            }
             if(version > 0) {
                 ((MyType*)arg)->spdy_version = version;
             }
