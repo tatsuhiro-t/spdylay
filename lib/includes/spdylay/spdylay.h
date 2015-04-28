@@ -2089,6 +2089,9 @@ int spdylay_submit_window_update(spdylay_session *session, int32_t stream_id,
  *     {
  *         int version;
  *         version = spdylay_select_next_protocol(out, outlen, in, inlen);
+ *         if(version == -1) {
+ *             return SSL_TLSEXT_ERR_NOACK;
+ *         }
  *         if(version > 0) {
  *             ((MyType*)arg)->spdy_version = version;
  *         }
