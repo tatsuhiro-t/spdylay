@@ -34,10 +34,6 @@
 
 /* Priority for PING */
 #define SPDYLAY_OB_PRI_PING -10
-/* Priority for CREDENTIAL */
-#define SPDYLAY_OB_PRI_CREDENTIAL -2
-/* Priority for the frame which must be sent after CREDENTIAL */
-#define SPDYLAY_OB_PRI_AFTER_CREDENTIAL -1
 
 typedef struct {
   spdylay_data_provider *data_prd;

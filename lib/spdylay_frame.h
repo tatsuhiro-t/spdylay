@@ -32,7 +32,6 @@
 #include <spdylay/spdylay.h>
 #include "spdylay_zlib.h"
 #include "spdylay_buffer.h"
-#include "spdylay_client_cert_vector.h"
 
 #define SPDYLAY_STREAM_ID_MASK 0x7fffffff
 /* This is actually the maximum length of a control frame in SPDY/2
@@ -489,35 +488,6 @@ int spdylay_frame_unpack_settings(spdylay_settings *frame,
                                   const uint8_t *payload, size_t payloadlen);
 
 /*
- * Packs CREDENTIAL frame |frame| in wire format and store it in
- * |*buf_ptr|. The capacity of |*buf_ptr| is |*buflen_ptr|
- * length. This function expands |*buf_ptr| as necessary to store
- * given |frame|.
- *
- * This function returns the size of packed frame if it succeeds, or
- * returns one of the following negative error codes:
- *
- * SPDYLAY_ERR_NOMEM
- *     Out of memory.
- */
-ssize_t spdylay_frame_pack_credential(uint8_t **buf_ptr, size_t *buflen_ptr,
-                                      spdylay_credential *frame);
-
-/*
- * Unpacks CREDENTIAL wire format into |frame|.
- *
- * This function returns 0 if it succeeds or one of the following
- * negative error codes:
- *
- * SPDYLAY_ERR_INVALID_FRAME
- *     The input data are invalid.
- * SPDYLAY_ERR_NOMEM
- *     Out of memory.
- */
-int spdylay_frame_unpack_credential(spdylay_credential *frame,
-                                    const uint8_t *head, size_t headlen,
-                                    const uint8_t *payload, size_t payloadlen);
-/*
  * Returns number of bytes to pack name/value pairs |nv|. This
  * function expects |nv| is sorted in ascending order of key.
  * |len_size| is the number of bytes in length of name/value pair and
@@ -683,19 +653,6 @@ void spdylay_frame_settings_init(spdylay_settings *frame,
                                  spdylay_settings_entry *iv, size_t niv);
 
 void spdylay_frame_settings_free(spdylay_settings *frame);
-
-/*
- * Initializes CREDENTIAL frame |frame| with given values.  This
- * function takes ownership of |proof->data| and |certs| on success.
- * Note that the ownership of |proof| is not taken.
- */
-void spdylay_frame_credential_init(spdylay_credential *frame,
-                                   uint16_t version, uint16_t slot,
-                                   spdylay_mem_chunk *proof,
-                                   spdylay_mem_chunk *certs,
-                                   size_t ncerts);
-
-void spdylay_frame_credential_free(spdylay_credential *frame);
 
 void spdylay_frame_data_init(spdylay_data *frame, int32_t stream_id,
                              uint8_t flags,

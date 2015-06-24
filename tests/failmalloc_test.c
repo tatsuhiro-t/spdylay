@@ -36,18 +36,6 @@
 #include "malloc_wrapper.h"
 #include "spdylay_test_helper.h"
 
-static char* strcopy(const char* s)
-{
-  size_t len = strlen(s);
-  char *dest = malloc(len+1);
-  if(dest == NULL) {
-    return NULL;
-  }
-  memcpy(dest, s, len);
-  dest[len] = '\0';
-  return dest;
-}
-
 typedef struct {
   uint8_t data[8192];
   uint8_t *datamark, *datalimit;
@@ -104,50 +92,6 @@ static ssize_t fixed_length_data_source_read_callback
   return wlen;
 }
 
-static ssize_t get_credential_ncerts(spdylay_session *session _U_,
-                                     const spdylay_origin *origin,
-                                     void *user_data _U_)
-{
-  if(strcmp("example.org", origin->host) == 0 &&
-     strcmp("https", origin->scheme) == 0 &&
-     443 == origin->port) {
-    return 2;
-  } else {
-    return 0;
-  }
-}
-
-static ssize_t get_credential_cert(spdylay_session *session _U_,
-                                   const spdylay_origin *origin,
-                                   size_t idx _U_,
-                                   uint8_t *cert, size_t certlen,
-                                   void *user_data _U_)
-{
-  size_t len = strlen(origin->host);
-  if(certlen == 0) {
-    return len;
-  } else {
-    assert(certlen == len);
-    memcpy(cert, origin->host, len);
-    return 0;
-  }
-}
-
-static ssize_t get_credential_proof(spdylay_session *session _U_,
-                                    const spdylay_origin *origin,
-                                    uint8_t *proof, size_t prooflen,
-                                    void *user_data  _U_)
-{
-  size_t len = strlen(origin->scheme);
-  if(prooflen == 0) {
-    return len;
-  } else {
-    assert(prooflen == len);
-    memcpy(proof, origin->scheme, len);
-    return 0;
-  }
-}
-
 #define TEST_FAILMALLOC_RUN(FUN)                        \
   size_t nmalloc, i;                                    \
                                                         \
@@ -179,9 +123,6 @@ static void run_spdylay_session_send(void)
   int rv;
   memset(&callbacks, 0, sizeof(spdylay_session_callbacks));
   callbacks.send_callback = null_send_callback;
-  callbacks.get_credential_ncerts = get_credential_ncerts;
-  callbacks.get_credential_cert = get_credential_cert;
-  callbacks.get_credential_proof = get_credential_proof;
 
   data_prd.read_callback = fixed_length_data_source_read_callback;
   ud.data_source_length = 64*1024;
@@ -287,9 +228,6 @@ static void run_spdylay_session_recv(void)
                        ":scheme", "https",
                        NULL };
   spdylay_settings_entry iv[2];
-  spdylay_mem_chunk proof;
-  spdylay_mem_chunk *certs;
-  size_t ncerts;
   my_user_data ud;
   data_feed df;
   int rv;
@@ -359,27 +297,6 @@ static void run_spdylay_session_recv(void)
                               spdylay_frame_iv_copy(iv, 2), 2);
   framelen = spdylay_frame_pack_settings(&buf, &buflen, &frame.settings);
   spdylay_frame_settings_free(&frame.settings);
-  spdylay_failmalloc_unpause();
-
-  rv = spdylay_session_recv(session);
-  if(rv != 0) {
-    goto fail;
-  }
-
-  /* CREDENTIAL */
-  spdylay_failmalloc_pause();
-  proof.data = (uint8_t*)strcopy("PROOF");
-  proof.length = strlen("PROOF");
-  ncerts = 2;
-  certs = malloc(sizeof(spdylay_mem_chunk)*ncerts);
-  certs[0].data = (uint8_t*)strcopy("CERT0");
-  certs[0].length = strlen("CERT0");
-  certs[1].data = (uint8_t*)strcopy("CERT1");
-  certs[1].length = strlen("CERT1");
-  spdylay_frame_credential_init(&frame.credential, SPDYLAY_PROTO_SPDY3,
-                                1, &proof, certs, ncerts);
-  framelen = spdylay_frame_pack_credential(&buf, &buflen, &frame.credential);
-  spdylay_frame_credential_free(&frame.credential);
   spdylay_failmalloc_unpause();
 
   rv = spdylay_session_recv(session);
@@ -540,49 +457,6 @@ static void run_spdylay_frame_pack_settings(void)
   ;
 }
 
-static void run_spdylay_frame_pack_credential(void)
-{
-  spdylay_frame frame, oframe;
-  uint8_t *buf = NULL;
-  size_t buflen = 0;
-  ssize_t framelen;
-  spdylay_mem_chunk proof;
-  spdylay_mem_chunk *certs;
-  size_t ncerts;
-  int rv;
-
-  spdylay_failmalloc_pause();
-
-  proof.data = (uint8_t*)strcopy("PROOF");
-  proof.length = strlen("PROOF");
-  ncerts = 2;
-  certs = malloc(sizeof(spdylay_mem_chunk)*ncerts);
-  certs[0].data = (uint8_t*)strcopy("CERT0");
-  certs[0].length = strlen("CERT0");
-  certs[1].data = (uint8_t*)strcopy("CERT1");
-  certs[1].length = strlen("CERT1");
-
-  spdylay_failmalloc_unpause();
-
-  spdylay_frame_credential_init(&frame.credential, SPDYLAY_PROTO_SPDY3,
-                                1, &proof, certs, ncerts);
-  framelen = spdylay_frame_pack_credential(&buf, &buflen, &frame.credential);
-  if(framelen < 0) {
-    goto fail;
-  }
-  rv = spdylay_frame_unpack_credential(&oframe.credential,
-                                       &buf[0], SPDYLAY_FRAME_HEAD_LENGTH,
-                                       &buf[SPDYLAY_FRAME_HEAD_LENGTH],
-                                       framelen-SPDYLAY_FRAME_HEAD_LENGTH);
-  if(rv != 0) {
-    goto fail;
-  }
-  spdylay_frame_credential_free(&oframe.credential);
- fail:
-  free(buf);
-  spdylay_frame_credential_free(&frame.credential);
-}
-
 static void run_spdylay_frame(void)
 {
   run_spdylay_frame_pack_syn_stream();
@@ -591,7 +465,6 @@ static void run_spdylay_frame(void)
   run_spdylay_frame_pack_rst_stream();
   run_spdylay_frame_pack_window_update();
   run_spdylay_frame_pack_settings();
-  run_spdylay_frame_pack_credential();
 }
 
 void test_spdylay_frame(void)

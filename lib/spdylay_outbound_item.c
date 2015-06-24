@@ -67,7 +67,7 @@ void spdylay_outbound_item_free(spdylay_outbound_item *item)
       spdylay_frame_window_update_free(&frame->window_update);
       break;
     case SPDYLAY_CREDENTIAL:
-      spdylay_frame_credential_free(&frame->credential);
+      assert(0);
       break;
     }
   } else if(item->frame_cat == SPDYLAY_DATA) {

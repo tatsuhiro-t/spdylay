@@ -1059,6 +1059,13 @@ uint16_t spdylay_origin_get_port(const spdylay_origin *origin);
 /**
  * @functypedef
  *
+ * .. warning::
+ *
+ *    CREDENTIAL functionality was removed.  This interface is
+ *    preserved just for ABI compatibility.  Don't use this function.
+ *    We guess no one use CREDENTIAL since it was a catastrophic
+ *    failure.
+ *
  * Callback function invoked when the library needs the cryptographic
  * proof that the client has possession of the private key associated
  * with the certificate for the given |origin|.  If called with
@@ -1077,6 +1084,13 @@ typedef ssize_t (*spdylay_get_credential_proof)
 /**
  * @functypedef
  *
+ * .. warning::
+ *
+ *    CREDENTIAL functionality was removed.  This interface is
+ *    preserved just for ABI compatibility.  Don't use this function.
+ *    We guess no one use CREDENTIAL since it was a catastrophic
+ *    failure.
+ *
  * Callback function invoked when the library needs the length of the
  * client certificate chain for the given |origin|.  The
  * implementation of this function must return the length of the
@@ -1091,6 +1105,13 @@ typedef ssize_t (*spdylay_get_credential_ncerts)
 
 /**
  * @functypedef
+ *
+ * .. warning::
+ *
+ *    CREDENTIAL functionality was removed.  This interface is
+ *    preserved just for ABI compatibility.  Don't use this function.
+ *    We guess no one use CREDENTIAL since it was a catastrophic
+ *    failure.
  *
  * Callback function invoked when the library needs the client
  * certificate for the given |origin|. The |idx| is the index of the
@@ -1166,17 +1187,38 @@ typedef struct {
    */
   spdylay_on_request_recv_callback on_request_recv_callback;
   /**
+   * .. warning::
+   *
+   *    CREDENTIAL functionality was removed.  This interface is
+   *    preserved just for ABI compatibility.  Don't use this function.
+   *    We guess no one use CREDENTIAL since it was a catastrophic
+   *    failure.
+   *
    * Callback function invoked when the library needs the
    * cryptographic proof that the client has possession of the private
    * key associated with the certificate.
    */
   spdylay_get_credential_proof get_credential_proof;
   /**
+   * .. warning::
+   *
+   *    CREDENTIAL functionality was removed.  This interface is
+   *    preserved just for ABI compatibility.  Don't use this function.
+   *    We guess no one use CREDENTIAL since it was a catastrophic
+   *    failure.
+   *
    * Callback function invoked when the library needs the length of the
    * client certificate chain.
    */
   spdylay_get_credential_ncerts get_credential_ncerts;
   /**
+   * .. warning::
+   *
+   *    CREDENTIAL functionality was removed.  This interface is
+   *    preserved just for ABI compatibility.  Don't use this function.
+   *    We guess no one use CREDENTIAL since it was a catastrophic
+   *    failure.
+   *
    * Callback function invoked when the library needs the client
    * certificate.
    */
@@ -1205,13 +1247,7 @@ typedef struct {
  * The :member:`spdylay_session_callbacks.send_callback` must be
  * specified.  If the application code uses `spdylay_session_recv()`,
  * the :member:`spdylay_session_callbacks.recv_callback` must be
- * specified. The other members of |callbacks| can be ``NULL``.  To
- * use CREDENTIAL frame, specify :macro:`SPDYLAY_PROTO_SPDY3` in
- * |version| and specify
- * :member:`spdylay_session_callbacks.get_credential_ncerts`,
- * :member:`spdylay_session_callbacks.get_credential_cert` and
- * :member:`spdylay_session_callbacks.get_credential_proof`.  See also
- * `spdylay_session_set_initial_client_cert_origin()`.
+ * specified. The other members of |callbacks| can be ``NULL``.
  *
  * This function returns 0 if it succeeds, or one of the following
  * negative error codes:
@@ -1339,6 +1375,13 @@ int spdylay_session_set_option(spdylay_session *session,
 /**
  * @function
  *
+ * .. warning::
+ *
+ *    CREDENTIAL functionality was removed.  This interface is
+ *    preserved just for ABI compatibility.  Don't use this function.
+ *    We guess no one use CREDENTIAL since it was a catastrophic
+ *    failure.  This function does nothing, and just always returns 0.
+ *
  * Sets the origin tuple (|scheme|, |host| and |port|) that the
  * connection is made to and the client certificate is sent in the
  * first TLS handshake. This function must be called before any call
@@ -1367,6 +1410,14 @@ int spdylay_session_set_initial_client_cert_origin(spdylay_session *session,
 
 /**
  * @function
+ *
+ * .. warning::
+ *
+ *    CREDENTIAL functionality was removed.  This interface is
+ *    preserved just for ABI compatibility.  Don't use this function.
+ *    We guess no one use CREDENTIAL since it was a catastrophic
+ *    failure.  This function does nothing, and just always returns
+ *    NULL.
  *
  * Returns the origin at the index |slot| in the client certificate
  * vector. If there is no origin at the given |slot|, this function
@@ -1400,14 +1451,6 @@ const spdylay_origin* spdylay_session_get_client_cert_origin
  *    :member:`spdylay_session_callbacks.on_ctrl_not_send_callback` is
  *    invoked. Abort the following steps.
  * 4. If the frame is SYN_STREAM, the stream is opened here.
- *    If the |session| is initialized for client use and the protocol
- *    version is :macro:`SPDYLAY_PROTO_SPDY3` and the library needs
- *    the client certificate for the origin,
- *    :member:`spdylay_session_callbacks.get_credential_ncerts` is
- *    invoked. If the result is more than zero,
- *    :member:`spdylay_session_callbacks.get_credential_proof` and
- *    :member:`spdylay_session_callbacks.get_credential_cert` are also
- *    invoked.
  * 5. :member:`spdylay_session_callbacks.before_ctrl_send_callback` is
  *    invoked.
  * 6. :member:`spdylay_session_callbacks.send_callback` is invoked one
