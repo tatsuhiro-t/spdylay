@@ -387,7 +387,9 @@ int spdylay_session_add_frame(spdylay_session *session,
     spdylay_frame_type frame_type = frame->ctrl.hd.type;
     switch(frame_type) {
     case SPDYLAY_SYN_STREAM:
-      item->pri = frame->syn_stream.pri;
+      /* we have already allocated stream ID serially, so we have to
+         send SYN_STREAM in the order they added.  Use same priority
+         here. */
       break;
     case SPDYLAY_SYN_REPLY: {
       spdylay_stream *stream = spdylay_session_get_stream
@@ -601,10 +603,6 @@ static int spdylay_session_predicate_syn_stream_send
     /* When GOAWAY is sent or received, peer must not send new
        SYN_STREAM. */
     return SPDYLAY_ERR_SYN_STREAM_NOT_ALLOWED;
-  }
-  /* All 32bit signed stream IDs are spent. */
-  if(session->next_stream_id > INT32_MAX) {
-    return SPDYLAY_ERR_STREAM_ID_NOT_AVAILABLE;
   }
   if(frame->assoc_stream_id != 0) {
     /* Check associated stream is active. */
@@ -971,12 +969,21 @@ static ssize_t spdylay_session_prep_frame(spdylay_session *session,
     frame_type = spdylay_outbound_item_get_ctrl_frame_type(item);
     switch(frame_type) {
     case SPDYLAY_SYN_STREAM: {
-      int32_t stream_id;
       spdylay_syn_stream_aux_data *aux_data;
       int r;
       r = spdylay_session_predicate_syn_stream_send(session,
                                                     &frame->syn_stream);
       if(r != 0) {
+        aux_data = (spdylay_syn_stream_aux_data *)item->aux_data;
+        /* we need stream available for callbacks, so that application
+           can call spdylay_session_get_stream_user_data(). */
+        if(spdylay_session_open_stream(
+                session, frame->syn_stream.stream_id,
+                frame->syn_stream.hd.flags, frame->syn_stream.pri,
+                SPDYLAY_STREAM_INITIAL, aux_data->stream_user_data) == NULL) {
+          return SPDYLAY_ERR_NOMEM;
+        }
+
         return r;
       }
       if(session->version == SPDYLAY_PROTO_SPDY3 &&
@@ -1000,9 +1007,6 @@ static ssize_t spdylay_session_prep_frame(spdylay_session *session,
         }
         frame->syn_stream.slot = slot_index;
       }
-      stream_id = session->next_stream_id;
-      frame->syn_stream.stream_id = stream_id;
-      session->next_stream_id += 2;
       if(session->version == SPDYLAY_PROTO_SPDY2) {
         spdylay_frame_nv_3to2(frame->syn_stream.nv);
         spdylay_frame_nv_sort(frame->syn_stream.nv);
@@ -1021,11 +1025,10 @@ static ssize_t spdylay_session_prep_frame(spdylay_session *session,
         return framebuflen;
       }
       aux_data = (spdylay_syn_stream_aux_data*)item->aux_data;
-      if(spdylay_session_open_stream(session, stream_id,
-                                     frame->syn_stream.hd.flags,
-                                     frame->syn_stream.pri,
-                                     SPDYLAY_STREAM_INITIAL,
-                                     aux_data->stream_user_data) == NULL) {
+      if(spdylay_session_open_stream(
+              session, frame->syn_stream.stream_id, frame->syn_stream.hd.flags,
+              frame->syn_stream.pri, SPDYLAY_STREAM_INITIAL,
+              aux_data->stream_user_data) == NULL) {
         return SPDYLAY_ERR_NOMEM;
       }
       break;
@@ -1531,6 +1534,17 @@ int spdylay_session_send(spdylay_session *session)
                spdylay_outbound_item_get_ctrl_frame(item),
                (int)framebuflen,
                session->user_data);
+          }
+        }
+        if (item->frame_cat == SPDYLAY_CTRL) {
+          spdylay_frame *frame;
+          spdylay_frame_type frame_type;
+          frame_type = spdylay_outbound_item_get_ctrl_frame_type(item);
+          if (frame_type == SPDYLAY_SYN_STREAM) {
+
+            frame = spdylay_outbound_item_get_ctrl_frame(item);
+            spdylay_session_close_stream(session, frame->syn_stream.stream_id,
+                                         SPDYLAY_INTERNAL_ERROR);
           }
         }
         spdylay_outbound_item_free(item);

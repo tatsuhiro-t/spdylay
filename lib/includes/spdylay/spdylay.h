@@ -1757,6 +1757,9 @@ const char* spdylay_strerror(int error_code);
  *
  * :enum:`SPDYLAY_ERR_INVALID_ARGUMENT`
  *     The |nv| includes empty name or NULL value.
+ * :enum:`SPDYLAY_ERR_STREAM_ID_NOT_AVAILABLE`
+ *     Stream ID has reached the maximum value. Therefore no stream ID
+ *     is available.
  * :enum:`SPDYLAY_ERR_NOMEM`
  *     Out of memory.
  */
@@ -1852,6 +1855,9 @@ int spdylay_submit_response(spdylay_session *session,
  * :enum:`SPDYLAY_ERR_INVALID_ARGUMENT`
  *     The |assoc_stream_id| is invalid; or
  *     the |nv| includes empty name or NULL value.
+ * :enum:`SPDYLAY_ERR_STREAM_ID_NOT_AVAILABLE`
+ *     Stream ID has reached the maximum value. Therefore no stream ID
+ *     is available.
  * :enum:`SPDYLAY_ERR_NOMEM`
  *     Out of memory.
  */

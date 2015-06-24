@@ -522,7 +522,8 @@ void test_spdylay_session_add_frame(void)
 
   frame = malloc(sizeof(spdylay_frame));
   spdylay_frame_syn_stream_init(&frame->syn_stream, SPDYLAY_PROTO_SPDY2,
-                                SPDYLAY_CTRL_FLAG_NONE, 0, 0, 3, dup_nv(nv));
+                                SPDYLAY_CTRL_FLAG_NONE, 1, 0, 3, dup_nv(nv));
+  session->next_stream_id += 2;
 
   CU_ASSERT(0 == spdylay_session_add_frame(session, SPDYLAY_CTRL, frame,
                                            aux_data));
@@ -799,7 +800,8 @@ void test_spdylay_session_send_syn_stream(void)
 
   spdylay_session_client_new(&session, SPDYLAY_PROTO_SPDY2, &callbacks, NULL);
   spdylay_frame_syn_stream_init(&frame->syn_stream, SPDYLAY_PROTO_SPDY2,
-                                SPDYLAY_CTRL_FLAG_NONE, 0, 0, 3, dup_nv(nv));
+                                SPDYLAY_CTRL_FLAG_NONE, 1, 0, 3, dup_nv(nv));
+  session->next_stream_id += 2;
   spdylay_session_add_frame(session, SPDYLAY_CTRL, frame, aux_data);
   CU_ASSERT(0 == spdylay_session_send(session));
   stream = spdylay_session_get_stream(session, 1);
@@ -2185,12 +2187,9 @@ void test_spdylay_session_on_ctrl_not_send(void)
                                        &callbacks, &user_data) == 0);
   /* Maximum Stream ID is reached */
   session->next_stream_id = (1u << 31)+1;
-  CU_ASSERT(0 == spdylay_submit_syn_stream(session, SPDYLAY_CTRL_FLAG_FIN, 0,
-                                           3, nv, NULL));
-  CU_ASSERT(0 == spdylay_session_send(session));
-  CU_ASSERT(1 == user_data.ctrl_not_send_cb_called);
-  CU_ASSERT(SPDYLAY_SYN_STREAM == user_data.not_sent_frame_type);
-  CU_ASSERT(SPDYLAY_ERR_STREAM_ID_NOT_AVAILABLE == user_data.not_sent_error);
+  CU_ASSERT(SPDYLAY_ERR_STREAM_ID_NOT_AVAILABLE ==
+            spdylay_submit_syn_stream(session, SPDYLAY_CTRL_FLAG_FIN, 0, 3, nv,
+                                      NULL));
 
   session->next_stream_id = 1;
   user_data.ctrl_not_send_cb_called = 0;
