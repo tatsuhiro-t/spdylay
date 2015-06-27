@@ -527,14 +527,18 @@ const char* str_syslog_facility(int facility)
   switch(facility) {
   case(LOG_AUTH):
     return "auth";
+#ifndef __sgi
   case(LOG_AUTHPRIV):
     return "authpriv";
+#endif // !__sgi
   case(LOG_CRON):
     return "cron";
   case(LOG_DAEMON):
     return "daemon";
+#ifndef __sgi
   case(LOG_FTP):
     return "ftp";
+#endif // !__sgi
   case(LOG_KERN):
     return "kern";
   case(LOG_LOCAL0):
@@ -572,14 +576,18 @@ int int_syslog_facility(const char *strfacility)
 {
   if(util::strieq(strfacility, "auth")) {
     return LOG_AUTH;
+#ifndef __sgi
   } else if(util::strieq(strfacility, "authpriv")) {
     return LOG_AUTHPRIV;
+#endif // !__sgi
   } else if(util::strieq(strfacility, "cron")) {
     return LOG_CRON;
   } else if(util::strieq(strfacility, "daemon")) {
     return LOG_DAEMON;
+#ifndef __sgi
   } else if(util::strieq(strfacility, "ftp")) {
     return LOG_FTP;
+#endif // !__sgi
   } else if(util::strieq(strfacility, "kern")) {
     return LOG_KERN;
   } else if(util::strieq(strfacility, "local0")) {

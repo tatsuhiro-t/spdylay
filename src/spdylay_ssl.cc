@@ -22,6 +22,10 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+#ifdef __sgi
+#define CLOCK_MONOTONIC CLOCK_REALTIME
+#endif // !__sgi
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>

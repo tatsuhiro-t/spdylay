@@ -24,6 +24,10 @@
  */
 #include "shrpx.h"
 
+#ifdef __sgi
+#define daemon _daemonize
+#endif // __sgi
+
 #include <stdint.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -266,7 +270,11 @@ int event_loop()
   ListenHandler *listener_handler = new ListenHandler(evbase, sv_ssl_ctx,
                                                       cl_ssl_ctx);
   if(get_config()->daemon) {
+#ifdef __sgi
+    if(daemon(0, 0, 0, 0) == -1) {
+#else // !__sgi
     if(daemon(0, 0) == -1) {
+#endif // !__sgi
       LOG(FATAL) << "Failed to daemonize: " << strerror(errno);
       exit(EXIT_FAILURE);
     }
