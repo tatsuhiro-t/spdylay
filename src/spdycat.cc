@@ -857,7 +857,6 @@ int run(char **uris, int n)
   std::string prev_host;
   uint16_t prev_port = 0;
   int failures = 0;
-  SpdySession spdySession;
   int data_fd = -1;
   spdylay_data_provider data_prd;
   struct stat data_stat;
@@ -925,6 +924,8 @@ int run(char **uris, int n)
     data_prd.read_callback = file_read_callback;
   }
 
+  SpdySession *spdySession = new SpdySession();
+
   for(int i = 0; i < n; ++i) {
     http_parser_url u;
     std::string uri = strip_fragment(uris[i]);
@@ -934,48 +935,53 @@ int run(char **uris, int n)
         u.port : get_default_port(uri.c_str(), u);
       if(!fieldeq(uri.c_str(), u, UF_HOST, prev_host.c_str()) ||
          port != prev_port) {
-        if(!spdySession.reqvec.empty()) {
-          spdySession.update_hostport();
+        if(!spdySession->reqvec.empty()) {
+          spdySession->update_hostport();
           if(!config.proxy_host.empty()) {
             uint16_t port = 443;
             if(config.proxy_port != 0) {
               port = config.proxy_port;
             }
-            if (communicate(config.proxy_host, port, spdySession, &callbacks) != 0) {
+            if (communicate(config.proxy_host, port, *spdySession,
+                            &callbacks) != 0) {
               ++failures;
             }
           } else {
-            if (communicate(prev_host, prev_port, spdySession, &callbacks) != 0) {
+            if (communicate(prev_host, prev_port, *spdySession, &callbacks) !=
+                0) {
               ++failures;
             }
           }
-          spdySession = SpdySession();
+          delete spdySession;
+          spdySession = new SpdySession();
         }
         prev_host = get_uri_field(uri.c_str(), u, UF_HOST);
         prev_port = port;
       }
       for(int j = 0; j < config.multiply; ++j) {
-        spdySession.add_request(uri, u, data_fd == -1 ? 0 : &data_prd,
-                                data_stat.st_size);
+        spdySession->add_request(uri, u, data_fd == -1 ? 0 : &data_prd,
+                                 data_stat.st_size);
       }
     }
   }
-  if(!spdySession.reqvec.empty()) {
-    spdySession.update_hostport();
+  if(!spdySession->reqvec.empty()) {
+    spdySession->update_hostport();
     if(!config.proxy_host.empty()) {
       uint16_t port = 443;
       if(config.proxy_port != 0) {
         port = config.proxy_port;
       }
-      if (communicate(config.proxy_host, port, spdySession, &callbacks) != 0) {
+      if (communicate(config.proxy_host, port, *spdySession, &callbacks) != 0) {
         ++failures;
       }
     } else {
-      if (communicate(prev_host, prev_port, spdySession, &callbacks) != 0) {
+      if (communicate(prev_host, prev_port, *spdySession, &callbacks) != 0) {
         ++failures;
       }
     }
   }
+  delete spdySession;
+
   return failures;
 }
 
