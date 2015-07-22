@@ -1,4 +1,4 @@
-From 64e271844d00fa8531b5fcc3dbd722bd3160d472 Mon Sep 17 00:00:00 2001
+From 0230de8d757d45dad9ab9fa8cb84613b53eb80b6 Mon Sep 17 00:00:00 2001
 From: Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
 Date: Fri, 21 Feb 2014 21:59:40 +0900
 Subject: [PATCH 1/3] Support custom HTTP-version string (e.g., ICY)
@@ -8,10 +8,10 @@ Subject: [PATCH 1/3] Support custom HTTP-version string (e.g., ICY)
  1 file changed, 20 insertions(+)
 
 diff --git a/http_parser.c b/http_parser.c
-index df1b696..ccef696 100644
+index cbe8a90..c0825b0 100644
 --- a/http_parser.c
 +++ b/http_parser.c
-@@ -238,6 +238,7 @@ enum state
+@@ -282,6 +282,7 @@ enum state
    , s_start_req_or_res
    , s_res_or_resp_H
    , s_start_res
@@ -19,7 +19,7 @@ index df1b696..ccef696 100644
    , s_res_H
    , s_res_HT
    , s_res_HTT
-@@ -724,6 +725,10 @@ size_t http_parser_execute (http_parser *parser,
+@@ -761,6 +762,10 @@ reexecute:
              break;
  
            default:
@@ -30,7 +30,7 @@ index df1b696..ccef696 100644
              SET_ERRNO(HPE_INVALID_CONSTANT);
              goto error;
          }
-@@ -732,6 +737,21 @@ size_t http_parser_execute (http_parser *parser,
+@@ -769,6 +774,21 @@ reexecute:
          break;
        }
  
@@ -51,7 +51,7 @@ index df1b696..ccef696 100644
 +
        case s_res_H:
          STRICT_CHECK(ch != 'T');
-         parser->state = s_res_HT;
+         UPDATE_STATE(s_res_HT);
 -- 
-1.9.2
+2.1.4
 

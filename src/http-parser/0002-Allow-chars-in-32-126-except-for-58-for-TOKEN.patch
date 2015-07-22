@@ -1,4 +1,4 @@
-From 5cd90bb67dde77bd3ade654f633d611eb110c2b7 Mon Sep 17 00:00:00 2001
+From fad236762ca992a8a4a2b7f6c7077ddb53da5888 Mon Sep 17 00:00:00 2001
 From: Tatsuhiro Tsujikawa <tatsuhiro.t@gmail.com>
 Date: Fri, 21 Feb 2014 22:05:34 +0900
 Subject: [PATCH 2/3] Allow chars in [32, 126], except for 58 (':'), for TOKEN
@@ -8,10 +8,10 @@ Subject: [PATCH 2/3] Allow chars in [32, 126], except for 58 (':'), for TOKEN
  1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/http_parser.c b/http_parser.c
-index ccef696..2ca8aa1 100644
+index c0825b0..60c992e 100644
 --- a/http_parser.c
 +++ b/http_parser.c
-@@ -152,21 +152,21 @@ static const char tokens[256] = {
+@@ -196,21 +196,21 @@ static const char tokens[256] = {
  /*  24 can   25 em    26 sub   27 esc   28 fs    29 gs    30 rs    31 us  */
          0,       0,       0,       0,       0,       0,       0,       0,
  /*  32 sp    33  !    34  "    35  #    36  $    37  %    38  &    39  '  */
@@ -38,7 +38,7 @@ index ccef696..2ca8aa1 100644
  /*  96  `    97  a    98  b    99  c   100  d   101  e   102  f   103  g  */
         '`',     'a',     'b',     'c',     'd',     'e',     'f',     'g',
  /* 104  h   105  i   106  j   107  k   108  l   109  m   110  n   111  o  */
-@@ -174,7 +174,7 @@ static const char tokens[256] = {
+@@ -218,7 +218,7 @@ static const char tokens[256] = {
  /* 112  p   113  q   114  r   115  s   116  t   117  u   118  v   119  w  */
         'p',     'q',     'r',     's',     't',     'u',     'v',     'w',
  /* 120  x   121  y   122  z   123  {   124  |   125  }   126  ~   127 del */
@@ -48,5 +48,5 @@ index ccef696..2ca8aa1 100644
  
  static const int8_t unhex[256] =
 -- 
-1.9.2
+2.1.4
 
