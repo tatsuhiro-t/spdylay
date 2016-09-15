@@ -26,6 +26,7 @@
 
 #include <unistd.h>
 #include <cerrno>
+#include <cstring>
 
 #include "shrpx_upstream.h"
 #include "shrpx_spdy_upstream.h"

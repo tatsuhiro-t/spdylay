@@ -30,7 +30,7 @@
 #include <pthread.h>
 
 #include <vector>
-#include <string>
+#include <cstring>
 
 #include <openssl/crypto.h>
 #include <openssl/x509.h>

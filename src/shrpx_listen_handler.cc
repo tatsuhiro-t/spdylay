@@ -28,6 +28,7 @@
 #include <pthread.h>
 
 #include <cerrno>
+#include <cstring>
 
 #include <event2/bufferevent_ssl.h>
 

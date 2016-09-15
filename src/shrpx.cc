@@ -45,6 +45,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cstring>
 
 #include <openssl/ssl.h>
 #include <openssl/err.h>

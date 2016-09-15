@@ -39,6 +39,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 #include <spdylay/spdylay.h>
 
