@@ -840,7 +840,7 @@ int ssl_nonblock_handshake(SSL *ssl, int fd, int& timeout)
   pollfd pfd;
   pfd.fd = fd;
   pfd.events = POLLOUT;
-  timeval tv1, tv2;
+  timeval tv1 = {}, tv2 = {};
   while(1) {
     if(timeout != -1) {
       get_time(&tv1);
