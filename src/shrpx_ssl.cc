@@ -53,6 +53,17 @@ namespace shrpx {
 
 namespace ssl {
 
+#define OPENSSL_1_1_API                                                        \
+  (!defined(LIBRESSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER >= 0x1010000fL)
+
+#if !OPENSSL_1_1_API
+namespace {
+const unsigned char *ASN1_STRING_get0_data(ASN1_STRING *x) {
+  return ASN1_STRING_data(x);
+}
+} // namespace
+#endif // !OPENSSL_1_1_API
+
 namespace {
 std::pair<unsigned char*, size_t> next_proto;
 unsigned char proto_list[255];
@@ -533,8 +544,7 @@ void get_altnames(X509 *cert,
     for(size_t i = 0; i < n; ++i) {
       const GENERAL_NAME *altname = sk_GENERAL_NAME_value(altnames, i);
       if(altname->type == GEN_DNS) {
-        const char *name;
-        name = reinterpret_cast<char*>(ASN1_STRING_data(altname->d.ia5));
+        const unsigned char *name = ASN1_STRING_get0_data(altname->d.ia5);
         if(!name) {
           continue;
         }
@@ -543,7 +553,7 @@ void get_altnames(X509 *cert,
           // Embedded NULL is not permitted.
           continue;
         }
-        dns_names.push_back(std::string(name, len));
+        dns_names.push_back(std::string(name, name+len));
       } else if(altname->type == GEN_IPADD) {
         const unsigned char *ip_addr = altname->d.iPAddress->data;
         if(!ip_addr) {
@@ -611,6 +621,7 @@ int check_cert(SSL *ssl)
   return 0;
 }
 
+#if !OPENSSL_1_1_API
 namespace {
 pthread_mutex_t *ssl_locks;
 } // namespace
@@ -625,9 +636,11 @@ void ssl_locking_cb(int mode, int type, const char *file, int line)
   }
 }
 } // namespace
+#endif // !OPENSSL_1_1_API
 
 void setup_ssl_lock()
 {
+#if !OPENSSL_1_1_API
   ssl_locks = new pthread_mutex_t[CRYPTO_num_locks()];
   for(int i = 0; i < CRYPTO_num_locks(); ++i) {
     // Always returns 0
@@ -638,14 +651,17 @@ void setup_ssl_lock()
   // CRYPTO_THREADID_set_callback(), then default implementation is
   // used. We use this default one.
   CRYPTO_set_locking_callback(ssl_locking_cb);
+#endif // !OPENSSL_1_1_API
 }
 
 void teardown_ssl_lock()
 {
+#if !OPENSSL_1_1_API
   for(int i = 0; i < CRYPTO_num_locks(); ++i) {
     pthread_mutex_destroy(&(ssl_locks[i]));
   }
   delete [] ssl_locks;
+#endif // !OPENSSL_1_1_API
 }
 
 CertLookupTree* cert_lookup_tree_new()
