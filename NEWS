@@ -1,95 +1,66 @@
-spdylay 1.3.2
+spdylay 1.4.0
 =============
 
 Release Note
 ------------
 
-This release adds spdylay_session_get_stream_user_data() API function
-and various source code enhancements using compiler warning flags.
+This release removes CREDENTIAL frame support.  The API functions are
+still there, but they are now noop.
 
 Changes
 -------
 
-* Add spdylay_session_set_stream_user_data() API function
+* Renew test key pair
 
-* spdycat: Support pipe input for -d
+* Fix OpenSSL 1.1.0 deprecation warnings
 
-  This is a port from
-  https://github.com/tatsuhiro-t/nghttp2/commit/a8a66843db98377398edf6f65d3dabe35e82b98f
+* spdylay: compile against openssl-1.1.0
 
-* fix implicit conversion loses integer precision [-Werror,-Wshorten-64-to-32]
+  It fails to compile against openssl 1.1.0 due to things like
+  |shrpx_client_handler.cc:90:30: error: 'strerror' was not declared in this scope
+  |shrpx_listen_handler.cc:112:32: error: 'memset' was not declared in this scope
+  |shrpx_listen_handler.cc:114:43: error: 'memcpy' was not declared in this scope
 
-  Patch from Alexis La Goutte
+  This resolves it.
 
-* fix cast increases required alignment [-Werror,-Wcast-align]
+  Signed-off-by: Sebastian Andrzej Siewior <sebastian@breakpoint.cc>
 
-  Patch from Alexis La Goutte
+  Patch from Sebastian Andrzej Siewior
 
-* Fix error: will never be executed [-Werror,-Wunreachable-code]
+* spdycat: Fix leak in SpdySession.reqvec
 
-  Patch from Alexis La Goutte
+* Compile with IRIX 6.5.22 using GCC-4.7.4
 
-* Add check compile flag and add some new CFLAG option
+  Based on the patch from Klaus Ziegler
 
-  Patch from Alexis La Goutte
+* Remove CREDENTIAL frame processing completely
 
-* Remove -Wno-unused-parameter (and add _U_ macro)
+  We just left API as is, but related functions just do nothing now.
 
-  Patch from Alexis La Goutte
+* Allocate stream ID when spdylay_submit_{syn_stream,request} is called
 
-* Fix -Werror=unused-parameter using _U_ macro
+  This commit allocates stream ID when spdylay_submit_syn_stream and
+  spdylay_submit_request is called.  Also create stream when
+  spdylay_session_predicate_syn_stream_send is failed, to provide
+  stream to user callback (e.g., on_ctrl_not_send_callback).
+  Allocating stream ID early ensures that we can create stream because
+  we can catch stream ID exhaustion early and fail fast.  Since stream
+  ID is allocated serially, we have to send SYN_STREAM in the order
+  they queued.  So now all queued syn_stream have the same priority
+  (lowest).  The DATA frame has given priority by application.  This
+  does not work well with CREDENTIAL frame, since SYN_STREAM may wait
+  for CREDENTIAL, which results in out of order transmission.  Since
+  CREDENTIAL frame was deprecated in SPDY/3.1, and no one use it, we
+  remove its functionality in the later commit.
 
-  Patch from Alexis La Goutte
+* spdycat: --proxy-port, not --proxyport
 
-* shrpx: Don't send x-forwarded-proto if -s or -p is used
+  Fixes GH-132
 
-* Fix Allocator sizeof operand mismatch found by Clang Analyzer
+* spdycat: Check :host header field for SNI, since Host header is not allowed
 
-  Patch from Alexis La Goutte
+* spdycat: Update spdycat --help output for --header
 
-
+  Patch from Chris Adams
 
-spdylay 1.3.1
-=============
-
-Release Note
-------------
-
-This release fix the bug in spdylay_session_consume function.
-
-Changes
--------
-
-* Fix bug that connection window is consumed excessively
-
-  Previously we consider bytes as consumed in
-  spdylay_session_mem_recv() even if it is not ignored and is passing
-  to application.  As a result, excessive number of bytes are
-  considered as consumed and library sends excessive amount of
-  WINDOW_UPDATE to peer.  This commit fixes this bug.
-
-
-
-spdylay 1.3.0
-=============
-
-Release Note
-------------
-
-This release adds new API function spdylay_session_consume() and the
-new option SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE2 to enable that
-functionality.  This is a preferred way to manually control local flow
-window.  This effectively deprecates SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE
-option.
-
-Changes
--------
-
-* Add spdylay_session_consume() API
-
-  This function is back ported from nghttp2 project.  This is a
-  preferred way to manually control flow window.
-  SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE is not deprecated.  New
-  application should use SPDYLAY_OPT_NO_AUTO_WINDOW_UPDATE2 and use
-  spdylay_session_consume() to tell the library how many bytes
-  application consumed.
+* spdycat: Fix resource leak found by coverity scan
