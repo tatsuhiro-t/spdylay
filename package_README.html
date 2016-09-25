@@ -7,7 +7,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Spdylay - SPDY C Library &mdash; Spdylay 1.3.3-DEV documentation</title>
+  <title>Spdylay - SPDY C Library &mdash; Spdylay 1.4.0 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   
 
   
-    <link rel="top" title="Spdylay 1.3.3-DEV documentation" href="index.html"/>
+    <link rel="top" title="Spdylay 1.4.0 documentation" href="index.html"/>
         <link rel="next" title="API Reference" href="apiref.html"/>
         <link rel="prev" title="Spdylay - SPDY C Library" href="index.html"/> 
 
@@ -58,7 +58,7 @@
         
         
             <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="">Spdylay - SPDY C Library</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Spdylay - SPDY C Library</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#development-status">Development Status</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">Requirements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#build-from-git">Build from git</a></li>
@@ -182,20 +182,20 @@ needed:</p>
 <ul class="simple">
 <li>OpenSSL &gt;= 1.0.1</li>
 </ul>
-<p>To enable <tt class="docutils literal"><span class="pre">-a</span></tt> option (getting linked assets from the downloaded
-resource) in <tt class="docutils literal"><span class="pre">spdycat</span></tt> (one of the example program), the following
+<p>To enable <code class="docutils literal"><span class="pre">-a</span></code> option (getting linked assets from the downloaded
+resource) in <code class="docutils literal"><span class="pre">spdycat</span></code> (one of the example program), the following
 packages are needed:</p>
 <ul class="simple">
 <li>libxml2 &gt;= 2.7.7</li>
 </ul>
-<p>To build SPDY/HTTPS to HTTP reverse proxy <tt class="docutils literal"><span class="pre">shrpx</span></tt> (one of the
+<p>To build SPDY/HTTPS to HTTP reverse proxy <code class="docutils literal"><span class="pre">shrpx</span></code> (one of the
 example program), the following packages are needed:</p>
 <ul class="simple">
 <li>libevent-openssl &gt;= 2.0.8</li>
 </ul>
 <p>If you are using Ubuntu 12.04, you need the following packages
 installed:</p>
-<div class="highlight-c"><div class="highlight"><pre>$ apt-get install autoconf automake autotools-dev libtool pkg-config zlib1g-dev libcunit1-dev libssl-dev libxml2-dev libevent-dev
+<div class="highlight-c"><div class="highlight"><pre><span></span>$ apt-get install autoconf automake autotools-dev libtool pkg-config zlib1g-dev libcunit1-dev libssl-dev libxml2-dev libevent-dev
 </pre></div>
 </div>
 </div>
@@ -203,7 +203,7 @@ installed:</p>
 <h2>Build from git<a class="headerlink" href="#build-from-git" title="Permalink to this headline">¶</a></h2>
 <p>Building from git is easy, but please be sure that at least autoconf 2.68 is
 used:</p>
-<div class="highlight-c"><div class="highlight"><pre>$ autoreconf -i
+<div class="highlight-c"><div class="highlight"><pre><span></span>$ autoreconf -i
 $ automake
 $ autoconf
 $ ./configure
@@ -214,41 +214,41 @@ $ make
 <div class="section" id="building-documentation">
 <h2>Building documentation<a class="headerlink" href="#building-documentation" title="Permalink to this headline">¶</a></h2>
 <p>To build documentation, run:</p>
-<div class="highlight-c"><div class="highlight"><pre>$ make html
+<div class="highlight-c"><div class="highlight"><pre><span></span>$ make html
 </pre></div>
 </div>
-<p>The documents will be generated under <tt class="docutils literal"><span class="pre">doc/manual/html/</span></tt>.</p>
-<p>The generated documents will not be installed with <tt class="docutils literal"><span class="pre">make</span> <span class="pre">install</span></tt>.</p>
+<p>The documents will be generated under <code class="docutils literal"><span class="pre">doc/manual/html/</span></code>.</p>
+<p>The generated documents will not be installed with <code class="docutils literal"><span class="pre">make</span> <span class="pre">install</span></code>.</p>
 </div>
 <div class="section" id="building-android-binary">
 <h2>Building Android binary<a class="headerlink" href="#building-android-binary" title="Permalink to this headline">¶</a></h2>
 <p>In this section, we briefly describe how to build Android binary using
 <a class="reference external" href="http://developer.android.com/tools/sdk/ndk/index.html">Android NDK</a>
 cross-compiler on Debian Linux.</p>
-<p>We offer <tt class="docutils literal"><span class="pre">android-config</span></tt> and <tt class="docutils literal"><span class="pre">android-make</span></tt> scripts to make the
+<p>We offer <code class="docutils literal"><span class="pre">android-config</span></code> and <code class="docutils literal"><span class="pre">android-make</span></code> scripts to make the
 build easier. To make these script work, NDK toolchain must be
-installed in the following way. First, let introduce <tt class="docutils literal"><span class="pre">ANDROID_HOME</span></tt>
+installed in the following way. First, let introduce <code class="docutils literal"><span class="pre">ANDROID_HOME</span></code>
 environment variable. We need to install toolchain under
-<tt class="docutils literal"><span class="pre">$ANDROID_HOME/toolchain</span></tt>. An user can freely choose the path for
-<tt class="docutils literal"><span class="pre">ANDROID_HOME</span></tt>.  For example, to install toolchain under
-<tt class="docutils literal"><span class="pre">$ANDROID_HOME/toolchain</span></tt>, do this in the the directory where NDK is
+<code class="docutils literal"><span class="pre">$ANDROID_HOME/toolchain</span></code>. An user can freely choose the path for
+<code class="docutils literal"><span class="pre">ANDROID_HOME</span></code>.  For example, to install toolchain under
+<code class="docutils literal"><span class="pre">$ANDROID_HOME/toolchain</span></code>, do this in the the directory where NDK is
 unpacked:</p>
-<div class="highlight-c"><div class="highlight"><pre>$ build/tools/make-standalone-toolchain.sh --platform=android-9 --install-dir=$ANDROID_HOME/toolchain
+<div class="highlight-c"><div class="highlight"><pre><span></span>$ build/tools/make-standalone-toolchain.sh --platform=android-9 --install-dir=$ANDROID_HOME/toolchain
 </pre></div>
 </div>
 <p>The platform level is not important here because we don&#8217;t use Android
 specific C/C++ API.</p>
 <p>The dependent libraries, such as OpenSSL and libevent should be built
-with the toolchain and installed under <tt class="docutils literal"><span class="pre">$ANDROID_HOME/usr/local</span></tt>.
+with the toolchain and installed under <code class="docutils literal"><span class="pre">$ANDROID_HOME/usr/local</span></code>.
 We recommend to build these libraries as static library to make the
 deployment easier. libxml2 support is currently disabled.</p>
 <p>We use zlib which comes with Android NDK, so we don&#8217;t have to build it
 by ourselves.</p>
-<p>Before running <tt class="docutils literal"><span class="pre">android-config</span></tt> and <tt class="docutils literal"><span class="pre">android-make</span></tt>,
-<tt class="docutils literal"><span class="pre">ANDOIRD_HOME</span></tt> environment variable must be set to point to the
+<p>Before running <code class="docutils literal"><span class="pre">android-config</span></code> and <code class="docutils literal"><span class="pre">android-make</span></code>,
+<code class="docutils literal"><span class="pre">ANDOIRD_HOME</span></code> environment variable must be set to point to the
 correct path.</p>
-<p>After <tt class="docutils literal"><span class="pre">android-config</span></tt>, run <tt class="docutils literal"><span class="pre">android-make</span></tt> to compile sources.
-<tt class="docutils literal"><span class="pre">android-make</span></tt> is just include path to cross compiler in <tt class="docutils literal"><span class="pre">PATH</span></tt>
+<p>After <code class="docutils literal"><span class="pre">android-config</span></code>, run <code class="docutils literal"><span class="pre">android-make</span></code> to compile sources.
+<code class="docutils literal"><span class="pre">android-make</span></code> is just include path to cross compiler in <code class="docutils literal"><span class="pre">PATH</span></code>
 and run make. So if you include path to corss compiler by yourself,
 you can just run make to build spdylay and tools as usual.</p>
 </div>
@@ -269,10 +269,10 @@ required in order to build and run these programs.  At the time of
 this writing, the OpenSSL 1.0.1 supports NPN.</p>
 <div class="section" id="spdycat-spdy-client">
 <h3>Spdycat - SPDY client<a class="headerlink" href="#spdycat-spdy-client" title="Permalink to this headline">¶</a></h3>
-<p>The SPDY client is called <tt class="docutils literal"><span class="pre">spdycat</span></tt>. It is a dead simple downloader
+<p>The SPDY client is called <code class="docutils literal"><span class="pre">spdycat</span></code>. It is a dead simple downloader
 like wget/curl. It connects to SPDY server and gets resources given in
 the command-line:</p>
-<div class="highlight-c"><div class="highlight"><pre>$ src/spdycat -h
+<div class="highlight-c"><div class="highlight"><pre><span></span>$ src/spdycat -h
 Usage: spdycat [-Oansv23] [-t &lt;SECONDS&gt;] [-w &lt;WINDOW_BITS&gt;] [--cert=&lt;CERT&gt;]
                [--key=&lt;KEY&gt;] [--no-tls] [-d &lt;FILE&gt;] [-m &lt;N&gt;] [-p &lt;PROXY_HOST&gt;]
                [-P &lt;PROXY_PORT&gt;] &lt;URI&gt;...
@@ -360,11 +360,11 @@ $ src/spdycat -nv https://www.google.com/
 </div>
 <div class="section" id="spdyd-spdy-server">
 <h3>Spdyd - SPDY server<a class="headerlink" href="#spdyd-spdy-server" title="Permalink to this headline">¶</a></h3>
-<p>SPDY server is called <tt class="docutils literal"><span class="pre">spdyd</span></tt> and serves static files. It is single
+<p>SPDY server is called <code class="docutils literal"><span class="pre">spdyd</span></code> and serves static files. It is single
 threaded and multiplexes connections using non-blocking socket. The
-static files are read using blocking I/O system call, <tt class="docutils literal"><span class="pre">read(2)</span></tt>. It
+static files are read using blocking I/O system call, <code class="docutils literal"><span class="pre">read(2)</span></code>. It
 speaks SPDY/2 and SPDY/3:</p>
-<div class="highlight-c"><div class="highlight"><pre>$ src/spdyd --htdocs=/your/htdocs/ -v 3000 server.key server.crt
+<div class="highlight-c"><div class="highlight"><pre><span></span>$ src/spdyd --htdocs=/your/htdocs/ -v 3000 server.key server.crt
 IPv4: listen on port 3000
 IPv6: listen on port 3000
 The negotiated next protocol: spdy/3.1
@@ -398,22 +398,22 @@ The negotiated next protocol: spdy/3.1
 [id=1] [  1.297] closed
 </pre></div>
 </div>
-<p>Currently, <tt class="docutils literal"><span class="pre">spdyd</span></tt> needs <tt class="docutils literal"><span class="pre">epoll</span></tt> or <tt class="docutils literal"><span class="pre">kqueue</span></tt>.</p>
+<p>Currently, <code class="docutils literal"><span class="pre">spdyd</span></code> needs <code class="docutils literal"><span class="pre">epoll</span></code> or <code class="docutils literal"><span class="pre">kqueue</span></code>.</p>
 </div>
 <div class="section" id="shrpx-a-reverse-proxy-for-spdy-https">
 <h3>Shrpx - A reverse proxy for SPDY/HTTPS<a class="headerlink" href="#shrpx-a-reverse-proxy-for-spdy-https" title="Permalink to this headline">¶</a></h3>
 <p>For shrpx users who uses shrpx as SPDY proxy: Please consider
 migrating to nghttpx developed at <a class="reference external" href="https://nghttp2.org">nghttp2 project</a>.  nghttpx supports SPDY proxy too.</p>
-<p>The <tt class="docutils literal"><span class="pre">shrpx</span></tt> is a multi-threaded reverse proxy for SPDY/HTTPS.  It
+<p>The <code class="docutils literal"><span class="pre">shrpx</span></code> is a multi-threaded reverse proxy for SPDY/HTTPS.  It
 converts SPDY/HTTPS traffic to plain HTTP.  It is initially developed
 as a reverse proxy, but now it has other operation modes such as a
-frontend forward proxy.  For example, with <tt class="docutils literal"><span class="pre">--spdy-proxy</span></tt> (<tt class="docutils literal"><span class="pre">-s</span></tt> in
+frontend forward proxy.  For example, with <code class="docutils literal"><span class="pre">--spdy-proxy</span></code> (<code class="docutils literal"><span class="pre">-s</span></code> in
 shorthand) option, it can be used as secure SPDY proxy with a proxy
-(e.g., Squid) in the backend.  With <tt class="docutils literal"><span class="pre">--cliet-proxy</span></tt> (<tt class="docutils literal"><span class="pre">-p</span></tt>) option,
+(e.g., Squid) in the backend.  With <code class="docutils literal"><span class="pre">--cliet-proxy</span></code> (<code class="docutils literal"><span class="pre">-p</span></code>) option,
 it acts like an ordinaly forward proxy but expects secure SPDY proxy
 in the backend. Thus it becomes an adapter to secure SPDY proxy for
 clients which does not support secure SPDY proxy. The another notable
-operation mode is <tt class="docutils literal"><span class="pre">--spdy-relay</span></tt>, which just relays SPDY/HTTPS
+operation mode is <code class="docutils literal"><span class="pre">--spdy-relay</span></code>, which just relays SPDY/HTTPS
 traffic to the backend in SPDY. The following table summarizes the
 operation modes.</p>
 <table border="1" class="docutils">
@@ -436,31 +436,31 @@ operation modes.</p>
 <td>HTTP</td>
 <td>Reverse proxy</td>
 </tr>
-<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">--spdy</span></tt></td>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">--spdy</span></code></td>
 <td>SPDY/HTTPS</td>
 <td>HTTP</td>
 <td>SPDY proxy</td>
 </tr>
-<tr class="row-even"><td><tt class="docutils literal"><span class="pre">--spdy-relay</span></tt></td>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">--spdy-relay</span></code></td>
 <td>SPDY/HTTPS</td>
 <td>SPDY</td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">--client</span></tt></td>
+<tr class="row-odd"><td><code class="docutils literal"><span class="pre">--client</span></code></td>
 <td>HTTP</td>
 <td>SPDY</td>
 <td>&nbsp;</td>
 </tr>
-<tr class="row-even"><td><tt class="docutils literal"><span class="pre">--client-proxy</span></tt></td>
+<tr class="row-even"><td><code class="docutils literal"><span class="pre">--client-proxy</span></code></td>
 <td>HTTP</td>
 <td>SPDY</td>
 <td>Forward proxy</td>
 </tr>
 </tbody>
 </table>
-<p>The <tt class="docutils literal"><span class="pre">shrpx</span></tt> supports configuration file. See <tt class="docutils literal"><span class="pre">--conf</span></tt> option and
-sample configuration file <tt class="docutils literal"><span class="pre">shrpx.conf.sample</span></tt>.</p>
-<p>We briefly describe the architecture of <tt class="docutils literal"><span class="pre">shrpx</span></tt> here.  It has a
+<p>The <code class="docutils literal"><span class="pre">shrpx</span></code> supports configuration file. See <code class="docutils literal"><span class="pre">--conf</span></code> option and
+sample configuration file <code class="docutils literal"><span class="pre">shrpx.conf.sample</span></code>.</p>
+<p>We briefly describe the architecture of <code class="docutils literal"><span class="pre">shrpx</span></code> here.  It has a
 dedicated thread which listens on server sockets.  When it accepted
 the incoming connection, it passes the file descriptor of the incoming
 connection to one of the worker thread.  Each worker thread has its
@@ -469,7 +469,7 @@ The number of worker thread can be specified using the command-line
 option. The <a class="reference external" href="http://libevent.org/">libevent</a> is used to handle
 low-level network I/O.</p>
 <p>Here is the command-line options:</p>
-<div class="highlight-c"><div class="highlight"><pre>$ src/shrpx -h
+<div class="highlight-c"><div class="highlight"><pre><span></span>$ src/shrpx -h
 Usage: shrpx [-Dh] [-s|--client|-p] [-b &lt;HOST,PORT&gt;]
              [-f &lt;HOST,PORT&gt;] [-n &lt;CORES&gt;] [-c &lt;NUM&gt;] [-L &lt;LEVEL&gt;]
              [OPTIONS...] [&lt;PRIVATE_KEY&gt; &lt;CERT&gt;]
@@ -704,34 +704,34 @@ OPTIONS:
     -h, --help         Print this help and exit.
 </pre></div>
 </div>
-<p>For those of you who are curious, <tt class="docutils literal"><span class="pre">shrpx</span></tt> is an abbreviation of
+<p>For those of you who are curious, <code class="docutils literal"><span class="pre">shrpx</span></code> is an abbreviation of
 &#8220;Spdy/https to Http Reverse ProXy&#8221;.</p>
-<p>Without any of <tt class="docutils literal"><span class="pre">-s</span></tt>, <tt class="docutils literal"><span class="pre">--spdy-bridge</span></tt>, <tt class="docutils literal"><span class="pre">-p</span></tt> and <tt class="docutils literal"><span class="pre">--client</span></tt>
-options, <tt class="docutils literal"><span class="pre">shrpx</span></tt> works as reverse proxy to the backend server:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">,</span> <span class="n">HTTPS</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">HTTP</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Web</span> <span class="n">Server</span>
+<p>Without any of <code class="docutils literal"><span class="pre">-s</span></code>, <code class="docutils literal"><span class="pre">--spdy-bridge</span></code>, <code class="docutils literal"><span class="pre">-p</span></code> and <code class="docutils literal"><span class="pre">--client</span></code>
+options, <code class="docutils literal"><span class="pre">shrpx</span></code> works as reverse proxy to the backend server:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">,</span> <span class="n">HTTPS</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">HTTP</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Web</span> <span class="n">Server</span>
                         <span class="p">[</span><span class="n">reverse</span> <span class="n">proxy</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>With <tt class="docutils literal"><span class="pre">-s</span></tt> option, it works as secure SPDY proxy:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">,</span> <span class="n">HTTPS</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">HTTP</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Proxy</span>
+<p>With <code class="docutils literal"><span class="pre">-s</span></code> option, it works as secure SPDY proxy:</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">,</span> <span class="n">HTTPS</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">HTTP</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Proxy</span>
                           <span class="p">[</span><span class="n">SPDY</span> <span class="n">proxy</span><span class="p">]</span>            <span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">g</span><span class="p">.,</span> <span class="n">Squid</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <tt class="docutils literal"><span class="pre">Client</span></tt> in the above is needs to be configured to use shrpx as
+<p>The <code class="docutils literal"><span class="pre">Client</span></code> in the above is needs to be configured to use shrpx as
 secure SPDY proxy.</p>
 <p>At the time of this writing, Chrome is the only browser which supports
 secure SPDY proxy. The one way to configure Chrome to use secure SPDY
 proxy is create proxy.pac script like this:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">function</span> <span class="nf">FindProxyForURL</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span> <span class="p">{</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">function</span> <span class="nf">FindProxyForURL</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="s">&quot;HTTPS SERVERADDR:PORT&quot;</span><span class="p">;</span>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p><tt class="docutils literal"><span class="pre">SERVERADDR</span></tt> and <tt class="docutils literal"><span class="pre">PORT</span></tt> is the hostname/address and port of the
+<p><code class="docutils literal"><span class="pre">SERVERADDR</span></code> and <code class="docutils literal"><span class="pre">PORT</span></code> is the hostname/address and port of the
 machine shrpx is running.  Please note that Chrome requires valid
 certificate for secure SPDY proxy.</p>
 <p>Then run chrome with the following arguments:</p>
-<div class="highlight-c"><div class="highlight"><pre>$ google-chrome --proxy-pac-url=file:///path/to/proxy.pac --use-npn
+<div class="highlight-c"><div class="highlight"><pre><span></span>$ google-chrome --proxy-pac-url=file:///path/to/proxy.pac --use-npn
 </pre></div>
 </div>
 <div class="admonition note">
@@ -749,29 +749,29 @@ details how to change Policy setup on the platform you use.  The
 Policy name we are looking for is <a class="reference external" href="http://dev.chromium.org/administrators/policy-list-3#MaxConnectionsPerProxy">MaxConnectionsPerProxy</a>
 For example, if you are using Linux, follow the instruction
 described in <a class="reference external" href="http://dev.chromium.org/administrators/linux-quick-start">Linux Quick Start</a> and
-create <tt class="docutils literal"><span class="pre">/etc/opt/chrome/policies/managed/test_policy.json</span></tt> file
+create <code class="docutils literal"><span class="pre">/etc/opt/chrome/policies/managed/test_policy.json</span></code> file
 with the following content and restart Chrome:</p>
-<div class="last highlight-c"><div class="highlight"><pre><span class="p">{</span>
+<div class="last highlight-c"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s">&quot;MaxConnectionsPerProxy&quot;</span> <span class="o">:</span><span class="mi">99</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 </div>
-<p>With <tt class="docutils literal"><span class="pre">--spdy-bridge</span></tt>, it accepts SPDY/HTTPS connections and
+<p>With <code class="docutils literal"><span class="pre">--spdy-bridge</span></code>, it accepts SPDY/HTTPS connections and
 communicates with backend in SPDY:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">,</span> <span class="n">HTTPS</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Web</span> <span class="n">or</span> <span class="n">SPDY</span> <span class="n">Proxy</span> <span class="n">etc</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">,</span> <span class="n">HTTPS</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Web</span> <span class="n">or</span> <span class="n">SPDY</span> <span class="n">Proxy</span> <span class="n">etc</span>
                           <span class="p">[</span><span class="n">SPDY</span> <span class="n">bridge</span><span class="p">]</span>           <span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">g</span><span class="p">.,</span> <span class="n">shrpx</span> <span class="o">-</span><span class="n">s</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>With <tt class="docutils literal"><span class="pre">-p</span></tt> option, it works as forward proxy and expects that the
+<p>With <code class="docutils literal"><span class="pre">-p</span></code> option, it works as forward proxy and expects that the
 backend is secure SPDY proxy:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">HTTP</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Secure</span> <span class="n">SPDY</span> <span class="n">Proxy</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">HTTP</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Secure</span> <span class="n">SPDY</span> <span class="n">Proxy</span>
                  <span class="p">[</span><span class="n">forward</span> <span class="n">proxy</span><span class="p">]</span>         <span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">g</span><span class="p">.,</span> <span class="n">shrpx</span> <span class="o">-</span><span class="n">s</span> <span class="n">or</span> <span class="n">node</span><span class="o">-</span><span class="n">spdyproxy</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <tt class="docutils literal"><span class="pre">Client</span></tt> is needs to be configured to use shrpx as forward proxy.</p>
+<p>The <code class="docutils literal"><span class="pre">Client</span></code> is needs to be configured to use shrpx as forward proxy.</p>
 <p>In this configuration, clients which do not support secure SPDY proxy
-can use secure SPDY proxy through <tt class="docutils literal"><span class="pre">shrpx</span></tt>. Putting <tt class="docutils literal"><span class="pre">shrpx</span></tt> in the
+can use secure SPDY proxy through <code class="docutils literal"><span class="pre">shrpx</span></code>. Putting <code class="docutils literal"><span class="pre">shrpx</span></code> in the
 same box or same network with the clients, this configuration can
 bring the benefits of secure SPDY proxy to those clients. Since the
 maximum number of connections per server still applies in proxy
@@ -780,21 +780,21 @@ maximum number of connections per server is 6, after sending 6
 requests to the proxy, client blocks further requests, which kills
 performance which might be gained in SPDY connection.  For clients
 which can tweak these values (e.g.,
-<tt class="docutils literal"><span class="pre">network.http.max-connections-per-server</span></tt> in Firefox), increasing
+<code class="docutils literal"><span class="pre">network.http.max-connections-per-server</span></code> in Firefox), increasing
 them may improve the performance.</p>
-<p>With <tt class="docutils literal"><span class="pre">--client</span></tt> option, it works as reverse proxy and expects that
+<p>With <code class="docutils literal"><span class="pre">--client</span></code> option, it works as reverse proxy and expects that
 the backend is SPDY-enabled Web server:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">HTTP</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Web</span> <span class="n">Server</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">HTTP</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Web</span> <span class="n">Server</span>
                  <span class="p">[</span><span class="n">reverse</span> <span class="n">proxy</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>For the operation modes which talk to the backend in SPDY, the backend
 connections can be tunneled though HTTP proxy. The proxy is specified
-using <tt class="docutils literal"><span class="pre">--backend-http-proxy-uri</span></tt> option. The following figure
-illustrates the example of <tt class="docutils literal"><span class="pre">--spdy-bridge</span></tt> and
-<tt class="docutils literal"><span class="pre">--backend-http-proxy-uri</span></tt> option to talk to the outside SPDY proxy
+using <code class="docutils literal"><span class="pre">--backend-http-proxy-uri</span></code> option. The following figure
+illustrates the example of <code class="docutils literal"><span class="pre">--spdy-bridge</span></code> and
+<code class="docutils literal"><span class="pre">--backend-http-proxy-uri</span></code> option to talk to the outside SPDY proxy
 through HTTP proxy:</p>
-<div class="highlight-c"><div class="highlight"><pre><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">,</span> <span class="n">HTTPS</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">)</span> <span class="o">--</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">Client</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">,</span> <span class="n">HTTPS</span><span class="p">)</span> <span class="o">--&gt;</span> <span class="n">Shrpx</span> <span class="o">&lt;--</span> <span class="p">(</span><span class="n">SPDY</span><span class="p">)</span> <span class="o">--</span>
                          <span class="p">[</span><span class="n">SPDY</span> <span class="n">bridge</span><span class="p">]</span>
 
         <span class="o">--===================---&gt;</span> <span class="n">SPDY</span> <span class="n">Proxy</span>
@@ -810,8 +810,8 @@ in C.</p>
 </div>
 <div class="section" id="python-spdylay-python-wrapper">
 <h2>Python-Spdylay - Python Wrapper<a class="headerlink" href="#python-spdylay-python-wrapper" title="Permalink to this headline">¶</a></h2>
-<p>The library comes with Python wrapper <tt class="docutils literal"><span class="pre">python-spdylay</span></tt>. See
-<tt class="docutils literal"><span class="pre">python</span></tt> directory.</p>
+<p>The library comes with Python wrapper <code class="docutils literal"><span class="pre">python-spdylay</span></code>. See
+<code class="docutils literal"><span class="pre">python</span></code> directory.</p>
 </div>
 </div>
 
@@ -853,7 +853,7 @@ in C.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'1.3.3-DEV',
+            VERSION:'1.4.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
