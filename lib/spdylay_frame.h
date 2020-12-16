@@ -493,7 +493,7 @@ int spdylay_frame_unpack_settings(spdylay_settings *frame,
  * |len_size| is the number of bytes in length of name/value pair and
  * it must be 2 or 4.
  *
- * This function can handles duplicate keys and concatenation of thier
+ * This function can handles duplicate keys and concatenation of their
  * values with '\0'.
  */
 size_t spdylay_frame_count_nv_space(char **nv, size_t len_size);
